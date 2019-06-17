@@ -1,20 +1,36 @@
 # graphql-clientgen
 
-Generate client script for graphql projects
+Generate [client script](https://github.com/antoniopresto/graphql-clientgen/blob/master/examples/generated.ts#L73) for graphql projects
 
-### [Work in progress]
+A client-side method is generated for each query or mutation, with default customizable `fragment`:
+```ts
+// generated
+client.posts = (variables: QueryPostsArgs, options?: FetcherConfig): Promise<Post[]> => { /**/ };
+client.createPost = (variables: MutationCreatePostArgs, options?: FetcherConfig): Promise<Post> => { /**/ };
+...
+
+// usage
+client.posts({}); Promise<Post[]>
+client.posts({}, {fragment: `id title`}); Promise<(Partial<Post>)[]>
+```
+
+[antoniopresto.github.io/graphql-clientgen/](https://antoniopresto.github.io/graphql-clientgen/)
+
 
 ### Basic usage
 
 ```ts
+// server
 import { printClient } from 'graphql-clientgen';
 
-const clientCode = await printClient(graphqlSchema);
-fs.writeFile(`${__dirname}/${client.ts}`, clientCode);
+fs.writeFile(__dirname + '/client.ts', await printClient(graphqlSchema));
 ```
 
-[Generated code example](https://github.com/antoniopresto/graphql-clientgen/blob/master/client.ts#L152)
+> [Complete generated code example](https://github.com/antoniopresto/graphql-clientgen/blob/master/client.ts#L152)
 
+
+### [Work in progress]
+#### TODO
 - [x] generate typescript client
 - [x] generate typed query methods
 - [x] generate typed mutation methods
