@@ -1,9 +1,4 @@
-import {
-  GraphQLField,
-  GraphQLObjectType,
-  GraphQLSchema,
-  isListType
-} from 'graphql';
+import { GraphQLField, GraphQLObjectType, GraphQLSchema } from 'graphql';
 import { printJSON } from '../utils/print';
 
 type Field = GraphQLField<any, any>;
@@ -11,8 +6,9 @@ type Dict = { [key: string]: any };
 
 export type QueryItem = {
   opType: string;
+  opName: string; // ex usersPaginated
   schemaKey: string; // ex me
-  entityName: string; // ex User
+  entityName: string; // ex users
   varsToTypesStr?: string; // ex page: $page, perPage: $perPage, filter: $filter, sort: $sort
   query: string; // ex me { email password }
   argumentsDict: Dict;
@@ -23,10 +19,7 @@ export type QueryItem = {
   queryParts: [string, string, string]; // header, body (fragment), closing tags
 };
 
-// taken from
-// TODO integrate with resolversHelper;
-
-export function generateQuery(config: {
+export function expandFields(config: {
   schema: GraphQLSchema;
   depthLimit?: number;
   includeDeprecatedFields?: boolean;
@@ -120,6 +113,10 @@ export function generateQuery(config: {
       const crossReferenceKey = `${curParentName}To${curName}Key`;
       const fields = curType.getFields();
       const childKeys = Object.keys(fields);
+      
+      // const childSet = new Set(childKeys);
+      // const isComposition = childSet.has('pageInfo') && childSet.has('count');
+      // console.log({ curType, isComposition });
 
       if (
         crossReferenceKeyList.indexOf(crossReferenceKey) !== -1 ||
@@ -200,8 +197,8 @@ export function generateQuery(config: {
     }
     return { queryStr, argumentsDict: argumentsDict || {}, field };
   };
-
-  const queries = new Map<string, QueryItem>([]);
+  
+  const queries: QueryItem[] = [];
 
   /**
    * Generate the query for the specified field
@@ -227,9 +224,9 @@ export function generateQuery(config: {
           varsToTypesStr ? `(${varsToTypesStr})` : ''
         }{\n${query}\n}`;
 
-        const type = isListType(field.type) ? field.type.ofType : field.type;
-        // use type.name for object and toString for scalars
-        let entityName = type.name || type.toString();
+        const opName = ''; // ex usersPaginated
+        const type = field.type as GraphQLObjectType;
+        const entityName = type.name || type.toString(); // ex user
 
         const queryLines = query.split('\n');
 
@@ -256,10 +253,11 @@ export function generateQuery(config: {
           printJSON(queryLines);
           throw new Error('invalid queryParts');
         }
-        
-        queries.set(schemaKey, {
+
+        queries.push({
           opType,
           entityName,
+          opName,
           schemaKey, // ex user
           argumentsDict: queryResult.argumentsDict,
           varsToTypesStr, // ex page: $page, perPage: $perPage, filter: $filter, sort: $sort

@@ -1,16 +1,28 @@
-import { GraphQLSchema, GraphQLType, isListType, isScalarType } from 'graphql';
+import { GraphQLField, GraphQLObjectType, GraphQLSchema, isListType } from 'graphql';
 import camelCase from 'lodash/camelCase';
 import upperFirst from 'lodash/upperFirst';
 
-import {
-  ObjectTypeComposerArgumentConfigMap,
-  schemaComposer
-} from 'graphql-compose';
+export type ResolverStoreItem = {
+  type: GraphQLObjectType; //eg: [city]
+  schemaKey: string; // eg: cities
+  entityName: string; // eg: City
+  argsTSName: string; // eg: QueryMyCitiesArgs
+  returnTSName: string; // eg: `Query['cities']`
+  isList: boolean;
+  isMutation: boolean;
+  isQuery: boolean;
+  isSubscription: boolean;
+  field: GraphQLField<any, any>
+};
+
+export type ResolversStore = Map<string, ResolverStoreItem>;
 
 let _resolversStore: ResolversStore;
 
 export function getResolversHelper(schema: GraphQLSchema) {
   if (_resolversStore) return _resolversStore;
+
+  _resolversStore = new Map();
 
   const finalRootTypes = {
     mutation: schema.getMutationType(),
@@ -18,101 +30,74 @@ export function getResolversHelper(schema: GraphQLSchema) {
     subscription: schema.getSubscriptionType()
   };
 
-  let finalFields = {
-    ...(finalRootTypes.query ? finalRootTypes.query.getFields() : {}),
-    ...(finalRootTypes.mutation ? finalRootTypes.mutation.getFields() : {}),
-    ...(finalRootTypes.subscription
-      ? finalRootTypes.subscription.getFields()
-      : {})
+  const queryFields = finalRootTypes.query
+    ? finalRootTypes.query.getFields()
+    : {};
+
+  const mutationFields = finalRootTypes.mutation
+    ? finalRootTypes.mutation.getFields()
+    : {};
+
+  const subscriptionFields = finalRootTypes.subscription
+    ? finalRootTypes.subscription.getFields()
+    : {};
+
+  let fields = {
+    ...queryFields,
+    ...mutationFields,
+    ...subscriptionFields
   };
 
-  _resolversStore = new Map([]);
+  const fieldKeys = Object.keys(fields);
 
-  schemaComposer.types.forEach((_, tcType) => {
-    const resolvers =
-      typeof tcType.getResolvers === 'function' && tcType.getResolvers();
-    if (!resolvers || !resolvers.size) return;
-    const type = tcType.getType();
+  fieldKeys.forEach(schemaKey => {
+    const field = fields[schemaKey];
+    const type = field.type as GraphQLObjectType;
+    const isList = isListType(field.type);
 
-    resolvers.forEach((resolver, resolverName) => {
-      const entityName = type.name;
-      const args = resolver.args;
-      const path = `${entityName}.${resolverName}`;
-      const camelPath = camelCase(path);
-      // the final build field on graphql schema schema
-      const finalField = finalFields[camelPath];
+    const entityName = isListType(field.type)
+      ? field.type.ofType.toString()
+      : field.type.toString();
 
-      if (!finalField) {
-        console.log(
-          `can't find a field with name "${camelPath}" in the final graphql schema`
-        );
-        return;
-      }
+    const isMutation = !!mutationFields[schemaKey];
+    const isQuery = !!queryFields[schemaKey];
+    const isSubscription = !!subscriptionFields[schemaKey];
 
-      if (!resolver.kind) {
-        throw new Error(`resolver without kind for ${path}`);
-      }
+    let argsPrefix = '';
 
-      const returnType = finalFields[camelPath].type;
-      const kind = resolver.kind;
-      const isQuery = kind === 'query';
-      const isMutation = kind === 'mutation';
+    if (isMutation) {
+      argsPrefix = 'Mutation';
+    }
 
-      if (isQuery === isMutation) {
-        throw new Error('isQuery and isMutation cant be equals');
-      }
+    if (isQuery) {
+      argsPrefix = 'Query';
+    }
 
-      // printJSON(resolver);
+    if (isSubscription) {
+      argsPrefix = 'Subscription';
+    }
 
-      let returnTSType: string = (() => {
-        const isList = isListType(returnType);
-        let ofType: GraphQLType = isList
-          ? (returnType as any).ofType
-          : returnType;
+    let argsTSName = field.args.length
+      ? `${argsPrefix}${upperFirst(camelCase(schemaKey))}Args`
+      : '{}';
+    
+    let returnTSName = `Query['${schemaKey}']`;
 
-        let returning = upperFirst(ofType.toString());
+    const item = {
+      type,
+      schemaKey,
+      entityName,
+      isList,
+      argsTSName,
+      returnTSName,
+      isMutation,
+      isQuery,
+      isSubscription,
+      field
+    };
 
-        if (isScalarType(ofType)) {
-          returning = `Scalars['${returning}']`;
-        }
-
-        return isList ? `${returning}[]` : returning;
-      })();
-
-      const argsTSType =
-        upperFirst(kind) +
-        upperFirst(entityName) +
-        upperFirst(resolverName) +
-        'Args';
-
-      _resolversStore.set(resolver.displayName, {
-        entityName,
-        path,
-        args,
-        isQuery,
-        isMutation,
-        returnTSType,
-        argsTSType,
-        resolverName,
-        camelPath
-      });
-    });
+    _resolversStore.set(schemaKey, item);
   });
 
   return _resolversStore;
 }
-
-export type ResolverStoreItem = {
-  // path: string; // ex: `${entityName}.${fieldInfo.resolverName}`
-  args: ObjectTypeComposerArgumentConfigMap<any>; // ex: TCEntity.getResolver('findById').args
-  path: string; // `${entity}.${resolverName}`
-  camelPath: string; // camelCase('${entity}.${resolverName}')
-  resolverName: string; // ex: "findById" or "customOpName"
-  entityName: string; // ex user
-  isQuery: boolean;
-  isMutation: boolean;
-  returnTSType: string; // ex: LanguagesPagination | UpdateByIdlanguagesPayload
-  argsTSType: string; // ex: MutationCreattteUpdateOneArgs
-};
-
-export type ResolversStore = Map<string, ResolverStoreItem>;

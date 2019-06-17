@@ -1,85 +1,71 @@
-import groupBy from 'lodash/groupBy';
 import { plugin as tsPlugin } from '@graphql-codegen/typescript';
 import { GraphQLSchema } from 'graphql';
 
-import { genClientFields } from './expand-client-fields';
-import { getResolversHelper, ResolverStoreItem } from './resolversHelper';
+import { generateQuery } from './expand-client-fields';
+import { getResolversHelper } from './resolversHelper';
 import { prettify } from '../utils/prettify';
 
 function mountClient(schema: GraphQLSchema) {
   let prependBody = clientBase;
 
   const storeSet = getResolversHelper(schema);
-  const store = [...storeSet.values()];
+  const storeItems = [...storeSet.values()];
 
-  const queryHelpers = genClientFields({ schema });
+  const queryHelpers = generateQuery({ schema });
 
   let queriesStr = `
     export const query = {
   `;
 
   let clientBody = `
-    export type FetchConfig = any;
     export const client = {
   `;
 
-  const storeByEntity = groupBy(store, 'entityName');
-  const entityNames = Object.keys(storeByEntity);
+  storeItems.forEach(info => {
+    let clientEntry = ``;
 
-  entityNames.forEach(entityName => {
-    const entries = storeByEntity[entityName];
+    const queryHelper = queryHelpers.get(info.schemaKey);
+
+    if (!queryHelper) {
+      console.log(`no client generated for ${info.schemaKey}`);
+      return;
+    }
+
+    const query = addTabs(
+      queryHelper.queryParts
+        .map((el, k) => {
+          if (k !== 1) return el;
+          return addTabs(`\${fragment || \`\n${el}\n\`}`, 8);
+        })
+        .join('\n'),
+      8
+    );
 
     queriesStr += `
-      ${entityName}: {
-    `;
-
-    let clientEntry = `
-    ${entityName}: {
-  `;
-
-    entries.forEach((fieldInfo: ResolverStoreItem) => {
-      const queryHelper = queryHelpers.find(el => {
-        // console.log(el);
-        return el.schemaKey === fieldInfo.camelPath;
-      });
-
-      if (!queryHelper) {
-        console.log(`no client generated for ${fieldInfo.camelPath}`);
-        // query not exists, probably because no auth rule was created, not wrong.
-        return;
-      }
-
-      const query = addTabs(
-        queryHelper.queryParts
-          .map((el, k) => {
-            if (k !== 1) return el;
-            return addTabs(`\${fragment || \`\n${el}\n\`}`, 8);
-          })
-          .join('\n'),
-        8
-      );
-
-      queriesStr += `
-        "${fieldInfo.resolverName}": (fragment = '') => \`\n${query}\`,
+        "${info.schemaKey}": (fragment = '') => \`\n${query}\`,
       `;
 
-      clientEntry += `
-      ${fieldInfo.resolverName}: (variables: ${fieldInfo.argsTSType}, config: Partial<FetcherConfig> = {}) => {
-        return queryFetcher<${fieldInfo.argsTSType}, Maybe<${fieldInfo.returnTSType}>>(variables, {
-        entityName: '${fieldInfo.entityName}',
-        schemaKey: '${fieldInfo.camelPath}',
-        query: query.${fieldInfo.entityName}.${fieldInfo.resolverName}(config.fragment), ...config});
-      },
-    `;
-    });
-
-    queriesStr += `
-    },
-  `;
+    const hasArgs = !!info.field.args.length;
+    let variablesDeclaration = '';
+    if (hasArgs) {
+      variablesDeclaration = `variables: ${info.argsTSName}, `;
+    }
 
     clientEntry += `
-    },
-  `;
+      ${
+        info.schemaKey
+      }: (${variablesDeclaration}config: Partial<FetcherConfig> = {}) => {
+        return queryFetcher<${info.argsTSName}, Maybe<${info.returnTSName}>>(${
+      hasArgs ? 'variables, ' : 'undefined, '
+    } {
+        entityName: '${info.entityName}',
+        schemaKey: '${info.schemaKey}',
+        query: query.${
+      info.schemaKey
+    }(config.fragment), ...config});
+      },
+    `;
+    
     clientBody += clientEntry;
   });
 
@@ -94,7 +80,10 @@ function mountClient(schema: GraphQLSchema) {
   return {
     prependBody,
     clientBody,
-    query: queryHelpers.reduce((prev, next) => `${prev}\n\n ${next.query}`, '')
+    query: [...queryHelpers.values()].reduce(
+      (prev, next) => `${prev}\n\n ${next.query}`,
+      ''
+    )
   };
 }
 

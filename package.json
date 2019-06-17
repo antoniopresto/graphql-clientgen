@@ -1,5 +1,5 @@
 {
-  "name": "graphql-compose-client-gen",
+  "name": "graphql-clientgen",
   "version": "0.0.1",
   "description": "Generate client script for graphql-compose projects",
   "main": "build/main/index.js",
@@ -9,6 +9,7 @@
   "license": "MIT",
   "keywords": [],
   "scripts": {
+    "dev": "tsc-watch --onSuccess \"node build/main/dev/index.js\"",
     "describe": "npm-scripts-info",
     "build": "run-s clean && run-p build:*",
     "build:main": "tsc -p tsconfig.json",
@@ -30,8 +31,7 @@
     "reset": "git clean -dfx && git reset --hard && yarn install",
     "clean": "trash build test",
     "all": "run-s reset test cov:check doc:html",
-    "prepare-release": "run-s all version doc:publish",
-    "preinstall": "node -e \"if(process.env.npm_execpath.indexOf('yarn') === -1) throw new Error('mental must be installed with Yarn: https://yarnpkg.com/')\""
+    "prepare-release": "run-s all version doc:publish"
   },
   "scripts-info": {
     "info": "Display information about the package scripts",
@@ -70,6 +70,7 @@
     "prettier": "^1.18.2",
     "standard-version": "^4.4.0",
     "trash-cli": "^1.4.0",
+    "tsc-watch": "^2.2.1",
     "typedoc": "^0.14.2",
     "typescript": "^3.1.6"
   },
