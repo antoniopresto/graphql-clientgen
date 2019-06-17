@@ -77,36 +77,6 @@ fs.writeFile(<span class="hljs-string">`<span class="hljs-subst">${__dirname}</s
 <span class="hljs-keyword">import</span> client <span class="hljs-keyword">from</span> <span class="hljs-string">'../generated/client.ts'</span>;
 
 client.createCity({ code: <span class="hljs-number">1001</span>, name: <span class="hljs-string">''</span> }).then(<span class="hljs-built_in">console</span>.log).catch(<span class="hljs-built_in">console</span>.warn);</code></pre>
-				<pre><code class="language-ts">[...]
-<span class="hljs-keyword">export</span> <span class="hljs-keyword">type</span> QueryCreateCityArgs = {
-  payload?: Maybe&lt;CreateCityPayload&gt;;
-};
-
-<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> client = {
-  cities: <span class="hljs-function">(<span class="hljs-params">variables: QueryCitiesArgs, config: Partial&lt;FetcherConfig&gt; = {}</span>) =&gt;</span> {
-    <span class="hljs-keyword">return</span> queryFetcher&lt;QueryCitiesArgs, Maybe&lt;Query[<span class="hljs-string">'cities'</span>]&gt;&gt;(variables, {
-      entityName: <span class="hljs-string">'City'</span>,
-      schemaKey: <span class="hljs-string">'cities'</span>,
-      query: query.cities(config.fragment),
-      ...config
-    });
-  },
-
-  createCity: (
-    variables: QueryCreateCityArgs,
-    config: Partial&lt;FetcherConfig&gt; = {}
-  ) =&gt; {
-    <span class="hljs-keyword">return</span> queryFetcher&lt;QueryCreateCityArgs, Maybe&lt;Query[<span class="hljs-string">'createCity'</span>]&gt;&gt;(
-      variables,
-      {
-        entityName: <span class="hljs-string">'City'</span>,
-        schemaKey: <span class="hljs-string">'createCity'</span>,
-        query: query.createCity(config.fragment),
-        ...config
-      }
-    );
-  }
-};</code></pre>
 				<blockquote>
 					<p><a href="https://github.com/antoniopresto/graphql-clientgen/blob/master/client.ts#L152">Complete generated code example</a></p>
 				</blockquote>
