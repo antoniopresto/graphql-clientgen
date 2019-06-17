@@ -24,4 +24,5 @@ fs.writeFile(`${__dirname}/${client.ts}`, clientCode);
 - [ ] print query
 - [ ] improve docs
 - [ ] generate pure javascript version of the client
-- [ ] handle custom resolvers
+- [ ] generate jsdoc
+
