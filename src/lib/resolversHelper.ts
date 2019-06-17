@@ -81,7 +81,7 @@ export function getResolversHelper(schema: GraphQLSchema) {
       ? `${argsPrefix}${upperFirst(camelCase(schemaKey))}Args`
       : '{}';
     
-    let returnTSName = `Query['${schemaKey}']`;
+    let returnTSName = `${argsPrefix}['${schemaKey}']`;
 
     const item = {
       type,

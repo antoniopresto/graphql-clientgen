@@ -20,6 +20,8 @@ fs.writeFile(`${__dirname}/${client.ts}`, clientCode);
 - [x] generate typed mutation methods
 - [x] generate default fragments
 - [ ] generate from endpoint
+- [ ] print schema
+- [ ] print query
 - [ ] improve docs
 - [ ] generate pure javascript version of the client
 - [ ] handle custom resolvers
