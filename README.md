@@ -13,6 +13,8 @@ const clientCode = await printClient(graphqlSchema);
 fs.writeFile(`${__dirname}/${client.ts}`, clientCode);
 ```
 
+[Generated code example](https://github.com/antoniopresto/graphql-clientgen/blob/master/client.ts#L152)
+
 - [x] generate typescript client
 - [x] generate typed query methods
 - [x] generate typed mutation methods
