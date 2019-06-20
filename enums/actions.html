@@ -3,17 +3,17 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>graphql-clientgen</title>
+	<title>Actions | graphql-clientgen</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<link rel="stylesheet" href="assets/css/main.css">
+	<link rel="stylesheet" href="../assets/css/main.css">
 </head>
 <body>
 <header>
 	<div class="tsd-page-toolbar">
 		<div class="container">
 			<div class="table-wrap">
-				<div class="table-cell" id="tsd-search" data-index="assets/js/search.js" data-base=".">
+				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.js" data-base="..">
 					<div class="field">
 						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
 						<input id="tsd-search-field" type="text" />
@@ -22,7 +22,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="index.html" class="title">graphql-clientgen</a>
+					<a href="../index.html" class="title">graphql-clientgen</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -53,146 +53,162 @@
 		<div class="container">
 			<ul class="tsd-breadcrumb">
 				<li>
-					<a href="globals.html">Globals</a>
+					<a href="../globals.html">Globals</a>
+				</li>
+				<li>
+					<a href="actions.html">Actions</a>
 				</li>
 			</ul>
-			<h1> graphql-clientgen</h1>
+			<h1>Enumeration Actions</h1>
 		</div>
 	</div>
 </header>
 <div class="container container-main">
 	<div class="row">
 		<div class="col-8 col-content">
-			<div class="tsd-panel tsd-typography">
-				<h1 id="graphql-clientgen">graphql-clientgen</h1>
-				<p>Generate <a href="https://github.com/antoniopresto/graphql-clientgen/blob/master/examples/generated.ts#L73">client script</a> for graphql projects</p>
-				<p>A client-side method is generated for each query or mutation, with default customizable <code>fragment</code>:</p>
-				<pre><code class="language-ts"><span class="hljs-comment">// generated</span>
-client.posts = (variables: QueryPostsArgs, options?: FetcherConfig): <span class="hljs-built_in">Promise</span>&lt;Post[]&gt; =&gt; { <span class="hljs-comment">/**/</span> };
-client.createPost = (variables: MutationCreatePostArgs, options?: FetcherConfig): <span class="hljs-built_in">Promise</span>&lt;Post&gt; =&gt; { <span class="hljs-comment">/**/</span> };
-...
-
-<span class="hljs-comment">// usage</span>
-client.posts({}); <span class="hljs-built_in">Promise</span>&lt;Post[]&gt;
-client.posts({}, {fragment: <span class="hljs-string">`id title`</span>}); <span class="hljs-built_in">Promise</span>&lt;(Partial&lt;Post&gt;)[]&gt;</code></pre>
-				<p><a href="https://antoniopresto.github.io/graphql-clientgen/">antoniopresto.github.io/graphql-clientgen/</a></p>
-				<h3 id="basic-usage">Basic usage</h3>
-				<pre><code class="language-ts"><span class="hljs-comment">// server</span>
-<span class="hljs-keyword">import</span> { printClient } <span class="hljs-keyword">from</span> <span class="hljs-string">'graphql-clientgen'</span>;
-
-fs.writeFile(__dirname + <span class="hljs-string">'/client.ts'</span>, <span class="hljs-keyword">await</span> printClient(graphqlSchema));</code></pre>
-				<blockquote>
-					<p><a href="https://github.com/antoniopresto/graphql-clientgen/blob/master/client.ts#L152">Complete generated code example</a></p>
-				</blockquote>
-				<h3 id="-work-in-progress-">[Work in progress]</h3>
-				<h4 id="todo">TODO</h4>
-				<ul>
-					<li><input checked="" disabled="" type="checkbox"> generate typescript client</li>
-					<li><input checked="" disabled="" type="checkbox"> generate typed query methods</li>
-					<li><input checked="" disabled="" type="checkbox"> generate typed mutation methods</li>
-					<li><input checked="" disabled="" type="checkbox"> generate default fragments</li>
-					<li><input disabled="" type="checkbox"> generate from endpoint</li>
-					<li><input disabled="" type="checkbox"> print schema</li>
-					<li><input disabled="" type="checkbox"> print query</li>
-					<li><input disabled="" type="checkbox"> improve docs</li>
-					<li><input disabled="" type="checkbox"> generate pure javascript version of the client</li>
-					<li><input disabled="" type="checkbox"> generate jsdoc</li>
-				</ul>
-			</div>
+			<section class="tsd-panel-group tsd-index-group">
+				<h2>Index</h2>
+				<section class="tsd-panel tsd-index-panel">
+					<div class="tsd-index-content">
+						<section class="tsd-index-section ">
+							<h3>Enumeration members</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="actions.html#complete" class="tsd-kind-icon">complete</a></li>
+								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="actions.html#init" class="tsd-kind-icon">init</a></li>
+							</ul>
+						</section>
+					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Enumeration members</h2>
+				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
+					<a name="complete" class="tsd-anchor"></a>
+					<h3>complete</h3>
+					<div class="tsd-signature tsd-kind-icon">complete<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> =&nbsp;&quot;complete&quot;</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/a560ffa/src/lib/clientbase.ts#L3">lib/clientbase.ts:3</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
+					<a name="init" class="tsd-anchor"></a>
+					<h3>init</h3>
+					<div class="tsd-signature tsd-kind-icon">init<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> =&nbsp;&quot;init&quot;</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/a560ffa/src/lib/clientbase.ts#L2">lib/clientbase.ts:2</a></li>
+						</ul>
+					</aside>
+				</section>
+			</section>
 		</div>
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 			<nav class="tsd-navigation primary">
 				<ul>
 					<li class="globals  ">
-						<a href="globals.html"><em>Globals</em></a>
+						<a href="../globals.html"><em>Globals</em></a>
 					</li>
 				</ul>
 			</nav>
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
-					<li class=" tsd-kind-enum">
-						<a href="enums/actions.html" class="tsd-kind-icon">Actions</a>
+				</ul>
+				<ul class="current">
+					<li class="current tsd-kind-enum">
+						<a href="actions.html" class="tsd-kind-icon">Actions</a>
+						<ul>
+							<li class=" tsd-kind-enum-member tsd-parent-kind-enum">
+								<a href="actions.html#complete" class="tsd-kind-icon">complete</a>
+							</li>
+							<li class=" tsd-kind-enum-member tsd-parent-kind-enum">
+								<a href="actions.html#init" class="tsd-kind-icon">init</a>
+							</li>
+						</ul>
 					</li>
+				</ul>
+				<ul class="after-current">
 					<li class=" tsd-kind-class">
-						<a href="classes/graphqlclient.html" class="tsd-kind-icon">GraphQLClient</a>
+						<a href="../classes/graphqlclient.html" class="tsd-kind-icon">GraphQLClient</a>
 					</li>
 					<li class=" tsd-kind-type-alias tsd-is-not-exported">
-						<a href="globals.html#dict" class="tsd-kind-icon">Dict</a>
+						<a href="../globals.html#dict" class="tsd-kind-icon">Dict</a>
 					</li>
 					<li class=" tsd-kind-type-alias tsd-has-type-parameter">
-						<a href="globals.html#fetcherconfig" class="tsd-kind-icon">Fetcher<wbr>Config</a>
+						<a href="../globals.html#fetcherconfig" class="tsd-kind-icon">Fetcher<wbr>Config</a>
 					</li>
 					<li class=" tsd-kind-type-alias tsd-is-not-exported">
-						<a href="globals.html#field" class="tsd-kind-icon">Field</a>
+						<a href="../globals.html#field" class="tsd-kind-icon">Field</a>
 					</li>
 					<li class=" tsd-kind-type-alias tsd-has-type-parameter tsd-is-not-exported">
-						<a href="globals.html#middleware" class="tsd-kind-icon">Middleware</a>
+						<a href="../globals.html#middleware" class="tsd-kind-icon">Middleware</a>
 					</li>
 					<li class=" tsd-kind-type-alias tsd-has-type-parameter tsd-is-not-exported">
-						<a href="globals.html#middlewarecontext" class="tsd-kind-icon">Middleware<wbr>Context</a>
+						<a href="../globals.html#middlewarecontext" class="tsd-kind-icon">Middleware<wbr>Context</a>
 					</li>
 					<li class=" tsd-kind-type-alias">
-						<a href="globals.html#queryfetcher" class="tsd-kind-icon">Query<wbr>Fetcher</a>
+						<a href="../globals.html#queryfetcher" class="tsd-kind-icon">Query<wbr>Fetcher</a>
 					</li>
 					<li class=" tsd-kind-type-alias">
-						<a href="globals.html#queryitem" class="tsd-kind-icon">Query<wbr>Item</a>
+						<a href="../globals.html#queryitem" class="tsd-kind-icon">Query<wbr>Item</a>
 					</li>
 					<li class=" tsd-kind-type-alias">
-						<a href="globals.html#resolverstoreitem" class="tsd-kind-icon">Resolver<wbr>Store<wbr>Item</a>
+						<a href="../globals.html#resolverstoreitem" class="tsd-kind-icon">Resolver<wbr>Store<wbr>Item</a>
 					</li>
 					<li class=" tsd-kind-type-alias">
-						<a href="globals.html#resolversstore" class="tsd-kind-icon">Resolvers<wbr>Store</a>
+						<a href="../globals.html#resolversstore" class="tsd-kind-icon">Resolvers<wbr>Store</a>
 					</li>
 					<li class=" tsd-kind-variable tsd-is-not-exported">
-						<a href="globals.html#citytc" class="tsd-kind-icon">CityTC</a>
+						<a href="../globals.html#citytc" class="tsd-kind-icon">CityTC</a>
 					</li>
 					<li class=" tsd-kind-variable tsd-is-not-exported">
-						<a href="globals.html#_resolversstore" class="tsd-kind-icon">_resolvers<wbr>Store</a>
+						<a href="../globals.html#_resolversstore" class="tsd-kind-icon">_resolvers<wbr>Store</a>
 					</li>
 					<li class=" tsd-kind-variable tsd-is-not-exported">
-						<a href="globals.html#clientbase" class="tsd-kind-icon">client<wbr>Base</a>
+						<a href="../globals.html#clientbase" class="tsd-kind-icon">client<wbr>Base</a>
 					</li>
 					<li class=" tsd-kind-variable">
-						<a href="globals.html#schema" class="tsd-kind-icon">schema</a>
+						<a href="../globals.html#schema" class="tsd-kind-icon">schema</a>
 					</li>
 					<li class=" tsd-kind-function tsd-is-not-exported">
-						<a href="globals.html#addtabs" class="tsd-kind-icon">add<wbr>Tabs</a>
+						<a href="../globals.html#addtabs" class="tsd-kind-icon">add<wbr>Tabs</a>
 					</li>
 					<li class=" tsd-kind-function tsd-has-type-parameter tsd-is-not-exported">
-						<a href="globals.html#applymiddleware" class="tsd-kind-icon">apply<wbr>Middleware</a>
+						<a href="../globals.html#applymiddleware" class="tsd-kind-icon">apply<wbr>Middleware</a>
 					</li>
 					<li class=" tsd-kind-function tsd-is-not-exported">
-						<a href="globals.html#compose" class="tsd-kind-icon">compose</a>
+						<a href="../globals.html#compose" class="tsd-kind-icon">compose</a>
 					</li>
 					<li class=" tsd-kind-function tsd-is-not-exported">
-						<a href="globals.html#ensurearray" class="tsd-kind-icon">ensure<wbr>Array</a>
+						<a href="../globals.html#ensurearray" class="tsd-kind-icon">ensure<wbr>Array</a>
 					</li>
 					<li class=" tsd-kind-function">
-						<a href="globals.html#expandfields" class="tsd-kind-icon">expand<wbr>Fields</a>
+						<a href="../globals.html#expandfields" class="tsd-kind-icon">expand<wbr>Fields</a>
 					</li>
 					<li class=" tsd-kind-function">
-						<a href="globals.html#generatequery" class="tsd-kind-icon">generate<wbr>Query</a>
+						<a href="../globals.html#generatequery" class="tsd-kind-icon">generate<wbr>Query</a>
 					</li>
 					<li class=" tsd-kind-function">
-						<a href="globals.html#getresolvershelper" class="tsd-kind-icon">get<wbr>Resolvers<wbr>Helper</a>
+						<a href="../globals.html#getresolvershelper" class="tsd-kind-icon">get<wbr>Resolvers<wbr>Helper</a>
 					</li>
 					<li class=" tsd-kind-function tsd-is-not-exported">
-						<a href="globals.html#mountclient" class="tsd-kind-icon">mount<wbr>Client</a>
+						<a href="../globals.html#mountclient" class="tsd-kind-icon">mount<wbr>Client</a>
 					</li>
 					<li class=" tsd-kind-function">
-						<a href="globals.html#prettify" class="tsd-kind-icon">prettify</a>
+						<a href="../globals.html#prettify" class="tsd-kind-icon">prettify</a>
 					</li>
 					<li class=" tsd-kind-function">
-						<a href="globals.html#printclient" class="tsd-kind-icon">print<wbr>Client</a>
+						<a href="../globals.html#printclient" class="tsd-kind-icon">print<wbr>Client</a>
 					</li>
 					<li class=" tsd-kind-function">
-						<a href="globals.html#printjson" class="tsd-kind-icon">printJSON</a>
+						<a href="../globals.html#printjson" class="tsd-kind-icon">printJSON</a>
 					</li>
 					<li class=" tsd-kind-function tsd-has-type-parameter tsd-is-not-exported">
-						<a href="globals.html#queryfetcher" class="tsd-kind-icon">query<wbr>Fetcher</a>
+						<a href="../globals.html#queryfetcher" class="tsd-kind-icon">query<wbr>Fetcher</a>
 					</li>
 					<li class=" tsd-kind-object-literal tsd-is-not-exported">
-						<a href="globals.html#extension_to_parser" class="tsd-kind-icon">EXTENSION_<wbr>TO_<wbr>PARSER</a>
+						<a href="../globals.html#extension_to_parser" class="tsd-kind-icon">EXTENSION_<wbr>TO_<wbr>PARSER</a>
 					</li>
 				</ul>
 			</nav>
@@ -262,7 +278,7 @@ fs.writeFile(__dirname + <span class="hljs-string">'/client.ts'</span>, <span cl
 	<p>Generated using <a href="http://typedoc.org/" target="_blank">TypeDoc</a></p>
 </div>
 <div class="overlay"></div>
-<script src="assets/js/main.js"></script>
-<script>if (location.protocol == 'file:') document.write('<script src="assets/js/search.js"><' + '/script>');</script>
+<script src="../assets/js/main.js"></script>
+<script>if (location.protocol == 'file:') document.write('<script src="../assets/js/search.js"><' + '/script>');</script>
 </body>
 </html>
