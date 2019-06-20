@@ -120,15 +120,23 @@ function addTabs(str = '', n = 8) {
     .join('\n');
 }
 
-const clientBase = `type MiddlewareContext<V> = {
+const clientBase = `export enum Actions {
+  init,
+  complete
+}
+
+type MiddlewareContext<V, R = any> = {
   requestConfig: RequestInit;
   variables: V;
   config: FetcherConfig<V>;
+  action: Actions;
+  errors?: string[];
+  result?: R;
 };
 
-type Middleware<V = any> = (
-  config: MiddlewareContext<V>
-) => MiddlewareContext<V>;
+type Middleware<V = any, R = any> = (
+  config: MiddlewareContext<V, R>
+) => MiddlewareContext<V, R>;
 
 export type FetcherConfig<V = any> = {
   apiURL: string;
@@ -143,7 +151,7 @@ export type FetcherConfig<V = any> = {
 const queryFetcher = async function queryFetcher<Variables, Return>(
   variables: Variables,
   config: FetcherConfig<Variables>
-): Promise<Return> {
+): Promise<MiddlewareContext<Variables, Return>> {
   let requestConfig: RequestInit = {
     method: 'POST',
     credentials: 'include',
@@ -151,37 +159,48 @@ const queryFetcher = async function queryFetcher<Variables, Return>(
       'Content-Type': 'application/json',
       Accept: 'application/json',
       ...config.headers
-    },
-    body: JSON.stringify({
-      query: config.query,
-      variables
-    })
+    }
   };
 
-  let context: MiddlewareContext<Variables> = {
+  const middleware: Middleware<Variables, Return> = config.middleware
+    ? applyMiddleware(ensureArray(config.middleware))
+    : ctx => ctx;
+
+  const context = middleware({
     requestConfig,
     variables,
-    config
-  };
+    config,
+    action: Actions.init
+  });
 
-  if (config.middleware) {
-    context = applyMiddleware(ensureArray(config.middleware))(context);
-  }
+  context.requestConfig.body = JSON.stringify({
+    query: context.config.query,
+    variables: context.variables
+  });
 
   return fetch(context.config.apiURL, context.requestConfig).then(
     async response => {
       const contentType = response.headers.get('Content-Type');
-      if (contentType && contentType.startsWith('application/json')) {
-        const { errors, data } = await response.json();
+      const isJSON = contentType && contentType.startsWith('application/json');
 
-        if (errors) {
-          throw new Error(errors.join('\\n'));
-        }
+      if (!isJSON) {
+        const fetchError = await response.text();
 
-        return data[config.schemaKey];
-      } else {
-        throw new Error(await response.text());
+        return middleware({
+          ...context,
+          result: null,
+          action: Actions.complete,
+          errors: [fetchError]
+        });
       }
+
+      let { errors, data } = await response.json();
+
+      return middleware({
+        ...context,
+        errors,
+        result: data ? data[config.schemaKey] : null
+      });
     }
   );
 };
@@ -197,7 +216,7 @@ export class GraphQLClient {
     middleware?: Middleware | Middleware[];
   }) {
     this.middleware = ensureArray(config.middleware);
-    
+
     if (config.apiURL) {
       this.apiURL = config.apiURL;
     }
@@ -227,7 +246,9 @@ function compose(...funcs: Middleware<any>[]) {
   return funcs.reduce((a, b) => (...args) => a(b(...args)));
 }
 
-const applyMiddleware = <V = any>(middleware: Middleware<V>[]) => {
+const applyMiddleware = <V = any>(
+  middleware: Middleware<V>[]
+): Middleware<V> => {
   return (context: MiddlewareContext<V>) => {
     return compose(...middleware)(context);
   };
