@@ -1,5 +1,5 @@
 import fs from 'fs';
-import { schema } from '../__tests__/schema.spec';
+import { schema } from './schema-demo';
 // import { getResolversHelper } from '../lib/resolversHelper';
 import { printClient } from '../index';
 
