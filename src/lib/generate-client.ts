@@ -199,6 +199,7 @@ const queryFetcher = async function queryFetcher<Variables, Return>(
       return middleware({
         ...context,
         errors,
+        action: Actions.complete,
         result: data ? data[config.schemaKey] : null
       });
     }
