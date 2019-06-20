@@ -1,5 +1,5 @@
 export const printJSON = (obj: any) => {
-  let cache = [];
+  let cache: any[] = [];
   const str = JSON.stringify(obj, function(_, value) {
     if (typeof value === 'object' && value !== null) {
       if (cache.indexOf(value) !== -1) {
@@ -11,7 +11,6 @@ export const printJSON = (obj: any) => {
     }
     return value;
   }, 2);
-  cache = null; // Enable garbage collection
   
   console.log(str);
 };

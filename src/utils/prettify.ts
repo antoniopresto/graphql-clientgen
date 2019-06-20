@@ -26,6 +26,7 @@ export async function prettify(filePath: string, content: string): Promise<strin
     const prettierPath = require.resolve('prettier');
     
     if (prettierPath) {
+      // @ts-ignore
       const prettier = await import('prettier');
       const fileExtension = path.extname(filePath).slice(1) as keyof typeof EXTENSION_TO_PARSER;
       const parser = EXTENSION_TO_PARSER[fileExtension];

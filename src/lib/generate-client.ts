@@ -121,8 +121,8 @@ function addTabs(str = '', n = 8) {
 }
 
 const clientBase = `export enum Actions {
-  init,
-  complete
+  init = 'init',
+  complete = 'complete'
 }
 
 type MiddlewareContext<V, R = any> = {
@@ -131,7 +131,7 @@ type MiddlewareContext<V, R = any> = {
   config: FetcherConfig<V>;
   action: Actions;
   errors?: string[];
-  result?: R;
+  result?: R | null;
 };
 
 type Middleware<V = any, R = any> = (
