@@ -29,11 +29,7 @@ const queryFetcher = async function queryFetcher<Variables, Return>(
       'Content-Type': 'application/json',
       Accept: 'application/json',
       ...config.headers
-    },
-    body: JSON.stringify({
-      query: config.query,
-      variables
-    })
+    }
   };
 
   let context: MiddlewareContext<Variables> = {
@@ -45,6 +41,11 @@ const queryFetcher = async function queryFetcher<Variables, Return>(
   if (config.middleware) {
     context = applyMiddleware(ensureArray(config.middleware))(context);
   }
+
+  context.requestConfig.body = JSON.stringify({
+    query: context.config.query,
+    variables: context.variables
+  });
 
   return fetch(context.config.apiURL, context.requestConfig).then(
     async response => {
@@ -75,7 +76,7 @@ export class GraphQLClient {
     middleware?: Middleware | Middleware[];
   }) {
     this.middleware = ensureArray(config.middleware);
-    
+
     if (config.apiURL) {
       this.apiURL = config.apiURL;
     }
