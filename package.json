@@ -1,6 +1,6 @@
 {
   "name": "graphql-clientgen",
-  "version": "0.0.4-beta.5",
+  "version": "0.0.4-beta.6",
   "description": "Generate client script for graphql-compose projects",
   "main": "build/main/index.js",
   "typings": "build/main/index.d.ts",
@@ -32,7 +32,7 @@
     "clean": "trash build test",
     "all": "run-s reset test cov:check doc:html",
     "prepare-release": "run-s all version doc:publish",
-    "beta": "standard-version --prerelease beta"
+    "beta": "standard-version --prerelease beta && git push --follow-tags origin master && npm publish --tag prerelease"
   },
   "scripts-info": {
     "info": "Display information about the package scripts",
