@@ -41,4 +41,5 @@ fs.writeFile(__dirname + '/client.ts', await printClient(graphqlSchema));
 - [ ] improve docs
 - [ ] generate pure javascript version of the client
 - [ ] generate jsdoc
+- [ ] batch queries
 

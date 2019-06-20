@@ -2,6 +2,46 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.0.2-beta.1"></a>
+## [1.0.2-beta.1](https://github.com/antoniopresto/graphql-clientgen/compare/v1.0.1...v1.0.2-beta.1) (2019-06-20)
+
+
+
+<a name="1.0.2-beta.0"></a>
+## [1.0.2-beta.0](https://github.com/antoniopresto/graphql-clientgen/compare/v1.0.1...v1.0.2-beta.0) (2019-06-20)
+
+
+
+<a name="1.0.1"></a>
+## [1.0.1](https://github.com/antoniopresto/graphql-clientgen/compare/v0.0.4-beta.10...v1.0.1) (2019-06-20)
+
+
+
+<a name="0.0.4-beta.12"></a>
+## [0.0.4-beta.12](https://github.com/antoniopresto/graphql-clientgen/compare/v0.0.4-beta.10...v0.0.4-beta.12) (2019-06-20)
+
+
+
+<a name="0.0.4-beta.11"></a>
+## [0.0.4-beta.11](https://github.com/antoniopresto/graphql-clientgen/compare/v0.0.4-beta.10...v0.0.4-beta.11) (2019-06-20)
+
+
+
+<a name="0.0.4-beta.10"></a>
+## [0.0.4-beta.10](https://github.com/antoniopresto/graphql-clientgen/compare/v0.0.4-beta.9...v0.0.4-beta.10) (2019-06-20)
+
+
+
+<a name="0.0.4-beta.9"></a>
+## [0.0.4-beta.9](https://github.com/antoniopresto/graphql-clientgen/compare/v0.0.4...v0.0.4-beta.9) (2019-06-20)
+
+
+
+<a name="0.0.4-beta.8"></a>
+## [0.0.4-beta.8](https://github.com/antoniopresto/graphql-clientgen/compare/v0.0.4...v0.0.4-beta.8) (2019-06-20)
+
+
+
 <a name="0.0.4-beta.7"></a>
 ## [0.0.4-beta.7](https://github.com/antoniopresto/graphql-clientgen/compare/v0.0.4...v0.0.4-beta.7) (2019-06-20)
 
