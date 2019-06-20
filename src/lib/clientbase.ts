@@ -4,7 +4,7 @@ type MiddlewareContext<V> = {
   config: FetcherConfig<V>;
 };
 
-type FetchMiddleware<V> = (
+type Middleware<V = any> = (
   config: MiddlewareContext<V>
 ) => MiddlewareContext<V>;
 
@@ -14,7 +14,7 @@ export type FetcherConfig<V = any> = {
   query: string;
   entityName: string;
   schemaKey: string;
-  middlewareList?: FetchMiddleware<V>[];
+  middleware?: Middleware<V>[] | Middleware<V>;
   fragment?: string;
 };
 
@@ -42,9 +42,8 @@ const queryFetcher = async function queryFetcher<Variables, Return>(
     config
   };
 
-  if (config.middlewareList) {
-    context = applyMiddleware(config.middlewareList)(context);
-    console.log(context);
+  if (config.middleware) {
+    context = applyMiddleware(ensureArray(config.middleware))(context);
   }
 
   return fetch(context.config.apiURL, context.requestConfig).then(
@@ -69,13 +68,24 @@ export type QueryFetcher = typeof queryFetcher;
 
 export class GraphQLClient {
   apiURL = '/graphql';
-  middlewareList: FetchMiddleware<any>[] = [];
+  middleware: Middleware<any>[];
+
+  constructor(config: {
+    apiURL?: string;
+    middleware?: Middleware | Middleware[];
+  }) {
+    this.middleware = ensureArray(config.middleware);
+    
+    if (config.apiURL) {
+      this.apiURL = config.apiURL;
+    }
+  }
 
   exec = <V, R>(_variables: V, _config: FetcherConfig<V>) => {
     return queryFetcher<V, R>(_variables, {
       apiURL: this.apiURL,
       ..._config,
-      middlewareList: [...this.middlewareList, ..._config.middlewareList]
+      middleware: [...this.middleware, ...ensureArray(_config.middleware)]
     });
   };
 
@@ -83,9 +93,9 @@ export class GraphQLClient {
 }
 
 // compose(f, g, h) is identical to doing (...args) => f(g(h(...args))).
-function compose(...funcs) {
+function compose(...funcs: Middleware<any>[]) {
   if (funcs.length === 0) {
-    return arg => arg;
+    return (arg: any) => arg;
   }
 
   if (funcs.length === 1) {
@@ -95,8 +105,14 @@ function compose(...funcs) {
   return funcs.reduce((a, b) => (...args) => a(b(...args)));
 }
 
-const applyMiddleware = <V = any>(middlewareList: FetchMiddleware<V>[]) => {
+const applyMiddleware = <V = any>(middleware: Middleware<V>[]) => {
   return (context: MiddlewareContext<V>) => {
-    return compose(...middlewareList)(context);
+    return compose(...middleware)(context);
   };
 };
+
+function ensureArray(el: any) {
+  if (!el) return [];
+  if (Array.isArray(el)) return el;
+  return [el];
+}
