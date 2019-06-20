@@ -4,10 +4,13 @@ import { schema } from '../__tests__/schema.spec';
 import { printClient } from '../index';
 
 (async () => {
+  const dest =
+    '/Volumes/ossx/dev-user/dev/graphql-compose-clientgen/examples/generated.ts';
   const client = await printClient(schema);
-  fs.writeFileSync(
-    '/Volumes/ossx/dev-user/dev/graphql-compose-clientgen/client.ts',
-    client
-  );
-  
+  fs.writeFileSync(dest, client);
+
+  console.log(`
+    Generated:
+    - ${dest}
+  `);
 })();
