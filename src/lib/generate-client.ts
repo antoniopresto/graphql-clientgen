@@ -21,7 +21,7 @@ function mountClient(schema: GraphQLSchema, clientBase: string) {
   `;
 
   let actionsBody = `
-    actions = {
+    client = {
   `;
 
   storeItems.forEach(info => {

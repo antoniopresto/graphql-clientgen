@@ -2,32 +2,36 @@
 
 Generate [client script](https://github.com/antoniopresto/graphql-clientgen/blob/master/examples/generated.ts#L73) for graphql projects
 
-A client-side method is generated for each query or mutation, with default customizable `fragment`:
-```ts
-// generated
-client.posts = (variables: QueryPostsArgs, options?: FetcherConfig): Promise<Post[]> => { /**/ };
-client.createPost = (variables: MutationCreatePostArgs, options?: FetcherConfig): Promise<Post> => { /**/ };
-...
+A client-side method is generated for each query/mutation, with a default and customizable `fragment`:
 
-// usage
-client.posts({}); Promise<Post[]>
-client.posts({}, {fragment: `id title`}); Promise<(Partial<Post>)[]>
-```
 
-[antoniopresto.github.io/graphql-clientgen/](https://antoniopresto.github.io/graphql-clientgen/)
+### Installation
+
+``npm install --save graphql-clientgen``
+or 
+``yarn add graphql-clientgen``
 
 
 ### Basic usage
 
 ```ts
-// server
+// server:
 import { printClient } from 'graphql-clientgen';
-
 fs.writeFile(__dirname + '/client.ts', await printClient(graphqlSchema));
+
+// client:
+const { client } = new GraphQLClient({
+  apiURL: "http://localhost:3777/graphql",
+});
+
+client.posts({}); // Promise<Post[]>
+client.posts({}, {fragment: `id title`}); // Promise<(Partial<Post>)[]>
 ```
 
-> [Complete generated code example](https://github.com/antoniopresto/graphql-clientgen/blob/master/client.ts#L152)
+[Complete generated code example](https://github.com/antoniopresto/graphql-clientgen/blob/master/client.ts#L152)
 
+
+[antoniopresto.github.io/graphql-clientgen/](https://antoniopresto.github.io/graphql-clientgen/)
 
 ### [Work in progress]
 #### TODO

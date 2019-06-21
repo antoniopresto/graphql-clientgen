@@ -219,7 +219,6 @@ export class GraphQLClient {
       const fulfill = () => {
         let queue = [...this.mutationQueue];
         this.mutationQueue = [];
-        debugger;
         this.fetchQueue(queue, 'mutation');
       };
 

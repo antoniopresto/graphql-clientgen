@@ -348,6 +348,8 @@ export class GraphQLClient {
   };
 }
 
+export default GraphQLClient;
+
 // compose(f, g, h) is identical to doing (...args) => f(g(h(...args))).
 function compose(...funcs: Middleware<any>[]) {
   if (funcs.length === 0) {
