@@ -1,7 +1,9 @@
 import fs from 'fs';
+
 import { schema } from './schema-demo';
 // import { getResolversHelper } from '../lib/resolversHelper';
 import { printClient } from '../index';
+// import { printFromRemote } from '../lib/printFromRemote';
 
 (async () => {
   const dest =
@@ -14,3 +16,5 @@ import { printClient } from '../index';
     - ${dest}
   `);
 })();
+
+// printFromRemote('http://localhost:3777/graphql').then(console.log);

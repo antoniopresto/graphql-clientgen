@@ -12,14 +12,29 @@ or
 ``yarn add graphql-clientgen``
 
 
-### Basic usage
+## Basic usage
 
+### cli:
+``$ get-client http://localhost:3777/graphql ``
+
+``$ get-client --help ``
+
+### api
 ```ts
-// server:
+// from schema
 import { printClient } from 'graphql-clientgen';
-fs.writeFile(__dirname + '/client.ts', await printClient(graphqlSchema));
+let graphqlSchema: GraphQLSchema;
+const client = await printClient(graphqlSchema)
 
-// client:
+// Or from endpoint
+import { printFromEndpoint } from 'graphql-clientgen'
+const { status, client } = await printFromEndpoint('http://localhost:3000/graphql');
+
+fs.writeFile(__dirname + '/client.ts', client);
+```
+
+### client
+```
 const { client } = new GraphQLClient({
   apiURL: "http://localhost:3777/graphql",
 });
@@ -40,7 +55,7 @@ client.posts({}, {fragment: `id title`}); // Promise<(Partial<Post>)[]>
 - [x] generate typed mutation methods
 - [x] generate default fragments
 - [x] batch queries
-- [ ] generate from endpoint
+- [x] generate from endpoint
 - [ ] print schema
 - [ ] print query
 - [ ] improve docs
