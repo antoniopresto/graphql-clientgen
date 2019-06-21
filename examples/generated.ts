@@ -299,7 +299,6 @@ export class GraphQLClient {
       const fulfill = () => {
         let queue = [...this.mutationQueue];
         this.mutationQueue = [];
-        debugger;
         this.fetchQueue(queue, 'mutation');
       };
 
@@ -314,7 +313,7 @@ export class GraphQLClient {
     return promise;
   };
 
-  actions = {
+  client = {
     cities: (
       variables: QueryCitiesArgs,
       config: Partial<FetcherConfig<QueryCitiesArgs, Query['cities']>> = {}
@@ -347,8 +346,6 @@ export class GraphQLClient {
     }
   };
 }
-
-export default GraphQLClient;
 
 // compose(f, g, h) is identical to doing (...args) => f(g(h(...args))).
 function compose(...funcs: Middleware<any>[]) {

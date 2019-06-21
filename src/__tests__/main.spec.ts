@@ -4,5 +4,5 @@ import { schema } from '../dev/schema-demo';
 
 // FIXME
 test('regression', async t => {
-  t.is((await printClient(schema)).length, 5887);
+  t.is((await printClient(schema)).length, 9536);
 });
