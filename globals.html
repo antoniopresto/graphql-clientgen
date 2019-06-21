@@ -79,6 +79,12 @@
 								<li class="tsd-kind-class"><a href="classes/graphqlclient.html" class="tsd-kind-icon">GraphQLClient</a></li>
 							</ul>
 						</section>
+						<section class="tsd-index-section tsd-is-not-exported">
+							<h3>Interfaces</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-interface tsd-is-not-exported"><a href="interfaces/fetchoptions.html" class="tsd-kind-icon">Fetch<wbr>Options</a></li>
+							</ul>
+						</section>
 						<section class="tsd-index-section ">
 							<h3>Type aliases</h3>
 							<ul class="tsd-index-list">
@@ -87,12 +93,14 @@
 								<li class="tsd-kind-type-alias tsd-has-type-parameter"><a href="globals.html#fetcherconfig" class="tsd-kind-icon">Fetcher<wbr>Config</a></li>
 								<li class="tsd-kind-type-alias tsd-is-not-exported"><a href="globals.html#field" class="tsd-kind-icon">Field</a></li>
 								<li class="tsd-kind-type-alias tsd-has-type-parameter tsd-is-not-exported"><a href="globals.html#middleware" class="tsd-kind-icon">Middleware</a></li>
+								<li class="tsd-kind-type-alias tsd-is-not-exported"><a href="globals.html#options" class="tsd-kind-icon">Options</a></li>
 								<li class="tsd-kind-type-alias"><a href="globals.html#queryfetcher" class="tsd-kind-icon">Query<wbr>Fetcher</a></li>
 								<li class="tsd-kind-type-alias"><a href="globals.html#queryitem" class="tsd-kind-icon">Query<wbr>Item</a></li>
 								<li class="tsd-kind-type-alias tsd-is-not-exported"><a href="globals.html#queueitem" class="tsd-kind-icon">Queue<wbr>Item</a></li>
 								<li class="tsd-kind-type-alias tsd-is-not-exported"><a href="globals.html#resolver" class="tsd-kind-icon">Resolver</a></li>
 								<li class="tsd-kind-type-alias"><a href="globals.html#resolverstoreitem" class="tsd-kind-icon">Resolver<wbr>Store<wbr>Item</a></li>
 								<li class="tsd-kind-type-alias"><a href="globals.html#resolversstore" class="tsd-kind-icon">Resolvers<wbr>Store</a></li>
+								<li class="tsd-kind-type-alias tsd-is-not-exported"><a href="globals.html#return" class="tsd-kind-icon">Return</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
@@ -100,6 +108,7 @@
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-variable tsd-is-not-exported"><a href="globals.html#citytc" class="tsd-kind-icon">CityTC</a></li>
 								<li class="tsd-kind-variable tsd-is-not-exported"><a href="globals.html#_resolversstore" class="tsd-kind-icon">_resolvers<wbr>Store</a></li>
+								<li class="tsd-kind-variable tsd-is-not-exported"><a href="globals.html#cli" class="tsd-kind-icon">cli</a></li>
 								<li class="tsd-kind-variable tsd-is-not-exported"><a href="globals.html#got" class="tsd-kind-icon">got</a></li>
 								<li class="tsd-kind-variable"><a href="globals.html#schema" class="tsd-kind-icon">schema</a></li>
 							</ul>
@@ -115,10 +124,14 @@
 								<li class="tsd-kind-function"><a href="globals.html#generatequery" class="tsd-kind-icon">generate<wbr>Query</a></li>
 								<li class="tsd-kind-function tsd-is-not-exported"><a href="globals.html#getclientbase" class="tsd-kind-icon">get<wbr>Client<wbr>Base</a></li>
 								<li class="tsd-kind-function tsd-is-not-exported"><a href="globals.html#getheader" class="tsd-kind-icon">get<wbr>Header</a></li>
+								<li class="tsd-kind-function"><a href="globals.html#getheadersfrominput" class="tsd-kind-icon">get<wbr>Headers<wbr>From<wbr>Input</a></li>
+								<li class="tsd-kind-function"><a href="globals.html#getremoteschema" class="tsd-kind-icon">get<wbr>Remote<wbr>Schema</a></li>
 								<li class="tsd-kind-function"><a href="globals.html#getresolvershelper" class="tsd-kind-icon">get<wbr>Resolvers<wbr>Helper</a></li>
+								<li class="tsd-kind-function"><a href="globals.html#main" class="tsd-kind-icon">main</a></li>
 								<li class="tsd-kind-function tsd-is-not-exported"><a href="globals.html#mountclient" class="tsd-kind-icon">mount<wbr>Client</a></li>
 								<li class="tsd-kind-function"><a href="globals.html#prettify" class="tsd-kind-icon">prettify</a></li>
 								<li class="tsd-kind-function"><a href="globals.html#printclient" class="tsd-kind-icon">print<wbr>Client</a></li>
+								<li class="tsd-kind-function"><a href="globals.html#printfromendpoint" class="tsd-kind-icon">print<wbr>From<wbr>Endpoint</a></li>
 								<li class="tsd-kind-function"><a href="globals.html#printjson" class="tsd-kind-icon">printJSON</a></li>
 								<li class="tsd-kind-function tsd-has-type-parameter tsd-is-not-exported"><a href="globals.html#queryfetcher" class="tsd-kind-icon">query<wbr>Fetcher</a></li>
 							</ul>
@@ -140,7 +153,7 @@
 					<div class="tsd-signature tsd-kind-icon">Context<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/9a993be/src/lib/clientbase.ts#L6">lib/clientbase.ts:6</a></li>
+							<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/1eeeb93/src/lib/clientbase.ts#L6">lib/clientbase.ts:6</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -173,9 +186,9 @@
 					<div class="tsd-signature tsd-kind-icon">Dict<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/9a993be/src/lib/expand-client-fields.ts#L10">lib/expand-client-fields.ts:10</a></li>
-							<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/9a993be/src/lib/clientbase.ts#L276">lib/clientbase.ts:276</a></li>
-							<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/9a993be/src/lib/expand-fields.ts#L5">lib/expand-fields.ts:5</a></li>
+							<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/1eeeb93/src/lib/expand-client-fields.ts#L10">lib/expand-client-fields.ts:10</a></li>
+							<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/1eeeb93/src/lib/clientbase.ts#L276">lib/clientbase.ts:276</a></li>
+							<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/1eeeb93/src/lib/expand-fields.ts#L5">lib/expand-fields.ts:5</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -193,7 +206,7 @@
 					<div class="tsd-signature tsd-kind-icon">Fetcher<wbr>Config<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/9a993be/src/lib/clientbase.ts#L17">lib/clientbase.ts:17</a></li>
+							<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/1eeeb93/src/lib/clientbase.ts#L17">lib/clientbase.ts:17</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -229,8 +242,8 @@
 					<div class="tsd-signature tsd-kind-icon">Field<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">GraphQLField</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/9a993be/src/lib/expand-client-fields.ts#L9">lib/expand-client-fields.ts:9</a></li>
-							<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/9a993be/src/lib/expand-fields.ts#L4">lib/expand-fields.ts:4</a></li>
+							<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/1eeeb93/src/lib/expand-client-fields.ts#L9">lib/expand-client-fields.ts:9</a></li>
+							<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/1eeeb93/src/lib/expand-fields.ts#L4">lib/expand-fields.ts:4</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -240,7 +253,7 @@
 					<div class="tsd-signature tsd-kind-icon">Middleware<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/9a993be/src/lib/clientbase.ts#L15">lib/clientbase.ts:15</a></li>
+							<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/1eeeb93/src/lib/clientbase.ts#L15">lib/clientbase.ts:15</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -265,13 +278,31 @@
 						</ul>
 					</div>
 				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-is-not-exported">
+					<a name="options" class="tsd-anchor"></a>
+					<h3>Options</h3>
+					<div class="tsd-signature tsd-kind-icon">Options<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/1eeeb93/src/lib/printFromEndpoint.ts#L8">lib/printFromEndpoint.ts:8</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter">
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> fetch<wbr>Options<span class="tsd-signature-symbol">?: </span><a href="interfaces/fetchoptions.html" class="tsd-signature-type">FetchOptions</a></h5>
+							</li>
+						</ul>
+					</div>
+				</section>
 				<section class="tsd-panel tsd-member tsd-kind-type-alias">
 					<a name="queryfetcher" class="tsd-anchor"></a>
 					<h3>Query<wbr>Fetcher</h3>
 					<div class="tsd-signature tsd-kind-icon">Query<wbr>Fetcher<span class="tsd-signature-symbol">:</span> <a href="" class="tsd-signature-type">queryFetcher</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/9a993be/src/lib/clientbase.ts#L85">lib/clientbase.ts:85</a></li>
+							<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/1eeeb93/src/lib/clientbase.ts#L85">lib/clientbase.ts:85</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -281,8 +312,8 @@
 					<div class="tsd-signature tsd-kind-icon">Query<wbr>Item<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/9a993be/src/lib/expand-client-fields.ts#L12">lib/expand-client-fields.ts:12</a></li>
-							<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/9a993be/src/lib/expand-fields.ts#L7">lib/expand-fields.ts:7</a></li>
+							<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/1eeeb93/src/lib/expand-client-fields.ts#L12">lib/expand-client-fields.ts:12</a></li>
+							<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/1eeeb93/src/lib/expand-fields.ts#L7">lib/expand-fields.ts:7</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -333,7 +364,7 @@
 					<div class="tsd-signature tsd-kind-icon">Queue<wbr>Item<span class="tsd-signature-symbol">:</span> <a href="globals.html#fetcherconfig" class="tsd-signature-type">FetcherConfig</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">object</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/9a993be/src/lib/clientbase.ts#L88">lib/clientbase.ts:88</a></li>
+							<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/1eeeb93/src/lib/clientbase.ts#L88">lib/clientbase.ts:88</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -343,7 +374,7 @@
 					<div class="tsd-signature tsd-kind-icon">Resolver<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/9a993be/src/lib/clientbase.ts#L87">lib/clientbase.ts:87</a></li>
+							<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/1eeeb93/src/lib/clientbase.ts#L87">lib/clientbase.ts:87</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -374,7 +405,7 @@
 					<div class="tsd-signature tsd-kind-icon">Resolver<wbr>Store<wbr>Item<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/9a993be/src/lib/resolversHelper.ts#L5">lib/resolversHelper.ts:5</a></li>
+							<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/1eeeb93/src/lib/resolversHelper.ts#L5">lib/resolversHelper.ts:5</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -419,7 +450,17 @@
 					<div class="tsd-signature tsd-kind-icon">Resolvers<wbr>Store<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><a href="globals.html#resolverstoreitem" class="tsd-signature-type">ResolverStoreItem</a><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/9a993be/src/lib/resolversHelper.ts#L18">lib/resolversHelper.ts:18</a></li>
+							<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/1eeeb93/src/lib/resolversHelper.ts#L18">lib/resolversHelper.ts:18</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-is-not-exported">
+					<a name="return" class="tsd-anchor"></a>
+					<h3>Return</h3>
+					<div class="tsd-signature tsd-kind-icon">Return<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">object</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/1eeeb93/src/lib/printFromEndpoint.ts#L12">lib/printFromEndpoint.ts:12</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -432,7 +473,7 @@
 					<div class="tsd-signature tsd-kind-icon">CityTC<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">ObjectTypeComposer</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> =&nbsp;schemaComposer.createObjectTC(&#x60;type City {code: String!name: String!population: IntcountryCode: Stringtz: String}&#x60;)</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/9a993be/src/dev/schema-demo.ts#L4">dev/schema-demo.ts:4</a></li>
+							<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/1eeeb93/src/dev/schema-demo.ts#L4">dev/schema-demo.ts:4</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -442,7 +483,17 @@
 					<div class="tsd-signature tsd-kind-icon">_resolvers<wbr>Store<span class="tsd-signature-symbol">:</span> <a href="globals.html#resolversstore" class="tsd-signature-type">ResolversStore</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/9a993be/src/lib/resolversHelper.ts#L20">lib/resolversHelper.ts:20</a></li>
+							<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/1eeeb93/src/lib/resolversHelper.ts#L20">lib/resolversHelper.ts:20</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-variable tsd-is-not-exported">
+					<a name="cli" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagConst">Const</span> cli</h3>
+					<div class="tsd-signature tsd-kind-icon">cli<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Result</span><span class="tsd-signature-symbol"> =&nbsp;meow(&#x60;Usage:$ graphql-clientgen ENDPOINT_URL &gt; client.tsFetch and print the GraphQL Client from a GraphQL HTTP endpoint.Options:--header, -h    Add a custom header (ex. &#x27;X-API-KEY&#x3D;ABC123&#x27;), can be used multiple times--method        Use method (GET,POST, PUT, DELETE)&#x60;,{flags: {header: {type: &#x27;string&#x27;,alias: &#x27;h&#x27;},method: {type: &#x27;string&#x27;,default: &#x27;POST&#x27;},output: {type: &#x27;string&#x27;}}})</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/1eeeb93/src/lib/bin.ts#L7">lib/bin.ts:7</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -452,7 +503,7 @@
 					<div class="tsd-signature tsd-kind-icon">got<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> =&nbsp;require(&#x27;got&#x27;)</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/9a993be/src/lib/generate-client.ts#L9">lib/generate-client.ts:9</a></li>
+							<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/1eeeb93/src/lib/generate-client.ts#L9">lib/generate-client.ts:9</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -462,7 +513,7 @@
 					<div class="tsd-signature tsd-kind-icon">schema<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">GraphQLSchema</span><span class="tsd-signature-symbol"> =&nbsp;schemaComposer.buildSchema()</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/9a993be/src/dev/schema-demo.ts#L62">dev/schema-demo.ts:62</a></li>
+							<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/1eeeb93/src/dev/schema-demo.ts#L62">dev/schema-demo.ts:62</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -479,7 +530,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/9a993be/src/lib/generate-client.ts#L116">lib/generate-client.ts:116</a></li>
+									<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/1eeeb93/src/lib/generate-client.ts#L116">lib/generate-client.ts:116</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -505,7 +556,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/9a993be/src/lib/clientbase.ts#L252">lib/clientbase.ts:252</a></li>
+									<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/1eeeb93/src/lib/clientbase.ts#L252">lib/clientbase.ts:252</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -534,7 +585,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/9a993be/src/lib/clientbase.ts#L240">lib/clientbase.ts:240</a></li>
+									<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/1eeeb93/src/lib/clientbase.ts#L240">lib/clientbase.ts:240</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -560,7 +611,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/9a993be/src/lib/clientbase.ts#L260">lib/clientbase.ts:260</a></li>
+									<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/1eeeb93/src/lib/clientbase.ts#L260">lib/clientbase.ts:260</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -583,7 +634,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/9a993be/src/lib/expand-fields.ts#L22">lib/expand-fields.ts:22</a></li>
+									<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/1eeeb93/src/lib/expand-fields.ts#L22">lib/expand-fields.ts:22</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -617,7 +668,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/9a993be/src/lib/expand-client-fields.ts#L29">lib/expand-client-fields.ts:29</a></li>
+									<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/1eeeb93/src/lib/expand-client-fields.ts#L29">lib/expand-client-fields.ts:29</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -651,7 +702,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/9a993be/src/lib/generate-client.ts#L129">lib/generate-client.ts:129</a></li>
+									<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/1eeeb93/src/lib/generate-client.ts#L129">lib/generate-client.ts:129</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -668,7 +719,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/9a993be/src/lib/clientbase.ts#L267">lib/clientbase.ts:267</a></li>
+									<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/1eeeb93/src/lib/clientbase.ts#L267">lib/clientbase.ts:267</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -682,6 +733,57 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-function">
+					<a name="getheadersfrominput" class="tsd-anchor"></a>
+					<h3>get<wbr>Headers<wbr>From<wbr>Input</h3>
+					<ul class="tsd-signatures tsd-kind-function">
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Headers<wbr>From<wbr>Input<span class="tsd-signature-symbol">(</span>cli<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Result</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">object</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/1eeeb93/src/lib/bin.ts#L75">lib/bin.ts:75</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>cli: <span class="tsd-signature-type">Result</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">object</span></h4>
+							<ul class="tsd-parameters">
+							</ul>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function">
+					<a name="getremoteschema" class="tsd-anchor"></a>
+					<h3>get<wbr>Remote<wbr>Schema</h3>
+					<ul class="tsd-signatures tsd-kind-function">
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Remote<wbr>Schema<span class="tsd-signature-symbol">(</span>endpoint<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, options<span class="tsd-signature-symbol">: </span><a href="interfaces/fetchoptions.html" class="tsd-signature-type">FetchOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/1eeeb93/src/lib/printFromEndpoint.ts#L47">lib/printFromEndpoint.ts:47</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>endpoint: <span class="tsd-signature-type">string</span></h5>
+								</li>
+								<li>
+									<h5>options: <a href="interfaces/fetchoptions.html" class="tsd-signature-type">FetchOptions</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function">
 					<a name="getresolvershelper" class="tsd-anchor"></a>
 					<h3>get<wbr>Resolvers<wbr>Helper</h3>
 					<ul class="tsd-signatures tsd-kind-function">
@@ -691,7 +793,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/9a993be/src/lib/resolversHelper.ts#L22">lib/resolversHelper.ts:22</a></li>
+									<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/1eeeb93/src/lib/resolversHelper.ts#L22">lib/resolversHelper.ts:22</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -701,6 +803,34 @@
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function">
+					<a name="main" class="tsd-anchor"></a>
+					<h3>main</h3>
+					<ul class="tsd-signatures tsd-kind-function">
+						<li class="tsd-signature tsd-kind-icon">main<span class="tsd-signature-symbol">(</span>cli<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Result</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/1eeeb93/src/lib/bin.ts#L41">lib/bin.ts:41</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Main</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>cli: <span class="tsd-signature-type">Result</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -714,7 +844,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/9a993be/src/lib/generate-client.ts#L11">lib/generate-client.ts:11</a></li>
+									<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/1eeeb93/src/lib/generate-client.ts#L11">lib/generate-client.ts:11</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -751,7 +881,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/9a993be/src/utils/prettify.ts#L24">utils/prettify.ts:24</a></li>
+									<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/1eeeb93/src/utils/prettify.ts#L24">utils/prettify.ts:24</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -777,7 +907,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/9a993be/src/lib/generate-client.ts#L94">lib/generate-client.ts:94</a></li>
+									<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/1eeeb93/src/lib/generate-client.ts#L94">lib/generate-client.ts:94</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -791,6 +921,32 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-function">
+					<a name="printfromendpoint" class="tsd-anchor"></a>
+					<h3>print<wbr>From<wbr>Endpoint</h3>
+					<ul class="tsd-signatures tsd-kind-function">
+						<li class="tsd-signature tsd-kind-icon">print<wbr>From<wbr>Endpoint<span class="tsd-signature-symbol">(</span>url<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, options<span class="tsd-signature-symbol">?: </span><a href="globals.html#options" class="tsd-signature-type">Options</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="globals.html#return" class="tsd-signature-type">Return</a><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/1eeeb93/src/lib/printFromEndpoint.ts#L16">lib/printFromEndpoint.ts:16</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>url: <span class="tsd-signature-type">string</span></h5>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> options: <a href="globals.html#options" class="tsd-signature-type">Options</a><span class="tsd-signature-symbol"> =&nbsp;{}</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="globals.html#return" class="tsd-signature-type">Return</a><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function">
 					<a name="printjson" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagConst">Const</span> printJSON</h3>
 					<ul class="tsd-signatures tsd-kind-function">
@@ -800,7 +956,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/9a993be/src/utils/print.ts#L1">utils/print.ts:1</a></li>
+									<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/1eeeb93/src/utils/print.ts#L1">utils/print.ts:1</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -823,7 +979,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/9a993be/src/lib/clientbase.ts#L27">lib/clientbase.ts:27</a></li>
+									<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/1eeeb93/src/lib/clientbase.ts#L27">lib/clientbase.ts:27</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -857,7 +1013,7 @@
 					<div class="tsd-signature tsd-kind-icon">EXTENSION_<wbr>TO_<wbr>PARSER<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/9a993be/src/utils/prettify.ts#L5">utils/prettify.ts:5</a></li>
+							<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/1eeeb93/src/utils/prettify.ts#L5">utils/prettify.ts:5</a></li>
 						</ul>
 					</aside>
 					<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal tsd-is-not-exported">
@@ -866,7 +1022,7 @@
 						<div class="tsd-signature tsd-kind-icon">css<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;postcss&quot;</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/9a993be/src/utils/prettify.ts#L15">utils/prettify.ts:15</a></li>
+								<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/1eeeb93/src/utils/prettify.ts#L15">utils/prettify.ts:15</a></li>
 							</ul>
 						</aside>
 					</section>
@@ -876,7 +1032,7 @@
 						<div class="tsd-signature tsd-kind-icon">flow<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;flow&quot;</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/9a993be/src/utils/prettify.ts#L11">utils/prettify.ts:11</a></li>
+								<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/1eeeb93/src/utils/prettify.ts#L11">utils/prettify.ts:11</a></li>
 							</ul>
 						</aside>
 					</section>
@@ -886,7 +1042,7 @@
 						<div class="tsd-signature tsd-kind-icon">gql<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;graphql&quot;</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/9a993be/src/utils/prettify.ts#L12">utils/prettify.ts:12</a></li>
+								<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/1eeeb93/src/utils/prettify.ts#L12">utils/prettify.ts:12</a></li>
 							</ul>
 						</aside>
 					</section>
@@ -896,7 +1052,7 @@
 						<div class="tsd-signature tsd-kind-icon">graphql<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;graphql&quot;</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/9a993be/src/utils/prettify.ts#L13">utils/prettify.ts:13</a></li>
+								<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/1eeeb93/src/utils/prettify.ts#L13">utils/prettify.ts:13</a></li>
 							</ul>
 						</aside>
 					</section>
@@ -906,7 +1062,7 @@
 						<div class="tsd-signature tsd-kind-icon">graphqls<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;graphql&quot;</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/9a993be/src/utils/prettify.ts#L14">utils/prettify.ts:14</a></li>
+								<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/1eeeb93/src/utils/prettify.ts#L14">utils/prettify.ts:14</a></li>
 							</ul>
 						</aside>
 					</section>
@@ -916,7 +1072,7 @@
 						<div class="tsd-signature tsd-kind-icon">js<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;babylon&quot;</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/9a993be/src/utils/prettify.ts#L8">utils/prettify.ts:8</a></li>
+								<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/1eeeb93/src/utils/prettify.ts#L8">utils/prettify.ts:8</a></li>
 							</ul>
 						</aside>
 					</section>
@@ -926,7 +1082,7 @@
 						<div class="tsd-signature tsd-kind-icon">js.flow<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;flow&quot;</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/9a993be/src/utils/prettify.ts#L10">utils/prettify.ts:10</a></li>
+								<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/1eeeb93/src/utils/prettify.ts#L10">utils/prettify.ts:10</a></li>
 							</ul>
 						</aside>
 					</section>
@@ -936,7 +1092,7 @@
 						<div class="tsd-signature tsd-kind-icon">json<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;json&quot;</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/9a993be/src/utils/prettify.ts#L21">utils/prettify.ts:21</a></li>
+								<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/1eeeb93/src/utils/prettify.ts#L21">utils/prettify.ts:21</a></li>
 							</ul>
 						</aside>
 					</section>
@@ -946,7 +1102,7 @@
 						<div class="tsd-signature tsd-kind-icon">jsx<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;babylon&quot;</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/9a993be/src/utils/prettify.ts#L9">utils/prettify.ts:9</a></li>
+								<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/1eeeb93/src/utils/prettify.ts#L9">utils/prettify.ts:9</a></li>
 							</ul>
 						</aside>
 					</section>
@@ -956,7 +1112,7 @@
 						<div class="tsd-signature tsd-kind-icon">less<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;postcss&quot;</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/9a993be/src/utils/prettify.ts#L17">utils/prettify.ts:17</a></li>
+								<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/1eeeb93/src/utils/prettify.ts#L17">utils/prettify.ts:17</a></li>
 							</ul>
 						</aside>
 					</section>
@@ -966,7 +1122,7 @@
 						<div class="tsd-signature tsd-kind-icon">markdown<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;markdown&quot;</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/9a993be/src/utils/prettify.ts#L19">utils/prettify.ts:19</a></li>
+								<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/1eeeb93/src/utils/prettify.ts#L19">utils/prettify.ts:19</a></li>
 							</ul>
 						</aside>
 					</section>
@@ -976,7 +1132,7 @@
 						<div class="tsd-signature tsd-kind-icon">md<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;markdown&quot;</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/9a993be/src/utils/prettify.ts#L20">utils/prettify.ts:20</a></li>
+								<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/1eeeb93/src/utils/prettify.ts#L20">utils/prettify.ts:20</a></li>
 							</ul>
 						</aside>
 					</section>
@@ -986,7 +1142,7 @@
 						<div class="tsd-signature tsd-kind-icon">scss<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;postcss&quot;</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/9a993be/src/utils/prettify.ts#L16">utils/prettify.ts:16</a></li>
+								<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/1eeeb93/src/utils/prettify.ts#L16">utils/prettify.ts:16</a></li>
 							</ul>
 						</aside>
 					</section>
@@ -996,7 +1152,7 @@
 						<div class="tsd-signature tsd-kind-icon">stylus<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;postcss&quot;</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/9a993be/src/utils/prettify.ts#L18">utils/prettify.ts:18</a></li>
+								<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/1eeeb93/src/utils/prettify.ts#L18">utils/prettify.ts:18</a></li>
 							</ul>
 						</aside>
 					</section>
@@ -1006,7 +1162,7 @@
 						<div class="tsd-signature tsd-kind-icon">ts<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;typescript&quot;</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/9a993be/src/utils/prettify.ts#L6">utils/prettify.ts:6</a></li>
+								<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/1eeeb93/src/utils/prettify.ts#L6">utils/prettify.ts:6</a></li>
 							</ul>
 						</aside>
 					</section>
@@ -1016,7 +1172,7 @@
 						<div class="tsd-signature tsd-kind-icon">tsx<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;typescript&quot;</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/9a993be/src/utils/prettify.ts#L7">utils/prettify.ts:7</a></li>
+								<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/1eeeb93/src/utils/prettify.ts#L7">utils/prettify.ts:7</a></li>
 							</ul>
 						</aside>
 					</section>
@@ -1039,6 +1195,9 @@
 					<li class=" tsd-kind-class">
 						<a href="classes/graphqlclient.html" class="tsd-kind-icon">GraphQLClient</a>
 					</li>
+					<li class=" tsd-kind-interface tsd-is-not-exported">
+						<a href="interfaces/fetchoptions.html" class="tsd-kind-icon">Fetch<wbr>Options</a>
+					</li>
 					<li class=" tsd-kind-type-alias tsd-has-type-parameter tsd-is-not-exported">
 						<a href="globals.html#context" class="tsd-kind-icon">Context</a>
 					</li>
@@ -1053,6 +1212,9 @@
 					</li>
 					<li class=" tsd-kind-type-alias tsd-has-type-parameter tsd-is-not-exported">
 						<a href="globals.html#middleware" class="tsd-kind-icon">Middleware</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-is-not-exported">
+						<a href="globals.html#options" class="tsd-kind-icon">Options</a>
 					</li>
 					<li class=" tsd-kind-type-alias">
 						<a href="globals.html#queryfetcher" class="tsd-kind-icon">Query<wbr>Fetcher</a>
@@ -1072,11 +1234,17 @@
 					<li class=" tsd-kind-type-alias">
 						<a href="globals.html#resolversstore" class="tsd-kind-icon">Resolvers<wbr>Store</a>
 					</li>
+					<li class=" tsd-kind-type-alias tsd-is-not-exported">
+						<a href="globals.html#return" class="tsd-kind-icon">Return</a>
+					</li>
 					<li class=" tsd-kind-variable tsd-is-not-exported">
 						<a href="globals.html#citytc" class="tsd-kind-icon">CityTC</a>
 					</li>
 					<li class=" tsd-kind-variable tsd-is-not-exported">
 						<a href="globals.html#_resolversstore" class="tsd-kind-icon">_resolvers<wbr>Store</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#cli" class="tsd-kind-icon">cli</a>
 					</li>
 					<li class=" tsd-kind-variable tsd-is-not-exported">
 						<a href="globals.html#got" class="tsd-kind-icon">got</a>
@@ -1109,7 +1277,16 @@
 						<a href="globals.html#getheader" class="tsd-kind-icon">get<wbr>Header</a>
 					</li>
 					<li class=" tsd-kind-function">
+						<a href="globals.html#getheadersfrominput" class="tsd-kind-icon">get<wbr>Headers<wbr>From<wbr>Input</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getremoteschema" class="tsd-kind-icon">get<wbr>Remote<wbr>Schema</a>
+					</li>
+					<li class=" tsd-kind-function">
 						<a href="globals.html#getresolvershelper" class="tsd-kind-icon">get<wbr>Resolvers<wbr>Helper</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#main" class="tsd-kind-icon">main</a>
 					</li>
 					<li class=" tsd-kind-function tsd-is-not-exported">
 						<a href="globals.html#mountclient" class="tsd-kind-icon">mount<wbr>Client</a>
@@ -1119,6 +1296,9 @@
 					</li>
 					<li class=" tsd-kind-function">
 						<a href="globals.html#printclient" class="tsd-kind-icon">print<wbr>Client</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#printfromendpoint" class="tsd-kind-icon">print<wbr>From<wbr>Endpoint</a>
 					</li>
 					<li class=" tsd-kind-function">
 						<a href="globals.html#printjson" class="tsd-kind-icon">printJSON</a>

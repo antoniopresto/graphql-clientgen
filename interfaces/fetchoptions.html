@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>Actions | graphql-clientgen</title>
+	<title>FetchOptions | graphql-clientgen</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -56,49 +56,68 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="actions.html">Actions</a>
+					<a href="fetchoptions.html">FetchOptions</a>
 				</li>
 			</ul>
-			<h1>Enumeration Actions</h1>
+			<h1>Interface FetchOptions</h1>
 		</div>
 	</div>
 </header>
 <div class="container container-main">
 	<div class="row">
 		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-hierarchy">
+				<h3>Hierarchy</h3>
+				<ul class="tsd-hierarchy">
+					<li>
+						<span class="target">FetchOptions</span>
+					</li>
+				</ul>
+			</section>
 			<section class="tsd-panel-group tsd-index-group">
 				<h2>Index</h2>
 				<section class="tsd-panel tsd-index-panel">
 					<div class="tsd-index-content">
-						<section class="tsd-index-section ">
-							<h3>Enumeration members</h3>
+						<section class="tsd-index-section tsd-is-not-exported">
+							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="actions.html#complete" class="tsd-kind-icon">complete</a></li>
-								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="actions.html#init" class="tsd-kind-icon">init</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported"><a href="fetchoptions.html#headers" class="tsd-kind-icon">headers</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported"><a href="fetchoptions.html#json" class="tsd-kind-icon">json</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported"><a href="fetchoptions.html#method" class="tsd-kind-icon">method</a></li>
 							</ul>
 						</section>
 					</div>
 				</section>
 			</section>
-			<section class="tsd-panel-group tsd-member-group ">
-				<h2>Enumeration members</h2>
-				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
-					<a name="complete" class="tsd-anchor"></a>
-					<h3>complete</h3>
-					<div class="tsd-signature tsd-kind-icon">complete<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> =&nbsp;&quot;complete&quot;</span></div>
+			<section class="tsd-panel-group tsd-member-group tsd-is-not-exported">
+				<h2>Properties</h2>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported">
+					<a name="headers" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> headers</h3>
+					<div class="tsd-signature tsd-kind-icon">headers<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">object</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/1eeeb93/src/lib/clientbase.ts#L3">lib/clientbase.ts:3</a></li>
+							<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/1eeeb93/src/lib/printFromEndpoint.ts#L42">lib/printFromEndpoint.ts:42</a></li>
 						</ul>
 					</aside>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
-					<a name="init" class="tsd-anchor"></a>
-					<h3>init</h3>
-					<div class="tsd-signature tsd-kind-icon">init<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> =&nbsp;&quot;init&quot;</span></div>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported">
+					<a name="json" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> json</h3>
+					<div class="tsd-signature tsd-kind-icon">json<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/1eeeb93/src/lib/clientbase.ts#L2">lib/clientbase.ts:2</a></li>
+							<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/1eeeb93/src/lib/printFromEndpoint.ts#L43">lib/printFromEndpoint.ts:43</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported">
+					<a name="method" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> method</h3>
+					<div class="tsd-signature tsd-kind-icon">method<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"GET"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"POST"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"PUT"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"DELETE"</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/1eeeb93/src/lib/printFromEndpoint.ts#L41">lib/printFromEndpoint.ts:41</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -114,27 +133,30 @@
 			</nav>
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
+					<li class=" tsd-kind-enum">
+						<a href="../enums/actions.html" class="tsd-kind-icon">Actions</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="../classes/graphqlclient.html" class="tsd-kind-icon">GraphQLClient</a>
+					</li>
 				</ul>
 				<ul class="current">
-					<li class="current tsd-kind-enum">
-						<a href="actions.html" class="tsd-kind-icon">Actions</a>
+					<li class="current tsd-kind-interface tsd-is-not-exported">
+						<a href="fetchoptions.html" class="tsd-kind-icon">Fetch<wbr>Options</a>
 						<ul>
-							<li class=" tsd-kind-enum-member tsd-parent-kind-enum">
-								<a href="actions.html#complete" class="tsd-kind-icon">complete</a>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported">
+								<a href="fetchoptions.html#headers" class="tsd-kind-icon">headers</a>
 							</li>
-							<li class=" tsd-kind-enum-member tsd-parent-kind-enum">
-								<a href="actions.html#init" class="tsd-kind-icon">init</a>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported">
+								<a href="fetchoptions.html#json" class="tsd-kind-icon">json</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported">
+								<a href="fetchoptions.html#method" class="tsd-kind-icon">method</a>
 							</li>
 						</ul>
 					</li>
 				</ul>
 				<ul class="after-current">
-					<li class=" tsd-kind-class">
-						<a href="../classes/graphqlclient.html" class="tsd-kind-icon">GraphQLClient</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-is-not-exported">
-						<a href="../interfaces/fetchoptions.html" class="tsd-kind-icon">Fetch<wbr>Options</a>
-					</li>
 					<li class=" tsd-kind-type-alias tsd-has-type-parameter tsd-is-not-exported">
 						<a href="../globals.html#context" class="tsd-kind-icon">Context</a>
 					</li>

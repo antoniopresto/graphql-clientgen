@@ -71,19 +71,28 @@
 				<p><code>npm install --save graphql-clientgen</code>
 					or
 				<code>yarn add graphql-clientgen</code></p>
-				<h3 id="basic-usage">Basic usage</h3>
-				<pre><code class="language-ts"><span class="hljs-comment">// server:</span>
+				<h2 id="basic-usage">Basic usage</h2>
+				<h3 id="cli-">cli:</h3>
+				<p><code>$ get-client http://localhost:3777/graphql</code></p>
+				<p><code>$ get-client --help</code></p>
+				<h3 id="api">api</h3>
+				<pre><code class="language-ts"><span class="hljs-comment">// from schema</span>
 <span class="hljs-keyword">import</span> { printClient } <span class="hljs-keyword">from</span> <span class="hljs-string">'graphql-clientgen'</span>;
-fs.writeFile(__dirname + <span class="hljs-string">'/client.ts'</span>, <span class="hljs-keyword">await</span> printClient(graphqlSchema));
+<span class="hljs-keyword">let</span> graphqlSchema: GraphQLSchema;
+<span class="hljs-keyword">const</span> client = <span class="hljs-keyword">await</span> printClient(graphqlSchema)
 
-<span class="hljs-comment">// client:</span>
-<span class="hljs-keyword">const</span> { client } = <span class="hljs-keyword">new</span> GraphQLClient({
+<span class="hljs-comment">// Or from endpoint</span>
+<span class="hljs-keyword">import</span> { printFromEndpoint } <span class="hljs-keyword">from</span> <span class="hljs-string">'graphql-clientgen'</span>
+<span class="hljs-keyword">const</span> { status, client } = <span class="hljs-keyword">await</span> printFromEndpoint(<span class="hljs-string">'http://localhost:3000/graphql'</span>);
+
+fs.writeFile(__dirname + <span class="hljs-string">'/client.ts'</span>, client);</code></pre>
+				<h3 id="client">client</h3>
+				<pre><code>const { <span class="hljs-keyword">client</span> } = <span class="hljs-keyword">new</span> GraphQLClient({
   apiURL: <span class="hljs-string">"http://localhost:3777/graphql"</span>,
 });
 
-client.posts({}); <span class="hljs-comment">// Promise&lt;Post[]&gt;</span>
-client.posts({}, {fragment: <span class="hljs-string">`id title`</span>}); <span class="hljs-comment">// Promise&lt;(Partial&lt;Post&gt;)[]&gt;</span></code></pre>
-				<p><a href="https://github.com/antoniopresto/graphql-clientgen/blob/master/client.ts#L152">Complete generated code example</a></p>
+<span class="hljs-keyword">client</span>.posts({}); <span class="hljs-comment">// Promise&lt;Post[]&gt;</span>
+<span class="hljs-keyword">client</span>.posts({}, {fragment: `id title`}); <span class="hljs-comment">// Promise&lt;(Partial&lt;Post&gt;)[]&gt;</span></code></pre><p><a href="https://github.com/antoniopresto/graphql-clientgen/blob/master/client.ts#L152">Complete generated code example</a></p>
 				<p><a href="https://antoniopresto.github.io/graphql-clientgen/">antoniopresto.github.io/graphql-clientgen/</a></p>
 				<h3 id="-work-in-progress-">[Work in progress]</h3>
 				<h4 id="todo">TODO</h4>
@@ -93,7 +102,7 @@ client.posts({}, {fragment: <span class="hljs-string">`id title`</span>}); <span
 					<li><input checked="" disabled="" type="checkbox"> generate typed mutation methods</li>
 					<li><input checked="" disabled="" type="checkbox"> generate default fragments</li>
 					<li><input checked="" disabled="" type="checkbox"> batch queries</li>
-					<li><input disabled="" type="checkbox"> generate from endpoint</li>
+					<li><input checked="" disabled="" type="checkbox"> generate from endpoint</li>
 					<li><input disabled="" type="checkbox"> print schema</li>
 					<li><input disabled="" type="checkbox"> print query</li>
 					<li><input disabled="" type="checkbox"> improve docs</li>
@@ -118,6 +127,9 @@ client.posts({}, {fragment: <span class="hljs-string">`id title`</span>}); <span
 					<li class=" tsd-kind-class">
 						<a href="classes/graphqlclient.html" class="tsd-kind-icon">GraphQLClient</a>
 					</li>
+					<li class=" tsd-kind-interface tsd-is-not-exported">
+						<a href="interfaces/fetchoptions.html" class="tsd-kind-icon">Fetch<wbr>Options</a>
+					</li>
 					<li class=" tsd-kind-type-alias tsd-has-type-parameter tsd-is-not-exported">
 						<a href="globals.html#context" class="tsd-kind-icon">Context</a>
 					</li>
@@ -132,6 +144,9 @@ client.posts({}, {fragment: <span class="hljs-string">`id title`</span>}); <span
 					</li>
 					<li class=" tsd-kind-type-alias tsd-has-type-parameter tsd-is-not-exported">
 						<a href="globals.html#middleware" class="tsd-kind-icon">Middleware</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-is-not-exported">
+						<a href="globals.html#options" class="tsd-kind-icon">Options</a>
 					</li>
 					<li class=" tsd-kind-type-alias">
 						<a href="globals.html#queryfetcher" class="tsd-kind-icon">Query<wbr>Fetcher</a>
@@ -151,11 +166,17 @@ client.posts({}, {fragment: <span class="hljs-string">`id title`</span>}); <span
 					<li class=" tsd-kind-type-alias">
 						<a href="globals.html#resolversstore" class="tsd-kind-icon">Resolvers<wbr>Store</a>
 					</li>
+					<li class=" tsd-kind-type-alias tsd-is-not-exported">
+						<a href="globals.html#return" class="tsd-kind-icon">Return</a>
+					</li>
 					<li class=" tsd-kind-variable tsd-is-not-exported">
 						<a href="globals.html#citytc" class="tsd-kind-icon">CityTC</a>
 					</li>
 					<li class=" tsd-kind-variable tsd-is-not-exported">
 						<a href="globals.html#_resolversstore" class="tsd-kind-icon">_resolvers<wbr>Store</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#cli" class="tsd-kind-icon">cli</a>
 					</li>
 					<li class=" tsd-kind-variable tsd-is-not-exported">
 						<a href="globals.html#got" class="tsd-kind-icon">got</a>
@@ -188,7 +209,16 @@ client.posts({}, {fragment: <span class="hljs-string">`id title`</span>}); <span
 						<a href="globals.html#getheader" class="tsd-kind-icon">get<wbr>Header</a>
 					</li>
 					<li class=" tsd-kind-function">
+						<a href="globals.html#getheadersfrominput" class="tsd-kind-icon">get<wbr>Headers<wbr>From<wbr>Input</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getremoteschema" class="tsd-kind-icon">get<wbr>Remote<wbr>Schema</a>
+					</li>
+					<li class=" tsd-kind-function">
 						<a href="globals.html#getresolvershelper" class="tsd-kind-icon">get<wbr>Resolvers<wbr>Helper</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#main" class="tsd-kind-icon">main</a>
 					</li>
 					<li class=" tsd-kind-function tsd-is-not-exported">
 						<a href="globals.html#mountclient" class="tsd-kind-icon">mount<wbr>Client</a>
@@ -198,6 +228,9 @@ client.posts({}, {fragment: <span class="hljs-string">`id title`</span>}); <span
 					</li>
 					<li class=" tsd-kind-function">
 						<a href="globals.html#printclient" class="tsd-kind-icon">print<wbr>Client</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#printfromendpoint" class="tsd-kind-icon">print<wbr>From<wbr>Endpoint</a>
 					</li>
 					<li class=" tsd-kind-function">
 						<a href="globals.html#printjson" class="tsd-kind-icon">printJSON</a>
