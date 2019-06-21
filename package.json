@@ -51,6 +51,7 @@
   },
   "dependencies": {
     "@graphql-codegen/typescript": "^1.2.1",
+    "got": "^9.6.0",
     "lodash": "^4.17.11"
   },
   "peerDependencies": {

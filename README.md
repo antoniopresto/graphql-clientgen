@@ -35,11 +35,11 @@ fs.writeFile(__dirname + '/client.ts', await printClient(graphqlSchema));
 - [x] generate typed query methods
 - [x] generate typed mutation methods
 - [x] generate default fragments
+- [x] batch queries
 - [ ] generate from endpoint
 - [ ] print schema
 - [ ] print query
 - [ ] improve docs
 - [ ] generate pure javascript version of the client
 - [ ] generate jsdoc
-- [ ] batch queries
 

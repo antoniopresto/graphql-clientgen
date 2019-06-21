@@ -1,11 +1,14 @@
 import { plugin as tsPlugin } from '@graphql-codegen/typescript';
 import { GraphQLSchema } from 'graphql';
+import fs from 'fs';
 
 import { generateQuery } from './expand-client-fields';
 import { getResolversHelper } from './resolversHelper';
 import { prettify } from '../utils/prettify';
 
-function mountClient(schema: GraphQLSchema) {
+const got = require('got');
+
+function mountClient(schema: GraphQLSchema, clientBase: string) {
   let prependBody = '';
 
   const storeSet = getResolversHelper(schema);
@@ -54,22 +57,22 @@ function mountClient(schema: GraphQLSchema) {
     clientEntry += `
       ${
         info.schemaKey
-      }: (${variablesDeclaration}config: Partial<FetcherConfig<${info.argsTSName}, ${info.returnTSName}>> = {}) => {
+      }: (${variablesDeclaration}config: Partial<FetcherConfig<${
+      info.argsTSName
+    }, ${info.returnTSName}>> = {}) => {
         return this.exec<${info.argsTSName}, Maybe<${info.returnTSName}>>(${
       hasArgs ? 'variables, ' : 'undefined, '
     } {
         apiURL: this.apiURL,
         entityName: '${info.entityName}',
         schemaKey: '${info.schemaKey}',
-        query: query.${
-      info.schemaKey
-    }(config.fragment), ...config});
+        query: query.${info.schemaKey}(config.fragment), ...config});
       },
     `;
-    
+
     actionsBody += clientEntry;
   });
-  
+
   actionsBody += '}'; // close client
 
   // prepend queries
@@ -89,13 +92,16 @@ function mountClient(schema: GraphQLSchema) {
 }
 
 export async function printClient(schema: GraphQLSchema) {
+  const clientBase = await getClientBase();
+
   const tsTypes = await tsPlugin(schema, [], {});
+  
   const tsContent =
     typeof tsTypes === 'string'
       ? tsTypes
-      : tsTypes.prepend + '\n\n' + tsTypes.content;
+      : (tsTypes.prepend || []).join('\n') + '\n\n' + tsTypes.content;
 
-  const { prependBody, clientBody } = mountClient(schema);
+  const { prependBody, clientBody } = mountClient(schema, clientBase);
 
   return prettify(
     'client.ts',
@@ -103,7 +109,7 @@ export async function printClient(schema: GraphQLSchema) {
       ${prependBody}
       ${tsContent}
       ${clientBody}
-    `
+     `
   );
 }
 
@@ -120,144 +126,16 @@ function addTabs(str = '', n = 8) {
     .join('\n');
 }
 
-const clientBase = `export enum Actions {
-  init = 'init',
-  complete = 'complete'
-}
+const getClientBase = async () => {
+  const dest = __dirname + '/clientbase.ts';
+  const url =
+    'https://raw.githubusercontent.com/antoniopresto/graphql-clientgen/4f08e92bc230b1acbb3d3700e1f59547465af223/src/lib/clientbase.ts';
 
-type MiddlewareContext<V, R = any> = {
-  requestConfig: RequestInit;
-  variables: V;
-  config: FetcherConfig<V, R>;
-  action: Actions;
-  errors?: string[];
-  result?: R | null;
-};
-
-type Middleware<V = any, R = any> = (
-  config: MiddlewareContext<V, R>
-) => MiddlewareContext<V, R>;
-
-export type FetcherConfig<V, R> = {
-  apiURL: string;
-  headers?: { [key: string]: string };
-  query: string;
-  entityName: string;
-  schemaKey: string;
-  middleware?: Middleware<V, R>[] | Middleware<V, R>;
-  fragment?: string;
-};
-
-const queryFetcher = async function queryFetcher<Variables, Return>(
-  variables: Variables,
-  config: FetcherConfig<Variables, Return>
-): Promise<MiddlewareContext<Variables, Return>> {
-  let requestConfig: RequestInit = {
-    method: 'POST',
-    credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-      ...config.headers
-    }
-  };
-
-  const middleware: Middleware<Variables, Return> = config.middleware
-    ? applyMiddleware(ensureArray(config.middleware))
-    : ctx => ctx;
-
-  const context = middleware({
-    requestConfig,
-    variables,
-    config,
-    action: Actions.init
-  });
-
-  context.requestConfig.body = JSON.stringify({
-    query: context.config.query,
-    variables: context.variables
-  });
-
-  return fetch(context.config.apiURL, context.requestConfig).then(
-    async response => {
-      const contentType = response.headers.get('Content-Type');
-      const isJSON = contentType && contentType.startsWith('application/json');
-
-      if (!isJSON) {
-        const fetchError = await response.text();
-
-        return middleware({
-          ...context,
-          result: null,
-          action: Actions.complete,
-          errors: [fetchError]
-        });
-      }
-
-      let { errors, data } = await response.json();
-
-      return middleware({
-        ...context,
-        errors,
-        action: Actions.complete,
-        result: data ? data[config.schemaKey] : null
-      });
-    }
-  );
-};
-
-export type QueryFetcher = typeof queryFetcher;
-
-export class GraphQLClient {
-  apiURL = '/graphql';
-  middleware: Middleware<any>[];
-
-  constructor(config: {
-    apiURL?: string;
-    middleware?: Middleware | Middleware[];
-  }) {
-    this.middleware = ensureArray(config.middleware);
-
-    if (config.apiURL) {
-      this.apiURL = config.apiURL;
-    }
+  if (fs.existsSync(dest)) {
+    return fs.readFileSync(dest, 'utf8');
   }
 
-  exec = <V, R>(_variables: V, _config: FetcherConfig<V, R>) => {
-    return queryFetcher<V, R>(_variables, {
-      apiURL: this.apiURL,
-      ..._config,
-      middleware: [...this.middleware, ...ensureArray(_config.middleware)]
-    });
-  };
-
-  //[actions]//
-}
-
-// compose(f, g, h) is identical to doing (...args) => f(g(h(...args))).
-function compose(...funcs: Middleware<any>[]) {
-  if (funcs.length === 0) {
-    return (arg: any) => arg;
-  }
-
-  if (funcs.length === 1) {
-    return funcs[0];
-  }
-
-  return funcs.reduce((a, b) => (...args) => a(b(...args)));
-}
-
-const applyMiddleware = <V = any>(
-  middleware: Middleware<V>[]
-): Middleware<V> => {
-  return (context: MiddlewareContext<V>) => {
-    return compose(...middleware)(context);
-  };
+  const response = await got(url);
+  fs.writeFileSync(dest, response.body);
+  return response.body;
 };
-
-function ensureArray(el: any) {
-  if (!el) return [];
-  if (Array.isArray(el)) return el;
-  return [el];
-}
-`;
