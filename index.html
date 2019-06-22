@@ -65,8 +65,23 @@
 		<div class="col-8 col-content">
 			<div class="tsd-panel tsd-typography">
 				<h1 id="graphql-clientgen">graphql-clientgen</h1>
-				<p>Generate <a href="https://github.com/antoniopresto/graphql-clientgen/blob/master/examples/generated.ts#L73">client script</a> for graphql projects</p>
-				<p>A client-side method is generated for each query/mutation, with a default and customizable <code>fragment</code>:</p>
+				<p>Generate typescript <a href="https://github.com/antoniopresto/graphql-clientgen/blob/master/examples/generated.ts#L73">client script</a> with batch queries for graphql projects.
+				One client-side method is generated for each query/mutation, with a default and customizable <code>fragment</code>:</p>
+				<pre><code class="language-ts"><span class="hljs-comment">// using the generated GraphQLClient:</span>
+<span class="hljs-keyword">const</span> { client } = <span class="hljs-keyword">new</span> GraphQLClient({
+  url: <span class="hljs-string">"http://localhost:3777/graphql"</span>,
+});
+
+<span class="hljs-comment">// assuming there is a query called findUser, the generated code will accept</span>
+<span class="hljs-comment">// arguments for the corresponding input type</span>
+client.findUser({ filter: { name: <span class="hljs-string">'Maggie'</span> } }); <span class="hljs-comment">// Promise&lt;Maybe&lt;User&gt;&gt;</span>
+
+client.posts({}); <span class="hljs-comment">// Promise&lt;Post[]&gt;</span>
+
+<span class="hljs-comment">// one default query is generated for each query/mutation,</span>
+<span class="hljs-comment">// but we can pass a custom fragment.</span>
+client.posts({}, { fragment: <span class="hljs-string">`id title`</span> }); <span class="hljs-comment">// Promise&lt;(Partial&lt;Post&gt;)[]&gt;</span></code></pre>
+				<h1 id="-work-in-progress-">[Work in progress]</h1>
 				<h3 id="installation">Installation</h3>
 				<p><code>npm install --save graphql-clientgen</code>
 					or
@@ -79,11 +94,13 @@
 				<pre><code class="language-ts"><span class="hljs-comment">// from schema</span>
 <span class="hljs-keyword">import</span> { printClient } <span class="hljs-keyword">from</span> <span class="hljs-string">'graphql-clientgen'</span>;
 <span class="hljs-keyword">let</span> graphqlSchema: GraphQLSchema;
-<span class="hljs-keyword">const</span> client = <span class="hljs-keyword">await</span> printClient(graphqlSchema)
+<span class="hljs-keyword">const</span> client = <span class="hljs-keyword">await</span> printClient(graphqlSchema);
 
 <span class="hljs-comment">// Or from endpoint</span>
-<span class="hljs-keyword">import</span> { printFromEndpoint } <span class="hljs-keyword">from</span> <span class="hljs-string">'graphql-clientgen'</span>
-<span class="hljs-keyword">const</span> { status, client } = <span class="hljs-keyword">await</span> printFromEndpoint(<span class="hljs-string">'http://localhost:3000/graphql'</span>);
+<span class="hljs-keyword">import</span> { printFromEndpoint } <span class="hljs-keyword">from</span> <span class="hljs-string">'graphql-clientgen'</span>;
+<span class="hljs-keyword">const</span> { status, client } = <span class="hljs-keyword">await</span> printFromEndpoint(
+  <span class="hljs-string">'http://localhost:3000/graphql'</span>
+);
 
 fs.writeFile(__dirname + <span class="hljs-string">'/client.ts'</span>, client);</code></pre>
 				<h3 id="client">client</h3>
@@ -94,7 +111,6 @@ fs.writeFile(__dirname + <span class="hljs-string">'/client.ts'</span>, client);
 <span class="hljs-keyword">client</span>.posts({}); <span class="hljs-comment">// Promise&lt;Post[]&gt;</span>
 <span class="hljs-keyword">client</span>.posts({}, {fragment: `id title`}); <span class="hljs-comment">// Promise&lt;(Partial&lt;Post&gt;)[]&gt;</span></code></pre><p><a href="https://github.com/antoniopresto/graphql-clientgen/blob/master/client.ts#L152">Complete generated code example</a></p>
 				<p><a href="https://antoniopresto.github.io/graphql-clientgen/">antoniopresto.github.io/graphql-clientgen/</a></p>
-				<h3 id="-work-in-progress-">[Work in progress]</h3>
 				<h4 id="todo">TODO</h4>
 				<ul>
 					<li><input checked="" disabled="" type="checkbox"> generate typescript client</li>
@@ -124,17 +140,167 @@ fs.writeFile(__dirname + <span class="hljs-string">'/client.ts'</span>, client);
 					<li class=" tsd-kind-enum">
 						<a href="enums/actions.html" class="tsd-kind-icon">Actions</a>
 					</li>
+					<li class=" tsd-kind-enum">
+						<a href="enums/diffpositiontype.html" class="tsd-kind-icon">Diff<wbr>Position<wbr>Type</a>
+					</li>
+					<li class=" tsd-kind-enum">
+						<a href="enums/entrytype.html" class="tsd-kind-icon">Entry<wbr>Type</a>
+					</li>
+					<li class=" tsd-kind-enum">
+						<a href="enums/epicstate.html" class="tsd-kind-icon">Epic<wbr>State</a>
+					</li>
+					<li class=" tsd-kind-enum">
+						<a href="enums/issuablestate.html" class="tsd-kind-icon">Issuable<wbr>State</a>
+					</li>
+					<li class=" tsd-kind-enum">
+						<a href="enums/issuestate.html" class="tsd-kind-icon">Issue<wbr>State</a>
+					</li>
+					<li class=" tsd-kind-enum">
+						<a href="enums/mergerequeststate.html" class="tsd-kind-icon">Merge<wbr>Request<wbr>State</a>
+					</li>
+					<li class=" tsd-kind-enum">
+						<a href="enums/pipelinestatusenum.html" class="tsd-kind-icon">Pipeline<wbr>Status<wbr>Enum</a>
+					</li>
+					<li class=" tsd-kind-enum">
+						<a href="enums/sort.html" class="tsd-kind-icon">Sort</a>
+					</li>
 					<li class=" tsd-kind-class">
 						<a href="classes/graphqlclient.html" class="tsd-kind-icon">GraphQLClient</a>
 					</li>
 					<li class=" tsd-kind-interface tsd-is-not-exported">
 						<a href="interfaces/fetchoptions.html" class="tsd-kind-icon">Fetch<wbr>Options</a>
 					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#blob" class="tsd-kind-icon">Blob</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#blobconnection" class="tsd-kind-icon">Blob<wbr>Connection</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#blobedge" class="tsd-kind-icon">Blob<wbr>Edge</a>
+					</li>
 					<li class=" tsd-kind-type-alias tsd-has-type-parameter tsd-is-not-exported">
 						<a href="globals.html#context" class="tsd-kind-icon">Context</a>
 					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#design" class="tsd-kind-icon">Design</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#designcollection" class="tsd-kind-icon">Design<wbr>Collection</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#designcollectiondesignsargs" class="tsd-kind-icon">Design<wbr>Collection<wbr>Designs<wbr>Args</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#designcollectionversionsargs" class="tsd-kind-icon">Design<wbr>Collection<wbr>Versions<wbr>Args</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#designconnection" class="tsd-kind-icon">Design<wbr>Connection</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#designdiscussionsargs" class="tsd-kind-icon">Design<wbr>Discussions<wbr>Args</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#designedge" class="tsd-kind-icon">Design<wbr>Edge</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#designmanagementuploadinput" class="tsd-kind-icon">Design<wbr>Management<wbr>Upload<wbr>Input</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#designmanagementuploadpayload" class="tsd-kind-icon">Design<wbr>Management<wbr>Upload<wbr>Payload</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#designnotesargs" class="tsd-kind-icon">Design<wbr>Notes<wbr>Args</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#designversion" class="tsd-kind-icon">Design<wbr>Version</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#designversionconnection" class="tsd-kind-icon">Design<wbr>Version<wbr>Connection</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#designversiondesignsargs" class="tsd-kind-icon">Design<wbr>Version<wbr>Designs<wbr>Args</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#designversionedge" class="tsd-kind-icon">Design<wbr>Version<wbr>Edge</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#designversionsargs" class="tsd-kind-icon">Design<wbr>Versions<wbr>Args</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#detailedstatus" class="tsd-kind-icon">Detailed<wbr>Status</a>
+					</li>
 					<li class=" tsd-kind-type-alias tsd-is-not-exported">
 						<a href="globals.html#dict" class="tsd-kind-icon">Dict</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#diffposition" class="tsd-kind-icon">Diff<wbr>Position</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#discussion" class="tsd-kind-icon">Discussion</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#discussionconnection" class="tsd-kind-icon">Discussion<wbr>Connection</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#discussionedge" class="tsd-kind-icon">Discussion<wbr>Edge</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#discussionnotesargs" class="tsd-kind-icon">Discussion<wbr>Notes<wbr>Args</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#entry" class="tsd-kind-icon">Entry</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#epic" class="tsd-kind-icon">Epic</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#epicchildrenargs" class="tsd-kind-icon">Epic<wbr>Children<wbr>Args</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#epicconnection" class="tsd-kind-icon">Epic<wbr>Connection</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#epicdiscussionsargs" class="tsd-kind-icon">Epic<wbr>Discussions<wbr>Args</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#epicedge" class="tsd-kind-icon">Epic<wbr>Edge</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#epicissue" class="tsd-kind-icon">Epic<wbr>Issue</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#epicissueassigneesargs" class="tsd-kind-icon">Epic<wbr>Issue<wbr>Assignees<wbr>Args</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#epicissueconnection" class="tsd-kind-icon">Epic<wbr>Issue<wbr>Connection</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#epicissuediscussionsargs" class="tsd-kind-icon">Epic<wbr>Issue<wbr>Discussions<wbr>Args</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#epicissueedge" class="tsd-kind-icon">Epic<wbr>Issue<wbr>Edge</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#epicissuelabelsargs" class="tsd-kind-icon">Epic<wbr>Issue<wbr>Labels<wbr>Args</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#epicissuenotesargs" class="tsd-kind-icon">Epic<wbr>Issue<wbr>Notes<wbr>Args</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#epicissuereferenceargs" class="tsd-kind-icon">Epic<wbr>Issue<wbr>Reference<wbr>Args</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#epicissuesargs" class="tsd-kind-icon">Epic<wbr>Issues<wbr>Args</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#epicnotesargs" class="tsd-kind-icon">Epic<wbr>Notes<wbr>Args</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#epicpermissions" class="tsd-kind-icon">Epic<wbr>Permissions</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#epicreferenceargs" class="tsd-kind-icon">Epic<wbr>Reference<wbr>Args</a>
 					</li>
 					<li class=" tsd-kind-type-alias tsd-has-type-parameter">
 						<a href="globals.html#fetcherconfig" class="tsd-kind-icon">Fetcher<wbr>Config</a>
@@ -142,20 +308,212 @@ fs.writeFile(__dirname + <span class="hljs-string">'/client.ts'</span>, client);
 					<li class=" tsd-kind-type-alias tsd-is-not-exported">
 						<a href="globals.html#field" class="tsd-kind-icon">Field</a>
 					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#group" class="tsd-kind-icon">Group</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#groupepicargs" class="tsd-kind-icon">Group<wbr>Epic<wbr>Args</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#groupepicsargs" class="tsd-kind-icon">Group<wbr>Epics<wbr>Args</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#grouppermissions" class="tsd-kind-icon">Group<wbr>Permissions</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#groupprojectsargs" class="tsd-kind-icon">Group<wbr>Projects<wbr>Args</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#issue" class="tsd-kind-icon">Issue</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#issueassigneesargs" class="tsd-kind-icon">Issue<wbr>Assignees<wbr>Args</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#issueconnection" class="tsd-kind-icon">Issue<wbr>Connection</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#issuediscussionsargs" class="tsd-kind-icon">Issue<wbr>Discussions<wbr>Args</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#issueedge" class="tsd-kind-icon">Issue<wbr>Edge</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#issuelabelsargs" class="tsd-kind-icon">Issue<wbr>Labels<wbr>Args</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#issuenotesargs" class="tsd-kind-icon">Issue<wbr>Notes<wbr>Args</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#issuepermissions" class="tsd-kind-icon">Issue<wbr>Permissions</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#issuereferenceargs" class="tsd-kind-icon">Issue<wbr>Reference<wbr>Args</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#label" class="tsd-kind-icon">Label</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#labelconnection" class="tsd-kind-icon">Label<wbr>Connection</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#labeledge" class="tsd-kind-icon">Label<wbr>Edge</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-has-type-parameter">
+						<a href="globals.html#maybe" class="tsd-kind-icon">Maybe</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-has-type-parameter">
+						<a href="globals.html#maybepromise" class="tsd-kind-icon">Maybe<wbr>Promise</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#mergerequest" class="tsd-kind-icon">Merge<wbr>Request</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#mergerequestconnection" class="tsd-kind-icon">Merge<wbr>Request<wbr>Connection</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#mergerequestdiscussionsargs" class="tsd-kind-icon">Merge<wbr>Request<wbr>Discussions<wbr>Args</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#mergerequestedge" class="tsd-kind-icon">Merge<wbr>Request<wbr>Edge</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#mergerequestnotesargs" class="tsd-kind-icon">Merge<wbr>Request<wbr>Notes<wbr>Args</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#mergerequestpermissions" class="tsd-kind-icon">Merge<wbr>Request<wbr>Permissions</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#mergerequestpipelinesargs" class="tsd-kind-icon">Merge<wbr>Request<wbr>Pipelines<wbr>Args</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#mergerequestsetwipinput" class="tsd-kind-icon">Merge<wbr>Request<wbr>Set<wbr>Wip<wbr>Input</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#mergerequestsetwippayload" class="tsd-kind-icon">Merge<wbr>Request<wbr>Set<wbr>Wip<wbr>Payload</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#metadata" class="tsd-kind-icon">Metadata</a>
+					</li>
 					<li class=" tsd-kind-type-alias tsd-has-type-parameter tsd-is-not-exported">
 						<a href="globals.html#middleware" class="tsd-kind-icon">Middleware</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#milestone" class="tsd-kind-icon">Milestone</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#mutation" class="tsd-kind-icon">Mutation</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#mutationdesignmanagementuploadargs" class="tsd-kind-icon">Mutation<wbr>Design<wbr>Management<wbr>Upload<wbr>Args</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#mutationmergerequestsetwipargs" class="tsd-kind-icon">Mutation<wbr>Merge<wbr>Request<wbr>Set<wbr>Wip<wbr>Args</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#namespace" class="tsd-kind-icon">Namespace</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#namespaceprojectsargs" class="tsd-kind-icon">Namespace<wbr>Projects<wbr>Args</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#note" class="tsd-kind-icon">Note</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#noteconnection" class="tsd-kind-icon">Note<wbr>Connection</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#noteedge" class="tsd-kind-icon">Note<wbr>Edge</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#notepermissions" class="tsd-kind-icon">Note<wbr>Permissions</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#noteable" class="tsd-kind-icon">Noteable</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#noteablediscussionsargs" class="tsd-kind-icon">Noteable<wbr>Discussions<wbr>Args</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#noteablenotesargs" class="tsd-kind-icon">Noteable<wbr>Notes<wbr>Args</a>
 					</li>
 					<li class=" tsd-kind-type-alias tsd-is-not-exported">
 						<a href="globals.html#options" class="tsd-kind-icon">Options</a>
 					</li>
 					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#pageinfo" class="tsd-kind-icon">Page<wbr>Info</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#pipeline" class="tsd-kind-icon">Pipeline</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#pipelineconnection" class="tsd-kind-icon">Pipeline<wbr>Connection</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#pipelineedge" class="tsd-kind-icon">Pipeline<wbr>Edge</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#pipelinepermissions" class="tsd-kind-icon">Pipeline<wbr>Permissions</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#project" class="tsd-kind-icon">Project</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#projectconnection" class="tsd-kind-icon">Project<wbr>Connection</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#projectedge" class="tsd-kind-icon">Project<wbr>Edge</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#projectissueargs" class="tsd-kind-icon">Project<wbr>Issue<wbr>Args</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#projectissuesargs" class="tsd-kind-icon">Project<wbr>Issues<wbr>Args</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#projectmergerequestargs" class="tsd-kind-icon">Project<wbr>Merge<wbr>Request<wbr>Args</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#projectmergerequestsargs" class="tsd-kind-icon">Project<wbr>Merge<wbr>Requests<wbr>Args</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#projectpermissions" class="tsd-kind-icon">Project<wbr>Permissions</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#projectpipelinesargs" class="tsd-kind-icon">Project<wbr>Pipelines<wbr>Args</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#projectstatistics" class="tsd-kind-icon">Project<wbr>Statistics</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#query" class="tsd-kind-icon">Query</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#queryechoargs" class="tsd-kind-icon">Query<wbr>Echo<wbr>Args</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
 						<a href="globals.html#queryfetcher" class="tsd-kind-icon">Query<wbr>Fetcher</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#querygroupargs" class="tsd-kind-icon">Query<wbr>Group<wbr>Args</a>
 					</li>
 					<li class=" tsd-kind-type-alias">
 						<a href="globals.html#queryitem" class="tsd-kind-icon">Query<wbr>Item</a>
 					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#querynamespaceargs" class="tsd-kind-icon">Query<wbr>Namespace<wbr>Args</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#queryprojectargs" class="tsd-kind-icon">Query<wbr>Project<wbr>Args</a>
+					</li>
 					<li class=" tsd-kind-type-alias tsd-is-not-exported">
 						<a href="globals.html#queueitem" class="tsd-kind-icon">Queue<wbr>Item</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#repository" class="tsd-kind-icon">Repository</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#repositorytreeargs" class="tsd-kind-icon">Repository<wbr>Tree<wbr>Args</a>
 					</li>
 					<li class=" tsd-kind-type-alias tsd-is-not-exported">
 						<a href="globals.html#resolver" class="tsd-kind-icon">Resolver</a>
@@ -169,14 +527,62 @@ fs.writeFile(__dirname + <span class="hljs-string">'/client.ts'</span>, client);
 					<li class=" tsd-kind-type-alias tsd-is-not-exported">
 						<a href="globals.html#return" class="tsd-kind-icon">Return</a>
 					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#scalars" class="tsd-kind-icon">Scalars</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#submodule" class="tsd-kind-icon">Submodule</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#submoduleconnection" class="tsd-kind-icon">Submodule<wbr>Connection</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#submoduleedge" class="tsd-kind-icon">Submodule<wbr>Edge</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#taskcompletionstatus" class="tsd-kind-icon">Task<wbr>Completion<wbr>Status</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#tree" class="tsd-kind-icon">Tree</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#treeblobsargs" class="tsd-kind-icon">Tree<wbr>Blobs<wbr>Args</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#treeentry" class="tsd-kind-icon">Tree<wbr>Entry</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#treeentryconnection" class="tsd-kind-icon">Tree<wbr>Entry<wbr>Connection</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#treeentryedge" class="tsd-kind-icon">Tree<wbr>Entry<wbr>Edge</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#treesubmodulesargs" class="tsd-kind-icon">Tree<wbr>Submodules<wbr>Args</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#treetreesargs" class="tsd-kind-icon">Tree<wbr>Trees<wbr>Args</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#user" class="tsd-kind-icon">User</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#userconnection" class="tsd-kind-icon">User<wbr>Connection</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#useredge" class="tsd-kind-icon">User<wbr>Edge</a>
+					</li>
 					<li class=" tsd-kind-variable tsd-is-not-exported">
 						<a href="globals.html#citytc" class="tsd-kind-icon">CityTC</a>
 					</li>
-					<li class=" tsd-kind-variable tsd-is-not-exported">
-						<a href="globals.html#_resolversstore" class="tsd-kind-icon">_resolvers<wbr>Store</a>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#test_api" class="tsd-kind-icon">TEST_<wbr>API</a>
 					</li>
 					<li class=" tsd-kind-variable tsd-is-not-exported">
 						<a href="globals.html#cli" class="tsd-kind-icon">cli</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#destpath" class="tsd-kind-icon">dest<wbr>Path</a>
 					</li>
 					<li class=" tsd-kind-variable tsd-is-not-exported">
 						<a href="globals.html#got" class="tsd-kind-icon">got</a>
@@ -202,6 +608,9 @@ fs.writeFile(__dirname + <span class="hljs-string">'/client.ts'</span>, client);
 					<li class=" tsd-kind-function">
 						<a href="globals.html#generatequery" class="tsd-kind-icon">generate<wbr>Query</a>
 					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getclient" class="tsd-kind-icon">get<wbr>Client</a>
+					</li>
 					<li class=" tsd-kind-function tsd-is-not-exported">
 						<a href="globals.html#getclientbase" class="tsd-kind-icon">get<wbr>Client<wbr>Base</a>
 					</li>
@@ -212,10 +621,16 @@ fs.writeFile(__dirname + <span class="hljs-string">'/client.ts'</span>, client);
 						<a href="globals.html#getheadersfrominput" class="tsd-kind-icon">get<wbr>Headers<wbr>From<wbr>Input</a>
 					</li>
 					<li class=" tsd-kind-function">
+						<a href="globals.html#getjsfile" class="tsd-kind-icon">getJSFile</a>
+					</li>
+					<li class=" tsd-kind-function">
 						<a href="globals.html#getremoteschema" class="tsd-kind-icon">get<wbr>Remote<wbr>Schema</a>
 					</li>
 					<li class=" tsd-kind-function">
 						<a href="globals.html#getresolvershelper" class="tsd-kind-icon">get<wbr>Resolvers<wbr>Helper</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#gettsfile" class="tsd-kind-icon">getTSFile</a>
 					</li>
 					<li class=" tsd-kind-function">
 						<a href="globals.html#main" class="tsd-kind-icon">main</a>
@@ -240,6 +655,9 @@ fs.writeFile(__dirname + <span class="hljs-string">'/client.ts'</span>, client);
 					</li>
 					<li class=" tsd-kind-object-literal tsd-is-not-exported">
 						<a href="globals.html#extension_to_parser" class="tsd-kind-icon">EXTENSION_<wbr>TO_<wbr>PARSER</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#query" class="tsd-kind-icon">query</a>
 					</li>
 				</ul>
 			</nav>

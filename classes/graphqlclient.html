@@ -87,7 +87,6 @@
 						<section class="tsd-index-section tsd-is-private tsd-is-private-protected">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="graphqlclient.html#apiurl" class="tsd-kind-icon">apiURL</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="graphqlclient.html#middleware" class="tsd-kind-icon">middleware</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="graphqlclient.html#mutationbachtimeout" class="tsd-kind-icon">mutation<wbr>Bach<wbr>Timeout</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="graphqlclient.html#mutationqueue" class="tsd-kind-icon">mutation<wbr>Queue</a></li>
@@ -95,6 +94,7 @@
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="graphqlclient.html#queryqueue" class="tsd-kind-icon">query<wbr>Queue</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="graphqlclient.html#queuelimit" class="tsd-kind-icon">queue<wbr>Limit</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="graphqlclient.html#timeoutlimit" class="tsd-kind-icon">timeout<wbr>Limit</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="graphqlclient.html#url" class="tsd-kind-icon">url</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
@@ -102,6 +102,12 @@
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter"><a href="graphqlclient.html#exec" class="tsd-kind-icon">exec</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="graphqlclient.html#fetchqueue" class="tsd-kind-icon">fetch<wbr>Queue</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Object literals</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-object-literal tsd-parent-kind-class"><a href="graphqlclient.html#client" class="tsd-kind-icon">client</a></li>
 							</ul>
 						</section>
 					</div>
@@ -119,7 +125,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/1eeeb93/src/lib/clientbase.ts#L105">lib/clientbase.ts:105</a></li>
+									<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/69488d4/src/dev/generated-remote.ts#L1654">dev/generated-remote.ts:1654</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -128,10 +134,10 @@
 									<h5>config: <span class="tsd-signature-type">object</span></h5>
 									<ul class="tsd-parameters">
 										<li class="tsd-parameter">
-											<h5><span class="tsd-flag ts-flagOptional">Optional</span> apiURL<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></h5>
+											<h5><span class="tsd-flag ts-flagOptional">Optional</span> middleware<span class="tsd-signature-symbol">?: </span><a href="../globals.html#middleware" class="tsd-signature-type">Middleware</a><span class="tsd-signature-symbol"> | </span><a href="../globals.html#middleware" class="tsd-signature-type">Middleware</a><span class="tsd-signature-symbol">[]</span></h5>
 										</li>
 										<li class="tsd-parameter">
-											<h5><span class="tsd-flag ts-flagOptional">Optional</span> middleware<span class="tsd-signature-symbol">?: </span><a href="../globals.html#middleware" class="tsd-signature-type">Middleware</a><span class="tsd-signature-symbol"> | </span><a href="../globals.html#middleware" class="tsd-signature-type">Middleware</a><span class="tsd-signature-symbol">[]</span></h5>
+											<h5><span class="tsd-flag ts-flagOptional">Optional</span> url<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></h5>
 										</li>
 									</ul>
 								</li>
@@ -144,22 +150,13 @@
 			<section class="tsd-panel-group tsd-member-group tsd-is-private tsd-is-private-protected">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
-					<a name="apiurl" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagPrivate">Private</span> apiURL</h3>
-					<div class="tsd-signature tsd-kind-icon">apiURL<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;/graphql&quot;</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/1eeeb93/src/lib/clientbase.ts#L95">lib/clientbase.ts:95</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
 					<a name="middleware" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagPrivate">Private</span> middleware</h3>
 					<div class="tsd-signature tsd-kind-icon">middleware<span class="tsd-signature-symbol">:</span> <a href="../globals.html#middleware" class="tsd-signature-type">Middleware</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/1eeeb93/src/lib/clientbase.ts#L96">lib/clientbase.ts:96</a></li>
+							<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/69488d4/src/dev/generated-remote.ts#L1645">dev/generated-remote.ts:1645</a></li>
+							<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/69488d4/src/lib/clientbase.ts#L107">lib/clientbase.ts:107</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -169,7 +166,8 @@
 					<div class="tsd-signature tsd-kind-icon">mutation<wbr>Bach<wbr>Timeout<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/1eeeb93/src/lib/clientbase.ts#L99">lib/clientbase.ts:99</a></li>
+							<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/69488d4/src/dev/generated-remote.ts#L1648">dev/generated-remote.ts:1648</a></li>
+							<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/69488d4/src/lib/clientbase.ts#L110">lib/clientbase.ts:110</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -179,7 +177,8 @@
 					<div class="tsd-signature tsd-kind-icon">mutation<wbr>Queue<span class="tsd-signature-symbol">:</span> <a href="../globals.html#queueitem" class="tsd-signature-type">QueueItem</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> =&nbsp;[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/1eeeb93/src/lib/clientbase.ts#L101">lib/clientbase.ts:101</a></li>
+							<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/69488d4/src/dev/generated-remote.ts#L1650">dev/generated-remote.ts:1650</a></li>
+							<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/69488d4/src/lib/clientbase.ts#L112">lib/clientbase.ts:112</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -189,7 +188,8 @@
 					<div class="tsd-signature tsd-kind-icon">query<wbr>Bach<wbr>Timeout<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/1eeeb93/src/lib/clientbase.ts#L98">lib/clientbase.ts:98</a></li>
+							<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/69488d4/src/dev/generated-remote.ts#L1647">dev/generated-remote.ts:1647</a></li>
+							<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/69488d4/src/lib/clientbase.ts#L109">lib/clientbase.ts:109</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -199,7 +199,8 @@
 					<div class="tsd-signature tsd-kind-icon">query<wbr>Queue<span class="tsd-signature-symbol">:</span> <a href="../globals.html#queueitem" class="tsd-signature-type">QueueItem</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> =&nbsp;[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/1eeeb93/src/lib/clientbase.ts#L102">lib/clientbase.ts:102</a></li>
+							<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/69488d4/src/dev/generated-remote.ts#L1651">dev/generated-remote.ts:1651</a></li>
+							<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/69488d4/src/lib/clientbase.ts#L113">lib/clientbase.ts:113</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -209,7 +210,8 @@
 					<div class="tsd-signature tsd-kind-icon">queue<wbr>Limit<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> =&nbsp;20</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/1eeeb93/src/lib/clientbase.ts#L104">lib/clientbase.ts:104</a></li>
+							<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/69488d4/src/dev/generated-remote.ts#L1653">dev/generated-remote.ts:1653</a></li>
+							<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/69488d4/src/lib/clientbase.ts#L115">lib/clientbase.ts:115</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -219,7 +221,19 @@
 					<div class="tsd-signature tsd-kind-icon">timeout<wbr>Limit<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> =&nbsp;50</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/1eeeb93/src/lib/clientbase.ts#L105">lib/clientbase.ts:105</a></li>
+							<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/69488d4/src/dev/generated-remote.ts#L1654">dev/generated-remote.ts:1654</a></li>
+							<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/69488d4/src/lib/clientbase.ts#L116">lib/clientbase.ts:116</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
+					<a name="url" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> url</h3>
+					<div class="tsd-signature tsd-kind-icon">url<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;/graphql&quot;</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/69488d4/src/dev/generated-remote.ts#L1644">dev/generated-remote.ts:1644</a></li>
+							<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/69488d4/src/lib/clientbase.ts#L106">lib/clientbase.ts:106</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -231,12 +245,39 @@
 					<h3>exec</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
 						<li class="tsd-signature tsd-kind-icon">exec&lt;V, R&gt;<span class="tsd-signature-symbol">(</span>_variables<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">V</span>, _config<span class="tsd-signature-symbol">: </span><a href="../globals.html#fetcherconfig" class="tsd-signature-type">FetcherConfig</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">V</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">R</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">exec&lt;V, R&gt;<span class="tsd-signature-symbol">(</span>_variables<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">V</span>, _config<span class="tsd-signature-symbol">: </span><a href="../globals.html#fetcherconfig" class="tsd-signature-type">FetcherConfig</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">V</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">R</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/1eeeb93/src/lib/clientbase.ts#L183">lib/clientbase.ts:183</a></li>
+									<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/69488d4/src/dev/generated-remote.ts#L1730">dev/generated-remote.ts:1730</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-type-parameters-title">Type parameters</h4>
+							<ul class="tsd-type-parameters">
+								<li>
+									<h4>V</h4>
+								</li>
+								<li>
+									<h4>R</h4>
+								</li>
+							</ul>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>_variables: <span class="tsd-signature-type">V</span></h5>
+								</li>
+								<li>
+									<h5>_config: <a href="../globals.html#fetcherconfig" class="tsd-signature-type">FetcherConfig</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">V</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">R</span><span class="tsd-signature-symbol">&gt;</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/69488d4/src/lib/clientbase.ts#L192">lib/clientbase.ts:192</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -266,12 +307,30 @@
 					<h3><span class="tsd-flag ts-flagPrivate">Private</span> fetch<wbr>Queue</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
 						<li class="tsd-signature tsd-kind-icon">fetch<wbr>Queue<span class="tsd-signature-symbol">(</span>queue<span class="tsd-signature-symbol">: </span><a href="../globals.html#queueitem" class="tsd-signature-type">QueueItem</a><span class="tsd-signature-symbol">[]</span>, kind<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">"mutation"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"query"</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">fetch<wbr>Queue<span class="tsd-signature-symbol">(</span>queue<span class="tsd-signature-symbol">: </span><a href="../globals.html#queueitem" class="tsd-signature-type">QueueItem</a><span class="tsd-signature-symbol">[]</span>, kind<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">"mutation"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"query"</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/1eeeb93/src/lib/clientbase.ts#L118">lib/clientbase.ts:118</a></li>
+									<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/69488d4/src/dev/generated-remote.ts#L1667">dev/generated-remote.ts:1667</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>queue: <a href="../globals.html#queueitem" class="tsd-signature-type">QueueItem</a><span class="tsd-signature-symbol">[]</span></h5>
+								</li>
+								<li>
+									<h5>kind: <span class="tsd-signature-type">"mutation"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"query"</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/69488d4/src/lib/clientbase.ts#L129">lib/clientbase.ts:129</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -288,6 +347,198 @@
 					</ul>
 				</section>
 			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Object literals</h2>
+				<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-class">
+					<a name="client" class="tsd-anchor"></a>
+					<h3>client</h3>
+					<div class="tsd-signature tsd-kind-icon">client<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/69488d4/src/dev/generated-remote.ts#L1783">dev/generated-remote.ts:1783</a></li>
+						</ul>
+					</aside>
+					<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-object-literal">
+						<a name="client.designmanagementupload" class="tsd-anchor"></a>
+						<h3>design<wbr>Management<wbr>Upload</h3>
+						<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-object-literal">
+							<li class="tsd-signature tsd-kind-icon">design<wbr>Management<wbr>Upload<span class="tsd-signature-symbol">(</span>variables<span class="tsd-signature-symbol">: </span><a href="../globals.html#mutationdesignmanagementuploadargs" class="tsd-signature-type">MutationDesignManagementUploadArgs</a>, config<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#fetcherconfig" class="tsd-signature-type">FetcherConfig</a><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#mutationdesignmanagementuploadargs" class="tsd-signature-type">MutationDesignManagementUploadArgs</a><span class="tsd-signature-symbol">, </span><a href="../globals.html#maybe" class="tsd-signature-type">Maybe</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">&gt;</span></li>
+						</ul>
+						<ul class="tsd-descriptions">
+							<li class="tsd-description">
+								<aside class="tsd-sources">
+									<ul>
+										<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/69488d4/src/dev/generated-remote.ts#L1858">dev/generated-remote.ts:1858</a></li>
+									</ul>
+								</aside>
+								<h4 class="tsd-parameters-title">Parameters</h4>
+								<ul class="tsd-parameters">
+									<li>
+										<h5>variables: <a href="../globals.html#mutationdesignmanagementuploadargs" class="tsd-signature-type">MutationDesignManagementUploadArgs</a></h5>
+									</li>
+									<li>
+										<h5><span class="tsd-flag ts-flagDefault value">Default value</span> config: <span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#fetcherconfig" class="tsd-signature-type">FetcherConfig</a><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#mutationdesignmanagementuploadargs" class="tsd-signature-type">MutationDesignManagementUploadArgs</a><span class="tsd-signature-symbol">, </span><a href="../globals.html#maybe" class="tsd-signature-type">Maybe</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> =&nbsp;{}</span></h5>
+									</li>
+								</ul>
+								<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							</li>
+						</ul>
+					</section>
+					<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-object-literal">
+						<a name="client.echo" class="tsd-anchor"></a>
+						<h3>echo</h3>
+						<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-object-literal">
+							<li class="tsd-signature tsd-kind-icon">echo<span class="tsd-signature-symbol">(</span>variables<span class="tsd-signature-symbol">: </span><a href="../globals.html#queryechoargs" class="tsd-signature-type">QueryEchoArgs</a>, config<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#fetcherconfig" class="tsd-signature-type">FetcherConfig</a><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#queryechoargs" class="tsd-signature-type">QueryEchoArgs</a><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">&gt;</span></li>
+						</ul>
+						<ul class="tsd-descriptions">
+							<li class="tsd-description">
+								<aside class="tsd-sources">
+									<ul>
+										<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/69488d4/src/dev/generated-remote.ts#L1784">dev/generated-remote.ts:1784</a></li>
+									</ul>
+								</aside>
+								<h4 class="tsd-parameters-title">Parameters</h4>
+								<ul class="tsd-parameters">
+									<li>
+										<h5>variables: <a href="../globals.html#queryechoargs" class="tsd-signature-type">QueryEchoArgs</a></h5>
+									</li>
+									<li>
+										<h5><span class="tsd-flag ts-flagDefault value">Default value</span> config: <span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#fetcherconfig" class="tsd-signature-type">FetcherConfig</a><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#queryechoargs" class="tsd-signature-type">QueryEchoArgs</a><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> =&nbsp;{}</span></h5>
+									</li>
+								</ul>
+								<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							</li>
+						</ul>
+					</section>
+					<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-object-literal">
+						<a name="client.group" class="tsd-anchor"></a>
+						<h3>group</h3>
+						<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-object-literal">
+							<li class="tsd-signature tsd-kind-icon">group<span class="tsd-signature-symbol">(</span>variables<span class="tsd-signature-symbol">: </span><a href="../globals.html#querygroupargs" class="tsd-signature-type">QueryGroupArgs</a>, config<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#fetcherconfig" class="tsd-signature-type">FetcherConfig</a><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#querygroupargs" class="tsd-signature-type">QueryGroupArgs</a><span class="tsd-signature-symbol">, </span><a href="../globals.html#maybe" class="tsd-signature-type">Maybe</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">&gt;</span></li>
+						</ul>
+						<ul class="tsd-descriptions">
+							<li class="tsd-description">
+								<aside class="tsd-sources">
+									<ul>
+										<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/69488d4/src/dev/generated-remote.ts#L1797">dev/generated-remote.ts:1797</a></li>
+									</ul>
+								</aside>
+								<h4 class="tsd-parameters-title">Parameters</h4>
+								<ul class="tsd-parameters">
+									<li>
+										<h5>variables: <a href="../globals.html#querygroupargs" class="tsd-signature-type">QueryGroupArgs</a></h5>
+									</li>
+									<li>
+										<h5><span class="tsd-flag ts-flagDefault value">Default value</span> config: <span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#fetcherconfig" class="tsd-signature-type">FetcherConfig</a><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#querygroupargs" class="tsd-signature-type">QueryGroupArgs</a><span class="tsd-signature-symbol">, </span><a href="../globals.html#maybe" class="tsd-signature-type">Maybe</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> =&nbsp;{}</span></h5>
+									</li>
+								</ul>
+								<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							</li>
+						</ul>
+					</section>
+					<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-object-literal">
+						<a name="client.mergerequestsetwip" class="tsd-anchor"></a>
+						<h3>merge<wbr>Request<wbr>Set<wbr>Wip</h3>
+						<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-object-literal">
+							<li class="tsd-signature tsd-kind-icon">merge<wbr>Request<wbr>Set<wbr>Wip<span class="tsd-signature-symbol">(</span>variables<span class="tsd-signature-symbol">: </span><a href="../globals.html#mutationmergerequestsetwipargs" class="tsd-signature-type">MutationMergeRequestSetWipArgs</a>, config<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#fetcherconfig" class="tsd-signature-type">FetcherConfig</a><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#mutationmergerequestsetwipargs" class="tsd-signature-type">MutationMergeRequestSetWipArgs</a><span class="tsd-signature-symbol">, </span><a href="../globals.html#maybe" class="tsd-signature-type">Maybe</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">&gt;</span></li>
+						</ul>
+						<ul class="tsd-descriptions">
+							<li class="tsd-description">
+								<aside class="tsd-sources">
+									<ul>
+										<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/69488d4/src/dev/generated-remote.ts#L1879">dev/generated-remote.ts:1879</a></li>
+									</ul>
+								</aside>
+								<h4 class="tsd-parameters-title">Parameters</h4>
+								<ul class="tsd-parameters">
+									<li>
+										<h5>variables: <a href="../globals.html#mutationmergerequestsetwipargs" class="tsd-signature-type">MutationMergeRequestSetWipArgs</a></h5>
+									</li>
+									<li>
+										<h5><span class="tsd-flag ts-flagDefault value">Default value</span> config: <span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#fetcherconfig" class="tsd-signature-type">FetcherConfig</a><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#mutationmergerequestsetwipargs" class="tsd-signature-type">MutationMergeRequestSetWipArgs</a><span class="tsd-signature-symbol">, </span><a href="../globals.html#maybe" class="tsd-signature-type">Maybe</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> =&nbsp;{}</span></h5>
+									</li>
+								</ul>
+								<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							</li>
+						</ul>
+					</section>
+					<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-object-literal">
+						<a name="client.metadata" class="tsd-anchor"></a>
+						<h3>metadata</h3>
+						<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-object-literal">
+							<li class="tsd-signature tsd-kind-icon">metadata<span class="tsd-signature-symbol">(</span>config<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#fetcherconfig" class="tsd-signature-type">FetcherConfig</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">__type</span><span class="tsd-signature-symbol">, </span><a href="../globals.html#maybe" class="tsd-signature-type">Maybe</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">&gt;</span></li>
+						</ul>
+						<ul class="tsd-descriptions">
+							<li class="tsd-description">
+								<aside class="tsd-sources">
+									<ul>
+										<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/69488d4/src/dev/generated-remote.ts#L1810">dev/generated-remote.ts:1810</a></li>
+									</ul>
+								</aside>
+								<h4 class="tsd-parameters-title">Parameters</h4>
+								<ul class="tsd-parameters">
+									<li>
+										<h5><span class="tsd-flag ts-flagDefault value">Default value</span> config: <span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#fetcherconfig" class="tsd-signature-type">FetcherConfig</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">__type</span><span class="tsd-signature-symbol">, </span><a href="../globals.html#maybe" class="tsd-signature-type">Maybe</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> =&nbsp;{}</span></h5>
+									</li>
+								</ul>
+								<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							</li>
+						</ul>
+					</section>
+					<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-object-literal">
+						<a name="client.namespace" class="tsd-anchor"></a>
+						<h3>namespace</h3>
+						<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-object-literal">
+							<li class="tsd-signature tsd-kind-icon">namespace<span class="tsd-signature-symbol">(</span>variables<span class="tsd-signature-symbol">: </span><a href="../globals.html#querynamespaceargs" class="tsd-signature-type">QueryNamespaceArgs</a>, config<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#fetcherconfig" class="tsd-signature-type">FetcherConfig</a><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#querynamespaceargs" class="tsd-signature-type">QueryNamespaceArgs</a><span class="tsd-signature-symbol">, </span><a href="../globals.html#maybe" class="tsd-signature-type">Maybe</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">&gt;</span></li>
+						</ul>
+						<ul class="tsd-descriptions">
+							<li class="tsd-description">
+								<aside class="tsd-sources">
+									<ul>
+										<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/69488d4/src/dev/generated-remote.ts#L1825">dev/generated-remote.ts:1825</a></li>
+									</ul>
+								</aside>
+								<h4 class="tsd-parameters-title">Parameters</h4>
+								<ul class="tsd-parameters">
+									<li>
+										<h5>variables: <a href="../globals.html#querynamespaceargs" class="tsd-signature-type">QueryNamespaceArgs</a></h5>
+									</li>
+									<li>
+										<h5><span class="tsd-flag ts-flagDefault value">Default value</span> config: <span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#fetcherconfig" class="tsd-signature-type">FetcherConfig</a><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#querynamespaceargs" class="tsd-signature-type">QueryNamespaceArgs</a><span class="tsd-signature-symbol">, </span><a href="../globals.html#maybe" class="tsd-signature-type">Maybe</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> =&nbsp;{}</span></h5>
+									</li>
+								</ul>
+								<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							</li>
+						</ul>
+					</section>
+					<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-object-literal">
+						<a name="client.project" class="tsd-anchor"></a>
+						<h3>project</h3>
+						<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-object-literal">
+							<li class="tsd-signature tsd-kind-icon">project<span class="tsd-signature-symbol">(</span>variables<span class="tsd-signature-symbol">: </span><a href="../globals.html#queryprojectargs" class="tsd-signature-type">QueryProjectArgs</a>, config<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#fetcherconfig" class="tsd-signature-type">FetcherConfig</a><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#queryprojectargs" class="tsd-signature-type">QueryProjectArgs</a><span class="tsd-signature-symbol">, </span><a href="../globals.html#maybe" class="tsd-signature-type">Maybe</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">&gt;</span></li>
+						</ul>
+						<ul class="tsd-descriptions">
+							<li class="tsd-description">
+								<aside class="tsd-sources">
+									<ul>
+										<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/69488d4/src/dev/generated-remote.ts#L1843">dev/generated-remote.ts:1843</a></li>
+									</ul>
+								</aside>
+								<h4 class="tsd-parameters-title">Parameters</h4>
+								<ul class="tsd-parameters">
+									<li>
+										<h5>variables: <a href="../globals.html#queryprojectargs" class="tsd-signature-type">QueryProjectArgs</a></h5>
+									</li>
+									<li>
+										<h5><span class="tsd-flag ts-flagDefault value">Default value</span> config: <span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#fetcherconfig" class="tsd-signature-type">FetcherConfig</a><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#queryprojectargs" class="tsd-signature-type">QueryProjectArgs</a><span class="tsd-signature-symbol">, </span><a href="../globals.html#maybe" class="tsd-signature-type">Maybe</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> =&nbsp;{}</span></h5>
+									</li>
+								</ul>
+								<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							</li>
+						</ul>
+					</section>
+				</section>
+			</section>
 		</div>
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 			<nav class="tsd-navigation primary">
@@ -299,9 +550,6 @@
 			</nav>
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
-					<li class=" tsd-kind-enum">
-						<a href="../enums/actions.html" class="tsd-kind-icon">Actions</a>
-					</li>
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-class">
@@ -309,9 +557,6 @@
 						<ul>
 							<li class=" tsd-kind-constructor tsd-parent-kind-class">
 								<a href="graphqlclient.html#constructor" class="tsd-kind-icon">constructor</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
-								<a href="graphqlclient.html#apiurl" class="tsd-kind-icon">apiURL</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
 								<a href="graphqlclient.html#middleware" class="tsd-kind-icon">middleware</a>
@@ -334,130 +579,22 @@
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
 								<a href="graphqlclient.html#timeoutlimit" class="tsd-kind-icon">timeout<wbr>Limit</a>
 							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
+								<a href="graphqlclient.html#url" class="tsd-kind-icon">url</a>
+							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
 								<a href="graphqlclient.html#exec" class="tsd-kind-icon">exec</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
 								<a href="graphqlclient.html#fetchqueue" class="tsd-kind-icon">fetch<wbr>Queue</a>
 							</li>
+							<li class=" tsd-kind-object-literal tsd-parent-kind-class">
+								<a href="graphqlclient.html#client" class="tsd-kind-icon">client</a>
+							</li>
 						</ul>
 					</li>
 				</ul>
 				<ul class="after-current">
-					<li class=" tsd-kind-interface tsd-is-not-exported">
-						<a href="../interfaces/fetchoptions.html" class="tsd-kind-icon">Fetch<wbr>Options</a>
-					</li>
-					<li class=" tsd-kind-type-alias tsd-has-type-parameter tsd-is-not-exported">
-						<a href="../globals.html#context" class="tsd-kind-icon">Context</a>
-					</li>
-					<li class=" tsd-kind-type-alias tsd-is-not-exported">
-						<a href="../globals.html#dict" class="tsd-kind-icon">Dict</a>
-					</li>
-					<li class=" tsd-kind-type-alias tsd-has-type-parameter">
-						<a href="../globals.html#fetcherconfig" class="tsd-kind-icon">Fetcher<wbr>Config</a>
-					</li>
-					<li class=" tsd-kind-type-alias tsd-is-not-exported">
-						<a href="../globals.html#field" class="tsd-kind-icon">Field</a>
-					</li>
-					<li class=" tsd-kind-type-alias tsd-has-type-parameter tsd-is-not-exported">
-						<a href="../globals.html#middleware" class="tsd-kind-icon">Middleware</a>
-					</li>
-					<li class=" tsd-kind-type-alias tsd-is-not-exported">
-						<a href="../globals.html#options" class="tsd-kind-icon">Options</a>
-					</li>
-					<li class=" tsd-kind-type-alias">
-						<a href="../globals.html#queryfetcher" class="tsd-kind-icon">Query<wbr>Fetcher</a>
-					</li>
-					<li class=" tsd-kind-type-alias">
-						<a href="../globals.html#queryitem" class="tsd-kind-icon">Query<wbr>Item</a>
-					</li>
-					<li class=" tsd-kind-type-alias tsd-is-not-exported">
-						<a href="../globals.html#queueitem" class="tsd-kind-icon">Queue<wbr>Item</a>
-					</li>
-					<li class=" tsd-kind-type-alias tsd-is-not-exported">
-						<a href="../globals.html#resolver" class="tsd-kind-icon">Resolver</a>
-					</li>
-					<li class=" tsd-kind-type-alias">
-						<a href="../globals.html#resolverstoreitem" class="tsd-kind-icon">Resolver<wbr>Store<wbr>Item</a>
-					</li>
-					<li class=" tsd-kind-type-alias">
-						<a href="../globals.html#resolversstore" class="tsd-kind-icon">Resolvers<wbr>Store</a>
-					</li>
-					<li class=" tsd-kind-type-alias tsd-is-not-exported">
-						<a href="../globals.html#return" class="tsd-kind-icon">Return</a>
-					</li>
-					<li class=" tsd-kind-variable tsd-is-not-exported">
-						<a href="../globals.html#citytc" class="tsd-kind-icon">CityTC</a>
-					</li>
-					<li class=" tsd-kind-variable tsd-is-not-exported">
-						<a href="../globals.html#_resolversstore" class="tsd-kind-icon">_resolvers<wbr>Store</a>
-					</li>
-					<li class=" tsd-kind-variable tsd-is-not-exported">
-						<a href="../globals.html#cli" class="tsd-kind-icon">cli</a>
-					</li>
-					<li class=" tsd-kind-variable tsd-is-not-exported">
-						<a href="../globals.html#got" class="tsd-kind-icon">got</a>
-					</li>
-					<li class=" tsd-kind-variable">
-						<a href="../globals.html#schema" class="tsd-kind-icon">schema</a>
-					</li>
-					<li class=" tsd-kind-function tsd-is-not-exported">
-						<a href="../globals.html#addtabs" class="tsd-kind-icon">add<wbr>Tabs</a>
-					</li>
-					<li class=" tsd-kind-function tsd-has-type-parameter tsd-is-not-exported">
-						<a href="../globals.html#applymiddleware" class="tsd-kind-icon">apply<wbr>Middleware</a>
-					</li>
-					<li class=" tsd-kind-function tsd-is-not-exported">
-						<a href="../globals.html#compose" class="tsd-kind-icon">compose</a>
-					</li>
-					<li class=" tsd-kind-function tsd-is-not-exported">
-						<a href="../globals.html#ensurearray" class="tsd-kind-icon">ensure<wbr>Array</a>
-					</li>
-					<li class=" tsd-kind-function">
-						<a href="../globals.html#expandfields" class="tsd-kind-icon">expand<wbr>Fields</a>
-					</li>
-					<li class=" tsd-kind-function">
-						<a href="../globals.html#generatequery" class="tsd-kind-icon">generate<wbr>Query</a>
-					</li>
-					<li class=" tsd-kind-function tsd-is-not-exported">
-						<a href="../globals.html#getclientbase" class="tsd-kind-icon">get<wbr>Client<wbr>Base</a>
-					</li>
-					<li class=" tsd-kind-function tsd-is-not-exported">
-						<a href="../globals.html#getheader" class="tsd-kind-icon">get<wbr>Header</a>
-					</li>
-					<li class=" tsd-kind-function">
-						<a href="../globals.html#getheadersfrominput" class="tsd-kind-icon">get<wbr>Headers<wbr>From<wbr>Input</a>
-					</li>
-					<li class=" tsd-kind-function">
-						<a href="../globals.html#getremoteschema" class="tsd-kind-icon">get<wbr>Remote<wbr>Schema</a>
-					</li>
-					<li class=" tsd-kind-function">
-						<a href="../globals.html#getresolvershelper" class="tsd-kind-icon">get<wbr>Resolvers<wbr>Helper</a>
-					</li>
-					<li class=" tsd-kind-function">
-						<a href="../globals.html#main" class="tsd-kind-icon">main</a>
-					</li>
-					<li class=" tsd-kind-function tsd-is-not-exported">
-						<a href="../globals.html#mountclient" class="tsd-kind-icon">mount<wbr>Client</a>
-					</li>
-					<li class=" tsd-kind-function">
-						<a href="../globals.html#prettify" class="tsd-kind-icon">prettify</a>
-					</li>
-					<li class=" tsd-kind-function">
-						<a href="../globals.html#printclient" class="tsd-kind-icon">print<wbr>Client</a>
-					</li>
-					<li class=" tsd-kind-function">
-						<a href="../globals.html#printfromendpoint" class="tsd-kind-icon">print<wbr>From<wbr>Endpoint</a>
-					</li>
-					<li class=" tsd-kind-function">
-						<a href="../globals.html#printjson" class="tsd-kind-icon">printJSON</a>
-					</li>
-					<li class=" tsd-kind-function tsd-has-type-parameter tsd-is-not-exported">
-						<a href="../globals.html#queryfetcher" class="tsd-kind-icon">query<wbr>Fetcher</a>
-					</li>
-					<li class=" tsd-kind-object-literal tsd-is-not-exported">
-						<a href="../globals.html#extension_to_parser" class="tsd-kind-icon">EXTENSION_<wbr>TO_<wbr>PARSER</a>
-					</li>
 				</ul>
 			</nav>
 		</div>
