@@ -128,8 +128,7 @@ function addTabs(str = '', n = 8) {
 
 const getClientBase = async () => {
   const dest = __dirname + '/clientbase.ts';
-  const url =
-    'https://raw.githubusercontent.com/antoniopresto/graphql-clientgen/2c47af9b8512bdeaf1bb68fd6e059a5e704b533f/src/lib/clientbase.ts';
+  const url = 'https://raw.githubusercontent.com/antoniopresto/graphql-clientgen/095527d16f4dda4d219b85ac1516118575f7dbdc/src/lib/clientbase.ts';
 
   if (fs.existsSync(dest)) {
     return fs.readFileSync(dest, 'utf8');

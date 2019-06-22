@@ -1,6 +1,8 @@
 export enum Actions {
   init = 'init',
-  complete = 'complete'
+  complete = 'complete',
+  abort = 'abort',
+  willQueue = 'willQueue'
 }
 
 type Context<V, R = any> = {
@@ -10,6 +12,7 @@ type Context<V, R = any> = {
   action: Actions;
   errors?: string[];
   result?: R | null;
+  querySuffix?: string;
 };
 
 type Middleware<V = any, R = any> = (config: Context<V, R>) => Context<V, R>;
@@ -22,6 +25,7 @@ export type FetcherConfig<V, R> = {
   schemaKey?: string;
   middleware?: Middleware<V, R>[] | Middleware<V, R>;
   fragment?: string;
+  querySuffix?: string;
 };
 
 const queryFetcher = async function queryFetcher<Variables, Return>(
@@ -46,8 +50,13 @@ const queryFetcher = async function queryFetcher<Variables, Return>(
     requestConfig,
     variables,
     config,
-    action: Actions.init
+    action: Actions.init,
+    querySuffix: config.querySuffix
   });
+
+  if (context.action === Actions.abort) {
+    return context;
+  }
 
   context.requestConfig.body = JSON.stringify({
     query: context.config.query,
@@ -194,14 +203,31 @@ export class GraphQLClient {
       ? 'query'
       : 'mutation';
 
-    const queueItem: QueueItem = {
+    const middleware = applyMiddleware([
+      ...this.middleware,
+      ...ensureArray(_config.middleware)
+    ]);
+
+    let queueItem: QueueItem = {
       url: this.url,
       ..._config,
-      middleware: [...this.middleware, ...ensureArray(_config.middleware)],
+      middleware,
       resolver: null,
       variables: _variables,
       kind
     };
+
+    const ctx = middleware({
+      action: Actions.willQueue,
+      requestConfig: {},
+      variables: _variables,
+      config: queueItem,
+      querySuffix: undefined
+    });
+
+    if (ctx.action === Actions.abort) {
+      return ctx;
+    }
 
     const promise = new Promise<Context<V, R>>(r => {
       queueItem.resolver = r;
