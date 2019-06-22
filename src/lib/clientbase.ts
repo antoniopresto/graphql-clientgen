@@ -198,7 +198,7 @@ export class GraphQLClient {
     });
   };
 
-  exec = <V, R>(_variables: V, _config: FetcherConfig<V, R>) => {
+  exec = <V, R>(_variables: V, _config: FetcherConfig<V, R>): Promise<Context<V, R>> => {
     const kind = _config.query.trim().startsWith('query')
       ? 'query'
       : 'mutation';
@@ -226,7 +226,7 @@ export class GraphQLClient {
     });
 
     if (ctx.action === Actions.abort) {
-      return ctx;
+      return Promise.resolve(ctx);
     }
 
     const promise = new Promise<Context<V, R>>(r => {
