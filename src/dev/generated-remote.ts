@@ -1544,7 +1544,7 @@ type Context<V, R = any> = {
   variables: V;
   config: FetcherConfig<V, R>;
   action: Actions;
-  errors?: string[];
+  errors?: any[];
   result?: R | null;
 };
 
@@ -1590,8 +1590,8 @@ const queryFetcher = async function queryFetcher<Variables, Return>(
     variables: context.variables
   });
 
-  return fetch(context.config.url, context.requestConfig).then(
-    async response => {
+  return fetch(context.config.url, context.requestConfig)
+    .then(async response => {
       const contentType = response.headers.get('Content-Type');
       const isJSON = contentType && contentType.startsWith('application/json');
 
@@ -1608,14 +1608,27 @@ const queryFetcher = async function queryFetcher<Variables, Return>(
 
       let { errors, data } = await response.json();
 
+      if (errors) {
+        console.log({ errors });
+      }
+
+      errors = errors ? (Array.isArray(errors) ? errors : [errors]) : undefined;
+
       return middleware({
         ...context,
         errors,
         action: Actions.complete,
         result: data ? (config.schemaKey ? data[config.schemaKey] : data) : null
       });
-    }
-  );
+    })
+    .catch(err => {
+      return middleware({
+        ...context,
+        errors: [err],
+        action: Actions.complete,
+        result: null
+      });
+    });
 };
 
 export type QueryFetcher = typeof queryFetcher;
@@ -1706,13 +1719,11 @@ export class GraphQLClient {
       url: this.url,
       query
     }).then(ctx => {
-      if (ctx.result) {
-        Object.keys(resolverMap).forEach(key => {
-          const { resolver } = resolverMap[key];
-          if (!resolver) return;
-          resolver({ ...ctx, result: ctx.result[key] });
-        });
-      }
+      Object.keys(resolverMap).forEach(key => {
+        const { resolver } = resolverMap[key];
+        if (!resolver) return;
+        resolver({ ...ctx, result: ctx.result ? ctx.result[key] : null });
+      });
     });
   };
 

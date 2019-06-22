@@ -24,12 +24,8 @@ export type ResolverStoreItem = {
 
 export type ResolversStore = Map<string, ResolverStoreItem>;
 
-let _resolversStore: ResolversStore;
-
 export function getResolversHelper(schema: GraphQLSchema) {
-  if (_resolversStore) return _resolversStore;
-
-  _resolversStore = new Map();
+  let _resolversStore: ResolversStore = new Map();
 
   const finalRootTypes = {
     mutation: schema.getMutationType(),

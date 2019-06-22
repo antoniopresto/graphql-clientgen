@@ -1,14 +1,7 @@
 import test from 'ava';
-import fs from 'fs';
-import ts from 'typescript';
 import { schema } from '../dev/schema-demo';
 import { printClient } from '../lib/generate-client';
-import { printFromEndpoint } from '..';
-
-const API_ENDPOINT = 'https://gitlab.com/api/graphql';
-
-// @ts-ignore
-global.fetch = require('node-fetch');
+import { getClient, getJSFile, getTSFile, TEST_API } from '../dev/helpers';
 
 test('generate file from schema (smoke test)', async t => {
   const client = await printClient(schema);
@@ -26,33 +19,15 @@ test('generate js', async t => {
   t.is(js.length > 5000, true);
 });
 
-// test('using generated file', async t => {
-//   const tsContent = await getTSFile();
-//   const js = await getJSFile(tsContent);
-//   const Client = eval(js);
-//   const { client } = new Client({ url: API_ENDPOINT });
-//
-//   // t.is(client, 0);
-//
-//   t.is(client, null);
-// });
+test('using generated file', async t => {
+  const client = await getClient();
 
-async function getJSFile(tsContet: string) {
-  const tsConfigText = fs.readFileSync(
-    process.cwd() + '/tsconfig.json',
-    'utf8'
+  // echo
+  t.is((await client.echo({ text: 'HY! echo' })).result, 'nil says: HY! echo');
+
+  // mutation
+  t.is(
+    (await client.designManagementUpload()).errors[0].message,
+    'Variable input_0 of type DesignManagementUploadInput! was provided invalid value'
   );
-  let config: any = {};
-  eval(`config = ${tsConfigText}`);
-  config.compilerOptions.inlineSourceMap = false;
-  let result = ts.transpileModule(tsContet, config);
-  return result.outputText;
-}
-
-async function getTSFile() {
-  const client = await printFromEndpoint(API_ENDPOINT);
-  if (client.status !== 'ok') {
-    throw new Error(client.message);
-  }
-  return client.client;
-}
+});

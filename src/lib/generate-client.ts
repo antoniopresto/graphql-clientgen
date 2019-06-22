@@ -30,8 +30,8 @@ function mountClient(schema: GraphQLSchema, clientBase: string) {
     const queryHelper = queryHelpers.get(info.schemaKey);
 
     if (!queryHelper) {
-      console.log(`no client generated for ${info.schemaKey}`);
-      return;
+      console.log('available schema keys:', [...queryHelpers.keys()]);
+      throw new Error(`no client generated for ${info.schemaKey}`);
     }
 
     const query = addTabs(
@@ -53,7 +53,7 @@ function mountClient(schema: GraphQLSchema, clientBase: string) {
     if (hasArgs) {
       variablesDeclaration = `variables: ${info.argsTSName}, `;
     }
-    
+
     clientEntry += `
       ${
         info.schemaKey
@@ -129,7 +129,7 @@ function addTabs(str = '', n = 8) {
 const getClientBase = async () => {
   const dest = __dirname + '/clientbase.ts';
   const url =
-    'https://raw.githubusercontent.com/antoniopresto/graphql-clientgen/e68b1ddbd8b4098cece3bc12e042cf05b6b4d328/src/lib/clientbase.ts';
+    'https://raw.githubusercontent.com/antoniopresto/graphql-clientgen/2c47af9b8512bdeaf1bb68fd6e059a5e704b533f/src/lib/clientbase.ts';
 
   if (fs.existsSync(dest)) {
     return fs.readFileSync(dest, 'utf8');

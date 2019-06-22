@@ -316,7 +316,9 @@ export class GraphQLClient {
   client = {
     cities: (
       variables: QueryCitiesArgs,
-      config: Partial<FetcherConfig<QueryCitiesArgs, Query['cities']>> = {}
+      config: Partial<
+        FetcherConfig<QueryCitiesArgs, Maybe<Query['cities']>>
+      > = {}
     ) => {
       return this.exec<QueryCitiesArgs, Maybe<Query['cities']>>(variables, {
         url: this.url,
@@ -330,7 +332,7 @@ export class GraphQLClient {
     createCity: (
       variables: QueryCreateCityArgs,
       config: Partial<
-        FetcherConfig<QueryCreateCityArgs, Query['createCity']>
+        FetcherConfig<QueryCreateCityArgs, Maybe<Query['createCity']>>
       > = {}
     ) => {
       return this.exec<QueryCreateCityArgs, Maybe<Query['createCity']>>(
