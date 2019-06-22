@@ -53,15 +53,15 @@ function mountClient(schema: GraphQLSchema, clientBase: string) {
     if (hasArgs) {
       variablesDeclaration = `variables: ${info.argsTSName}, `;
     }
-
+    
     clientEntry += `
       ${
         info.schemaKey
       }: (${variablesDeclaration}config: Partial<FetcherConfig<${
       info.argsTSName
     }, ${info.returnTSName}>> = {}) => {
-        return this.exec<${info.argsTSName}, Maybe<${info.returnTSName}>>(${
-      hasArgs ? 'variables, ' : 'undefined, '
+        return this.exec<${info.argsTSName}, ${info.returnTSName}>(${
+      hasArgs ? 'variables, ' : '{}, '
     } {
         url: this.url,
         entityName: '${info.entityName}',
@@ -95,7 +95,7 @@ export async function printClient(schema: GraphQLSchema) {
   const clientBase = await getClientBase();
 
   const tsTypes = await tsPlugin(schema, [], {});
-  
+
   const tsContent =
     typeof tsTypes === 'string'
       ? tsTypes

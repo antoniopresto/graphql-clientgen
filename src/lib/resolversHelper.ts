@@ -1,4 +1,10 @@
-import { GraphQLField, GraphQLObjectType, GraphQLSchema, isListType } from 'graphql';
+import {
+  GraphQLField,
+  GraphQLObjectType,
+  GraphQLSchema,
+  isListType,
+  isNonNullType
+} from 'graphql';
 import camelCase from 'lodash/camelCase';
 import upperFirst from 'lodash/upperFirst';
 
@@ -12,7 +18,8 @@ export type ResolverStoreItem = {
   isMutation: boolean;
   isQuery: boolean;
   isSubscription: boolean;
-  field: GraphQLField<any, any>
+  field: GraphQLField<any, any>;
+  isNonNull: boolean;
 };
 
 export type ResolversStore = Map<string, ResolverStoreItem>;
@@ -54,10 +61,12 @@ export function getResolversHelper(schema: GraphQLSchema) {
     const field = fields[schemaKey];
     const type = field.type as GraphQLObjectType;
     const isList = isListType(field.type);
+    const isNonNull = isNonNullType(field.type);
 
-    const entityName = isListType(field.type)
-      ? field.type.ofType.toString()
-      : field.type.toString();
+    let finalType = isNonNullType(field.type) ? field.type.ofType : field.type;
+    const entityName = isListType(finalType)
+      ? finalType.ofType.toString()
+      : finalType.toString();
 
     const isMutation = !!mutationFields[schemaKey];
     const isQuery = !!queryFields[schemaKey];
@@ -80,8 +89,9 @@ export function getResolversHelper(schema: GraphQLSchema) {
     let argsTSName = field.args.length
       ? `${argsPrefix}${upperFirst(camelCase(schemaKey))}Args`
       : '{}';
-    
+
     let returnTSName = `${argsPrefix}['${schemaKey}']`;
+    returnTSName = isNonNull ? returnTSName : `Maybe<${returnTSName}>`;
 
     const item = {
       type,
@@ -93,7 +103,8 @@ export function getResolversHelper(schema: GraphQLSchema) {
       isMutation,
       isQuery,
       isSubscription,
-      field
+      field,
+      isNonNull
     };
 
     _resolversStore.set(schemaKey, item);

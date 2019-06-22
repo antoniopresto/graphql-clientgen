@@ -1,4 +1,897 @@
-export const query = {};
+export const query = {
+  echo: (fragment = '') => `
+        query echo($text: String){
+                ${fragment ||
+                  `
+                    echo(text: $text)
+                `}
+        }`,
+
+  group: (fragment = '') => `
+        query group($full: Boolean, $full1: Boolean, $iid: ID, $iids: [ID!], $first: Int, $after: String, $last: Int, $before: String, $iid1: ID, $iids1: [ID!], $full2: Boolean, $iid2: ID, $iids2: [ID!], $first1: Int, $after1: String, $last1: Int, $before1: String, $includeSubgroups: Boolean, $fullPath: ID!){
+            group(fullPath: $fullPath){
+                ${fragment ||
+                  `
+                        avatarUrl
+                        description
+                        epic(iid: $iid, iids: $iids){
+                            author{
+                                avatarUrl
+                                name
+                                username
+                                webUrl
+                            }
+                            closedAt
+                            createdAt
+                            description
+                            dueDate
+                            dueDateFixed
+                            dueDateFromMilestones
+                            dueDateIsFixed
+                            group{
+                                avatarUrl
+                                description
+                                epicsEnabled
+                                fullName
+                                fullPath
+                                id
+                                lfsEnabled
+                                name
+                                path
+                                requestAccessEnabled
+                                visibility
+                                webUrl
+                            }
+                            hasChildren
+                            hasIssues
+                            id
+                            iid
+                            parent{
+                                closedAt
+                                createdAt
+                                description
+                                dueDate
+                                dueDateFixed
+                                dueDateFromMilestones
+                                dueDateIsFixed
+                                hasChildren
+                                hasIssues
+                                id
+                                iid
+                                reference(full: $full)
+                                relationPath
+                                startDate
+                                startDateFixed
+                                startDateFromMilestones
+                                startDateIsFixed
+                                state
+                                title
+                                updatedAt
+                                webPath
+                                webUrl
+                            }
+                            reference(full: $full1)
+                            relationPath
+                            startDate
+                            startDateFixed
+                            startDateFromMilestones
+                            startDateIsFixed
+                            state
+                            title
+                            updatedAt
+                            userPermissions{
+                                adminEpic
+                                awardEmoji
+                                createEpic
+                                createNote
+                                destroyEpic
+                                readEpic
+                                readEpicIid
+                                updateEpic
+                            }
+                            webPath
+                            webUrl
+                        }
+                        epics(first: $first, after: $after, last: $last, before: $before, iid: $iid1, iids: $iids1){
+                            edges{
+                                cursor
+                            }
+                            pageInfo{
+                                endCursor
+                                hasNextPage
+                                hasPreviousPage
+                                startCursor
+                            }
+                        }
+                        epicsEnabled
+                        fullName
+                        fullPath
+                        id
+                        lfsEnabled
+                        name
+                        parent{
+                            avatarUrl
+                            description
+                            epic(iid: $iid2, iids: $iids2){
+                                closedAt
+                                createdAt
+                                description
+                                dueDate
+                                dueDateFixed
+                                dueDateFromMilestones
+                                dueDateIsFixed
+                                hasChildren
+                                hasIssues
+                                id
+                                iid
+                                reference(full: $full2)
+                                relationPath
+                                startDate
+                                startDateFixed
+                                startDateFromMilestones
+                                startDateIsFixed
+                                state
+                                title
+                                updatedAt
+                                webPath
+                                webUrl
+                            }
+                            epicsEnabled
+                            fullName
+                            fullPath
+                            id
+                            lfsEnabled
+                            name
+                            parent{
+                                avatarUrl
+                                description
+                                epicsEnabled
+                                fullName
+                                fullPath
+                                id
+                                lfsEnabled
+                                name
+                                path
+                                requestAccessEnabled
+                                visibility
+                                webUrl
+                            }
+                            path
+                            requestAccessEnabled
+                            userPermissions{
+                                readGroup
+                            }
+                            visibility
+                            webUrl
+                        }
+                        path
+                        projects(first: $first1, after: $after1, last: $last1, before: $before1, includeSubgroups: $includeSubgroups){
+                            edges{
+                                cursor
+                            }
+                            pageInfo{
+                                endCursor
+                                hasNextPage
+                                hasPreviousPage
+                                startCursor
+                            }
+                        }
+                        requestAccessEnabled
+                        userPermissions{
+                            readGroup
+                        }
+                        visibility
+                        webUrl
+                `}
+            }
+        }`,
+
+  metadata: (fragment = '') => `
+        query metadata{
+            metadata{
+                ${fragment ||
+                  `
+                        revision
+                        version
+                `}
+            }
+        }`,
+
+  namespace: (fragment = '') => `
+        query namespace($first: Int, $after: String, $last: Int, $before: String, $includeSubgroups: Boolean, $fullPath: ID!){
+            namespace(fullPath: $fullPath){
+                ${fragment ||
+                  `
+                        description
+                        fullName
+                        fullPath
+                        id
+                        lfsEnabled
+                        name
+                        path
+                        projects(first: $first, after: $after, last: $last, before: $before, includeSubgroups: $includeSubgroups){
+                            edges{
+                                cursor
+                            }
+                            pageInfo{
+                                endCursor
+                                hasNextPage
+                                hasPreviousPage
+                                startCursor
+                            }
+                        }
+                        requestAccessEnabled
+                        visibility
+                `}
+            }
+        }`,
+
+  project: (fragment = '') => `
+        query project($full: Boolean, $iid: ID, $iids: [ID!], $full1: Boolean, $iid1: String, $iids1: [String!], $state: IssuableState, $labelName: [String], $createdBefore: Time, $createdAfter: Time, $updatedBefore: Time, $updatedAfter: Time, $closedBefore: Time, $closedAfter: Time, $search: String, $sort: Sort, $first: Int, $after: String, $last: Int, $before: String, $iid2: String, $iids2: [String!], $state1: IssuableState, $labelName1: [String], $createdBefore1: Time, $createdAfter1: Time, $updatedBefore1: Time, $updatedAfter1: Time, $closedBefore1: Time, $closedAfter1: Time, $search1: String, $sort1: Sort, $iid3: String, $iids3: [String!], $first1: Int, $after1: String, $last1: Int, $before1: String, $iid4: String, $iids4: [String!], $first2: Int, $after2: String, $last2: Int, $before2: String, $status: PipelineStatusEnum, $ref: String, $sha: String, $fullPath: ID!){
+            project(fullPath: $fullPath){
+                ${fragment ||
+                  `
+                        archived
+                        avatarUrl
+                        containerRegistryEnabled
+                        createdAt
+                        description
+                        forksCount
+                        fullPath
+                        group{
+                            avatarUrl
+                            description
+                            epic(iid: $iid, iids: $iids){
+                                closedAt
+                                createdAt
+                                description
+                                dueDate
+                                dueDateFixed
+                                dueDateFromMilestones
+                                dueDateIsFixed
+                                hasChildren
+                                hasIssues
+                                id
+                                iid
+                                reference(full: $full)
+                                relationPath
+                                startDate
+                                startDateFixed
+                                startDateFromMilestones
+                                startDateIsFixed
+                                state
+                                title
+                                updatedAt
+                                webPath
+                                webUrl
+                            }
+                            epicsEnabled
+                            fullName
+                            fullPath
+                            id
+                            lfsEnabled
+                            name
+                            parent{
+                                avatarUrl
+                                description
+                                epicsEnabled
+                                fullName
+                                fullPath
+                                id
+                                lfsEnabled
+                                name
+                                path
+                                requestAccessEnabled
+                                visibility
+                                webUrl
+                            }
+                            path
+                            requestAccessEnabled
+                            userPermissions{
+                                readGroup
+                            }
+                            visibility
+                            webUrl
+                        }
+                        httpUrlToRepo
+                        id
+                        importStatus
+                        issue(iid: $iid1, iids: $iids1, state: $state, labelName: $labelName, createdBefore: $createdBefore, createdAfter: $createdAfter, updatedBefore: $updatedBefore, updatedAfter: $updatedAfter, closedBefore: $closedBefore, closedAfter: $closedAfter, search: $search, sort: $sort){
+                            author{
+                                avatarUrl
+                                name
+                                username
+                                webUrl
+                            }
+                            closedAt
+                            confidential
+                            createdAt
+                            description
+                            discussionLocked
+                            downvotes
+                            dueDate
+                            iid
+                            milestone{
+                                createdAt
+                                description
+                                dueDate
+                                startDate
+                                state
+                                title
+                                updatedAt
+                            }
+                            reference(full: $full1)
+                            relativePosition
+                            state
+                            taskCompletionStatus{
+                                completedCount
+                                count
+                            }
+                            title
+                            updatedAt
+                            upvotes
+                            userNotesCount
+                            userPermissions{
+                                adminIssue
+                                createDesign
+                                createNote
+                                destroyDesign
+                                readDesign
+                                readIssue
+                                reopenIssue
+                                updateIssue
+                            }
+                            webPath
+                            webUrl
+                            weight
+                        }
+                        issues(first: $first, after: $after, last: $last, before: $before, iid: $iid2, iids: $iids2, state: $state1, labelName: $labelName1, createdBefore: $createdBefore1, createdAfter: $createdAfter1, updatedBefore: $updatedBefore1, updatedAfter: $updatedAfter1, closedBefore: $closedBefore1, closedAfter: $closedAfter1, search: $search1, sort: $sort1){
+                            edges{
+                                cursor
+                            }
+                            pageInfo{
+                                endCursor
+                                hasNextPage
+                                hasPreviousPage
+                                startCursor
+                            }
+                        }
+                        issuesEnabled
+                        jobsEnabled
+                        lastActivityAt
+                        lfsEnabled
+                        mergeRequest(iid: $iid3, iids: $iids3){
+                            allowCollaboration
+                            createdAt
+                            defaultMergeCommitMessage
+                            description
+                            diffHeadSha
+                            downvotes
+                            forceRemoveSourceBranch
+                            headPipeline{
+                                beforeSha
+                                committedAt
+                                coverage
+                                createdAt
+                                duration
+                                finishedAt
+                                id
+                                iid
+                                sha
+                                startedAt
+                                status
+                                updatedAt
+                            }
+                            id
+                            iid
+                            inProgressMergeCommitSha
+                            mergeCommitSha
+                            mergeError
+                            mergeOngoing
+                            mergeStatus
+                            mergeWhenPipelineSucceeds
+                            mergeableDiscussionsState
+                            project{
+                                archived
+                                avatarUrl
+                                containerRegistryEnabled
+                                createdAt
+                                description
+                                forksCount
+                                fullPath
+                                httpUrlToRepo
+                                id
+                                importStatus
+                                issuesEnabled
+                                jobsEnabled
+                                lastActivityAt
+                                lfsEnabled
+                                mergeRequestsEnabled
+                                mergeRequestsFfOnlyEnabled
+                                name
+                                nameWithNamespace
+                                onlyAllowMergeIfAllDiscussionsAreResolved
+                                onlyAllowMergeIfPipelineSucceeds
+                                openIssuesCount
+                                path
+                                printingMergeRequestLinkEnabled
+                                publicJobs
+                                requestAccessEnabled
+                                sharedRunnersEnabled
+                                snippetsEnabled
+                                sshUrlToRepo
+                                starCount
+                                tagList
+                                visibility
+                                webUrl
+                                wikiEnabled
+                            }
+                            projectId
+                            rebaseCommitSha
+                            rebaseInProgress
+                            shouldBeRebased
+                            shouldRemoveSourceBranch
+                            sourceBranch
+                            sourceBranchExists
+                            sourceProject{
+                                archived
+                                avatarUrl
+                                containerRegistryEnabled
+                                createdAt
+                                description
+                                forksCount
+                                fullPath
+                                httpUrlToRepo
+                                id
+                                importStatus
+                                issuesEnabled
+                                jobsEnabled
+                                lastActivityAt
+                                lfsEnabled
+                                mergeRequestsEnabled
+                                mergeRequestsFfOnlyEnabled
+                                name
+                                nameWithNamespace
+                                onlyAllowMergeIfAllDiscussionsAreResolved
+                                onlyAllowMergeIfPipelineSucceeds
+                                openIssuesCount
+                                path
+                                printingMergeRequestLinkEnabled
+                                publicJobs
+                                requestAccessEnabled
+                                sharedRunnersEnabled
+                                snippetsEnabled
+                                sshUrlToRepo
+                                starCount
+                                tagList
+                                visibility
+                                webUrl
+                                wikiEnabled
+                            }
+                            sourceProjectId
+                            state
+                            subscribed
+                            targetBranch
+                            targetProject{
+                                archived
+                                avatarUrl
+                                containerRegistryEnabled
+                                createdAt
+                                description
+                                forksCount
+                                fullPath
+                                httpUrlToRepo
+                                id
+                                importStatus
+                                issuesEnabled
+                                jobsEnabled
+                                lastActivityAt
+                                lfsEnabled
+                                mergeRequestsEnabled
+                                mergeRequestsFfOnlyEnabled
+                                name
+                                nameWithNamespace
+                                onlyAllowMergeIfAllDiscussionsAreResolved
+                                onlyAllowMergeIfPipelineSucceeds
+                                openIssuesCount
+                                path
+                                printingMergeRequestLinkEnabled
+                                publicJobs
+                                requestAccessEnabled
+                                sharedRunnersEnabled
+                                snippetsEnabled
+                                sshUrlToRepo
+                                starCount
+                                tagList
+                                visibility
+                                webUrl
+                                wikiEnabled
+                            }
+                            targetProjectId
+                            taskCompletionStatus{
+                                completedCount
+                                count
+                            }
+                            title
+                            updatedAt
+                            upvotes
+                            userNotesCount
+                            userPermissions{
+                                adminMergeRequest
+                                cherryPickOnCurrentMergeRequest
+                                createNote
+                                pushToSourceBranch
+                                readMergeRequest
+                                removeSourceBranch
+                                revertOnCurrentMergeRequest
+                                updateMergeRequest
+                            }
+                            webUrl
+                            workInProgress
+                        }
+                        mergeRequests(first: $first1, after: $after1, last: $last1, before: $before1, iid: $iid4, iids: $iids4){
+                            edges{
+                                cursor
+                            }
+                            pageInfo{
+                                endCursor
+                                hasNextPage
+                                hasPreviousPage
+                                startCursor
+                            }
+                        }
+                        mergeRequestsEnabled
+                        mergeRequestsFfOnlyEnabled
+                        name
+                        nameWithNamespace
+                        namespace{
+                            description
+                            fullName
+                            fullPath
+                            id
+                            lfsEnabled
+                            name
+                            path
+                            requestAccessEnabled
+                            visibility
+                        }
+                        onlyAllowMergeIfAllDiscussionsAreResolved
+                        onlyAllowMergeIfPipelineSucceeds
+                        openIssuesCount
+                        path
+                        pipelines(first: $first2, after: $after2, last: $last2, before: $before2, status: $status, ref: $ref, sha: $sha){
+                            edges{
+                                cursor
+                            }
+                            pageInfo{
+                                endCursor
+                                hasNextPage
+                                hasPreviousPage
+                                startCursor
+                            }
+                        }
+                        printingMergeRequestLinkEnabled
+                        publicJobs
+                        repository{
+                            empty
+                            exists
+                            rootRef
+                        }
+                        requestAccessEnabled
+                        sharedRunnersEnabled
+                        snippetsEnabled
+                        sshUrlToRepo
+                        starCount
+                        statistics{
+                            buildArtifactsSize
+                            commitCount
+                            lfsObjectsSize
+                            packagesSize
+                            repositorySize
+                            storageSize
+                            wikiSize
+                        }
+                        tagList
+                        userPermissions{
+                            adminProject
+                            adminRemoteMirror
+                            adminWiki
+                            archiveProject
+                            changeNamespace
+                            changeVisibilityLevel
+                            createDeployment
+                            createDesign
+                            createIssue
+                            createLabel
+                            createMergeRequestFrom
+                            createMergeRequestIn
+                            createPages
+                            createPipeline
+                            createPipelineSchedule
+                            createProjectSnippet
+                            createWiki
+                            destroyDesign
+                            destroyPages
+                            destroyWiki
+                            downloadCode
+                            downloadWikiCode
+                            forkProject
+                            pushCode
+                            pushToDeleteProtectedBranch
+                            readCommitStatus
+                            readCycleAnalytics
+                            readDesign
+                            readPagesContent
+                            readProject
+                            readProjectMember
+                            readWiki
+                            removeForkProject
+                            removePages
+                            removeProject
+                            renameProject
+                            requestAccess
+                            updatePages
+                            updateWiki
+                            uploadFile
+                        }
+                        visibility
+                        webUrl
+                        wikiEnabled
+                `}
+            }
+        }`,
+
+  designManagementUpload: (fragment = '') => `
+        mutation designManagementUpload($full: Boolean, $input: DesignManagementUploadInput!){
+            designManagementUpload(input: $input){
+                ${fragment ||
+                  `
+                        clientMutationId
+                        designs{
+                            filename
+                            id
+                            image
+                            issue{
+                                closedAt
+                                confidential
+                                createdAt
+                                description
+                                discussionLocked
+                                downvotes
+                                dueDate
+                                iid
+                                reference(full: $full)
+                                relativePosition
+                                state
+                                title
+                                updatedAt
+                                upvotes
+                                userNotesCount
+                                webPath
+                                webUrl
+                                weight
+                            }
+                            project{
+                                archived
+                                avatarUrl
+                                containerRegistryEnabled
+                                createdAt
+                                description
+                                forksCount
+                                fullPath
+                                httpUrlToRepo
+                                id
+                                importStatus
+                                issuesEnabled
+                                jobsEnabled
+                                lastActivityAt
+                                lfsEnabled
+                                mergeRequestsEnabled
+                                mergeRequestsFfOnlyEnabled
+                                name
+                                nameWithNamespace
+                                onlyAllowMergeIfAllDiscussionsAreResolved
+                                onlyAllowMergeIfPipelineSucceeds
+                                openIssuesCount
+                                path
+                                printingMergeRequestLinkEnabled
+                                publicJobs
+                                requestAccessEnabled
+                                sharedRunnersEnabled
+                                snippetsEnabled
+                                sshUrlToRepo
+                                starCount
+                                tagList
+                                visibility
+                                webUrl
+                                wikiEnabled
+                            }
+                        }
+                        errors
+                `}
+            }
+        }`,
+
+  mergeRequestSetWip: (fragment = '') => `
+        mutation mergeRequestSetWip($input: MergeRequestSetWipInput!){
+            mergeRequestSetWip(input: $input){
+                ${fragment ||
+                  `
+                        clientMutationId
+                        errors
+                        mergeRequest{
+                            allowCollaboration
+                            createdAt
+                            defaultMergeCommitMessage
+                            description
+                            diffHeadSha
+                            downvotes
+                            forceRemoveSourceBranch
+                            headPipeline{
+                                beforeSha
+                                committedAt
+                                coverage
+                                createdAt
+                                duration
+                                finishedAt
+                                id
+                                iid
+                                sha
+                                startedAt
+                                status
+                                updatedAt
+                            }
+                            id
+                            iid
+                            inProgressMergeCommitSha
+                            mergeCommitSha
+                            mergeError
+                            mergeOngoing
+                            mergeStatus
+                            mergeWhenPipelineSucceeds
+                            mergeableDiscussionsState
+                            project{
+                                archived
+                                avatarUrl
+                                containerRegistryEnabled
+                                createdAt
+                                description
+                                forksCount
+                                fullPath
+                                httpUrlToRepo
+                                id
+                                importStatus
+                                issuesEnabled
+                                jobsEnabled
+                                lastActivityAt
+                                lfsEnabled
+                                mergeRequestsEnabled
+                                mergeRequestsFfOnlyEnabled
+                                name
+                                nameWithNamespace
+                                onlyAllowMergeIfAllDiscussionsAreResolved
+                                onlyAllowMergeIfPipelineSucceeds
+                                openIssuesCount
+                                path
+                                printingMergeRequestLinkEnabled
+                                publicJobs
+                                requestAccessEnabled
+                                sharedRunnersEnabled
+                                snippetsEnabled
+                                sshUrlToRepo
+                                starCount
+                                tagList
+                                visibility
+                                webUrl
+                                wikiEnabled
+                            }
+                            projectId
+                            rebaseCommitSha
+                            rebaseInProgress
+                            shouldBeRebased
+                            shouldRemoveSourceBranch
+                            sourceBranch
+                            sourceBranchExists
+                            sourceProject{
+                                archived
+                                avatarUrl
+                                containerRegistryEnabled
+                                createdAt
+                                description
+                                forksCount
+                                fullPath
+                                httpUrlToRepo
+                                id
+                                importStatus
+                                issuesEnabled
+                                jobsEnabled
+                                lastActivityAt
+                                lfsEnabled
+                                mergeRequestsEnabled
+                                mergeRequestsFfOnlyEnabled
+                                name
+                                nameWithNamespace
+                                onlyAllowMergeIfAllDiscussionsAreResolved
+                                onlyAllowMergeIfPipelineSucceeds
+                                openIssuesCount
+                                path
+                                printingMergeRequestLinkEnabled
+                                publicJobs
+                                requestAccessEnabled
+                                sharedRunnersEnabled
+                                snippetsEnabled
+                                sshUrlToRepo
+                                starCount
+                                tagList
+                                visibility
+                                webUrl
+                                wikiEnabled
+                            }
+                            sourceProjectId
+                            state
+                            subscribed
+                            targetBranch
+                            targetProject{
+                                archived
+                                avatarUrl
+                                containerRegistryEnabled
+                                createdAt
+                                description
+                                forksCount
+                                fullPath
+                                httpUrlToRepo
+                                id
+                                importStatus
+                                issuesEnabled
+                                jobsEnabled
+                                lastActivityAt
+                                lfsEnabled
+                                mergeRequestsEnabled
+                                mergeRequestsFfOnlyEnabled
+                                name
+                                nameWithNamespace
+                                onlyAllowMergeIfAllDiscussionsAreResolved
+                                onlyAllowMergeIfPipelineSucceeds
+                                openIssuesCount
+                                path
+                                printingMergeRequestLinkEnabled
+                                publicJobs
+                                requestAccessEnabled
+                                sharedRunnersEnabled
+                                snippetsEnabled
+                                sshUrlToRepo
+                                starCount
+                                tagList
+                                visibility
+                                webUrl
+                                wikiEnabled
+                            }
+                            targetProjectId
+                            taskCompletionStatus{
+                                completedCount
+                                count
+                            }
+                            title
+                            updatedAt
+                            upvotes
+                            userNotesCount
+                            userPermissions{
+                                adminMergeRequest
+                                cherryPickOnCurrentMergeRequest
+                                createNote
+                                pushToSourceBranch
+                                readMergeRequest
+                                removeSourceBranch
+                                revertOnCurrentMergeRequest
+                                updateMergeRequest
+                            }
+                            webUrl
+                            workInProgress
+                        }
+                `}
+            }
+        }`
+};
 
 export type Maybe<T> = T | null;
 export type MaybePromise<T> = Promise<T> | T;
@@ -1647,7 +2540,123 @@ export class GraphQLClient {
     return promise;
   };
 
-  client = {};
+  client = {
+    echo: (
+      variables: QueryEchoArgs,
+      config: Partial<FetcherConfig<QueryEchoArgs, Query['echo']>> = {}
+    ) => {
+      return this.exec<QueryEchoArgs, Query['echo']>(variables, {
+        url: this.url,
+        entityName: 'String',
+        schemaKey: 'echo',
+        query: query.echo(config.fragment),
+        ...config
+      });
+    },
+
+    group: (
+      variables: QueryGroupArgs,
+      config: Partial<FetcherConfig<QueryGroupArgs, Maybe<Query['group']>>> = {}
+    ) => {
+      return this.exec<QueryGroupArgs, Maybe<Query['group']>>(variables, {
+        url: this.url,
+        entityName: 'Group',
+        schemaKey: 'group',
+        query: query.group(config.fragment),
+        ...config
+      });
+    },
+
+    metadata: (
+      config: Partial<FetcherConfig<{}, Maybe<Query['metadata']>>> = {}
+    ) => {
+      return this.exec<{}, Maybe<Query['metadata']>>(
+        {},
+        {
+          url: this.url,
+          entityName: 'Metadata',
+          schemaKey: 'metadata',
+          query: query.metadata(config.fragment),
+          ...config
+        }
+      );
+    },
+
+    namespace: (
+      variables: QueryNamespaceArgs,
+      config: Partial<
+        FetcherConfig<QueryNamespaceArgs, Maybe<Query['namespace']>>
+      > = {}
+    ) => {
+      return this.exec<QueryNamespaceArgs, Maybe<Query['namespace']>>(
+        variables,
+        {
+          url: this.url,
+          entityName: 'Namespace',
+          schemaKey: 'namespace',
+          query: query.namespace(config.fragment),
+          ...config
+        }
+      );
+    },
+
+    project: (
+      variables: QueryProjectArgs,
+      config: Partial<
+        FetcherConfig<QueryProjectArgs, Maybe<Query['project']>>
+      > = {}
+    ) => {
+      return this.exec<QueryProjectArgs, Maybe<Query['project']>>(variables, {
+        url: this.url,
+        entityName: 'Project',
+        schemaKey: 'project',
+        query: query.project(config.fragment),
+        ...config
+      });
+    },
+
+    designManagementUpload: (
+      variables: MutationDesignManagementUploadArgs,
+      config: Partial<
+        FetcherConfig<
+          MutationDesignManagementUploadArgs,
+          Maybe<Mutation['designManagementUpload']>
+        >
+      > = {}
+    ) => {
+      return this.exec<
+        MutationDesignManagementUploadArgs,
+        Maybe<Mutation['designManagementUpload']>
+      >(variables, {
+        url: this.url,
+        entityName: 'DesignManagementUploadPayload',
+        schemaKey: 'designManagementUpload',
+        query: query.designManagementUpload(config.fragment),
+        ...config
+      });
+    },
+
+    mergeRequestSetWip: (
+      variables: MutationMergeRequestSetWipArgs,
+      config: Partial<
+        FetcherConfig<
+          MutationMergeRequestSetWipArgs,
+          Maybe<Mutation['mergeRequestSetWip']>
+        >
+      > = {}
+    ) => {
+      return this.exec<
+        MutationMergeRequestSetWipArgs,
+        Maybe<Mutation['mergeRequestSetWip']>
+      >(variables, {
+        url: this.url,
+        entityName: 'MergeRequestSetWipPayload',
+        schemaKey: 'mergeRequestSetWip',
+        query: query.mergeRequestSetWip(config.fragment),
+        ...config
+      });
+    }
+  };
 }
 
 // compose(f, g, h) is identical to doing (...args) => f(g(h(...args))).
