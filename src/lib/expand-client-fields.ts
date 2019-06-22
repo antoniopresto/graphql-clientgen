@@ -31,7 +31,7 @@ export function generateQuery(config: {
   depthLimit?: number;
   includeDeprecatedFields?: boolean;
 }) {
-  const { schema, depthLimit = 3, includeDeprecatedFields = false } = config;
+  const { schema, depthLimit = 1, includeDeprecatedFields = false } = config;
 
   /**
    * Compile arguments dictionary for a field
