@@ -1,11 +1,12 @@
 export enum Actions {
-  init = 'init',
   complete = 'complete',
   abort = 'abort',
-  willQueue = 'willQueue'
+  willQueue = 'willQueue',
+  initFetch = 'initFetch',
+  completeFetch = 'completeFetch'
 }
 
-type Context<V, R = any> = {
+export type Context<V, R = any> = {
   requestConfig: RequestInit;
   variables: V;
   config: FetcherConfig<V, R>;
@@ -15,7 +16,9 @@ type Context<V, R = any> = {
   querySuffix?: string;
 };
 
-type Middleware<V = any, R = any> = (config: Context<V, R>) => Context<V, R>;
+export type Middleware<V = any, R = any> = (
+  config: Context<V, R>
+) => Context<V, R>;
 
 export type FetcherConfig<V, R> = {
   url: string;
@@ -42,15 +45,16 @@ const queryFetcher = async function queryFetcher<Variables, Return>(
     }
   };
 
-  const middleware: Middleware<Variables, Return> = config.middleware
-    ? applyMiddleware(ensureArray(config.middleware))
-    : ctx => ctx;
+  const middleware: Middleware<Variables, Return> =
+    typeof config.middleware === 'function'
+      ? config.middleware
+      : applyMiddleware(ensureArray(config.middleware));
 
   const context = middleware({
     requestConfig,
     variables,
     config,
-    action: Actions.init,
+    action: Actions.initFetch,
     querySuffix: config.querySuffix
   });
 
@@ -74,7 +78,7 @@ const queryFetcher = async function queryFetcher<Variables, Return>(
         return middleware({
           ...context,
           result: null,
-          action: Actions.complete,
+          action: Actions.completeFetch,
           errors: [fetchError]
         });
       }
@@ -88,7 +92,7 @@ const queryFetcher = async function queryFetcher<Variables, Return>(
       return middleware({
         ...context,
         errors,
-        action: Actions.complete,
+        action: Actions.completeFetch,
         result: data ? (config.schemaKey ? data[config.schemaKey] : data) : null
       });
     })
@@ -96,7 +100,7 @@ const queryFetcher = async function queryFetcher<Variables, Return>(
       return middleware({
         ...context,
         errors: [err],
-        action: Actions.complete,
+        action: Actions.completeFetch,
         result: null
       });
     });
@@ -105,15 +109,17 @@ const queryFetcher = async function queryFetcher<Variables, Return>(
 export type QueryFetcher = typeof queryFetcher;
 
 type Resolver = (r: Context<any, any>) => void;
-type QueueItem = FetcherConfig<any, any> & {
+
+type QueueItem = {
   resolver: Resolver | null;
   variables: Dict;
   kind: 'mutation' | 'query';
+  config: FetcherConfig<any, any>;
 };
 
 export class GraphQLClient {
   private url = '/graphql';
-  private middleware: Middleware<any>[];
+  private middleware: Middleware<any>[] = [];
 
   private queryBachTimeout!: any; //NodeJS.Timer;
   private mutationBachTimeout!: any; //NodeJS.Timer;
@@ -128,7 +134,18 @@ export class GraphQLClient {
     url?: string;
     middleware?: Middleware | Middleware[];
   }) {
-    this.middleware = ensureArray(config.middleware);
+    // apply global client instance middleware
+    if (config.middleware) {
+      const _instanceMiddleware = applyMiddleware(
+        ensureArray(config.middleware)
+      );
+
+      this.middleware = [
+        function instanceMiddleware(ctx: Context<any, any>) {
+          return _instanceMiddleware(ctx);
+        }
+      ];
+    }
 
     if (config.url) {
       this.url = config.url;
@@ -136,7 +153,7 @@ export class GraphQLClient {
   }
 
   private fetchQueue = (queue: QueueItem[], kind: 'mutation' | 'query') => {
-    let middleware: any[] = [];
+    let batchMiddleware: Middleware<any>[] = [];
     let headers: Dict = {};
     let finalQueryBody = '';
     let finalQueryHeader = '';
@@ -145,16 +162,17 @@ export class GraphQLClient {
 
     queue.forEach((q, key) => {
       const qiKey = `${kind}_${key}`;
-      let qiQuery = q.query;
+      let qiQuery = q.config.query;
       const qiHeader = getHeader(qiQuery.trim().split('\n')[0]);
       resolverMap[qiKey] = q;
 
-      if (q.middleware) {
-        middleware = middleware.concat(ensureArray(q.middleware));
+      if (q.config.middleware) {
+        const m = ensureArray(q.config.middleware);
+        batchMiddleware = batchMiddleware.concat(m);
       }
 
-      if (q.headers) {
-        headers = { ...headers, ...q.headers };
+      if (q.config.middleware) {
+        headers = { ...headers, ...q.config.headers };
       }
 
       if (q.variables) {
@@ -188,46 +206,62 @@ export class GraphQLClient {
 
     queryFetcher<any, any>(finalVariables, {
       url: this.url,
-      query
+      query,
+      middleware: batchMiddleware
     }).then(ctx => {
       Object.keys(resolverMap).forEach(key => {
-        const { resolver } = resolverMap[key];
+        const { resolver, config, variables } = resolverMap[key];
         if (!resolver) return;
-        resolver({ ...ctx, result: ctx.result ? ctx.result[key] : null });
+        const middleware = applyMiddleware(ensureArray(config.middleware));
+
+        resolver(
+          middleware({
+            ...ctx,
+            result: ctx.result ? ctx.result[key] : null,
+            action: Actions.complete,
+            variables,
+            config: config,
+            querySuffix: key
+          })
+        );
       });
     });
   };
 
-  exec = <V, R>(_variables: V, _config: FetcherConfig<V, R>): Promise<Context<V, R>> => {
+  exec = <V, R>(
+    _variables: V,
+    _config: FetcherConfig<V, R>
+  ): Promise<Context<V, R>> => {
     const kind = _config.query.trim().startsWith('query')
       ? 'query'
       : 'mutation';
 
-    const middleware = applyMiddleware([
-      ...this.middleware,
-      ...ensureArray(_config.middleware)
-    ]);
+    const config = {
+      ..._config,
+      url: this.url,
+      middleware: [...this.middleware, ...ensureArray(_config.middleware)]
+    };
+
+    const context = applyMiddleware(config.middleware as [])({
+      requestConfig: {},
+      variables: _variables,
+      config,
+      action: Actions.willQueue
+      // errors?: string[];
+      // result?: R | null;
+      // querySuffix?: string;
+    });
+
+    if (context.action === Actions.abort) {
+      return Promise.resolve(context);
+    }
 
     let queueItem: QueueItem = {
-      url: this.url,
-      ..._config,
-      middleware,
+      config: context.config,
       resolver: null,
       variables: _variables,
       kind
     };
-
-    const ctx = middleware({
-      action: Actions.willQueue,
-      requestConfig: {},
-      variables: _variables,
-      config: queueItem,
-      querySuffix: undefined
-    });
-
-    if (ctx.action === Actions.abort) {
-      return Promise.resolve(ctx);
-    }
 
     const promise = new Promise<Context<V, R>>(r => {
       queueItem.resolver = r;
