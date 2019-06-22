@@ -6,7 +6,7 @@ One client-side method is generated for each query/mutation, with a default and 
 ```ts
 // using the generated GraphQLClient:
 const { client } = new GraphQLClient({
-  apiURL: "http://localhost:3777/graphql",
+  url: "http://localhost:3777/graphql",
 });
 
 // assuming there is a query called findUser, the generated code will accept

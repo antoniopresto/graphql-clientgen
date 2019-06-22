@@ -95,7 +95,7 @@ type Context<V, R = any> = {
 type Middleware<V = any, R = any> = (config: Context<V, R>) => Context<V, R>;
 
 export type FetcherConfig<V, R> = {
-  apiURL: string;
+  url: string;
   headers?: { [key: string]: string };
   query: string;
   entityName?: string;
@@ -134,7 +134,7 @@ const queryFetcher = async function queryFetcher<Variables, Return>(
     variables: context.variables
   });
 
-  return fetch(context.config.apiURL, context.requestConfig).then(
+  return fetch(context.config.url, context.requestConfig).then(
     async response => {
       const contentType = response.headers.get('Content-Type');
       const isJSON = contentType && contentType.startsWith('application/json');
@@ -172,7 +172,7 @@ type QueueItem = FetcherConfig<any, any> & {
 };
 
 export class GraphQLClient {
-  private apiURL = '/graphql';
+  private url = '/graphql';
   private middleware: Middleware<any>[];
 
   private queryBachTimeout!: any; //NodeJS.Timer;
@@ -185,13 +185,13 @@ export class GraphQLClient {
   private timeoutLimit = 50;
 
   constructor(config: {
-    apiURL?: string;
+    url?: string;
     middleware?: Middleware | Middleware[];
   }) {
     this.middleware = ensureArray(config.middleware);
 
-    if (config.apiURL) {
-      this.apiURL = config.apiURL;
+    if (config.url) {
+      this.url = config.url;
     }
   }
 
@@ -247,7 +247,7 @@ export class GraphQLClient {
     }`;
 
     queryFetcher<any, any>(finalVariables, {
-      apiURL: this.apiURL,
+      url: this.url,
       query
     }).then(ctx => {
       if (ctx.result) {
@@ -266,7 +266,7 @@ export class GraphQLClient {
       : 'mutation';
 
     const queueItem: QueueItem = {
-      apiURL: this.apiURL,
+      url: this.url,
       ..._config,
       middleware: [...this.middleware, ...ensureArray(_config.middleware)],
       resolver: null,
@@ -319,7 +319,7 @@ export class GraphQLClient {
       config: Partial<FetcherConfig<QueryCitiesArgs, Query['cities']>> = {}
     ) => {
       return this.exec<QueryCitiesArgs, Maybe<Query['cities']>>(variables, {
-        apiURL: this.apiURL,
+        url: this.url,
         entityName: 'City',
         schemaKey: 'cities',
         query: query.cities(config.fragment),
@@ -336,7 +336,7 @@ export class GraphQLClient {
       return this.exec<QueryCreateCityArgs, Maybe<Query['createCity']>>(
         variables,
         {
-          apiURL: this.apiURL,
+          url: this.url,
           entityName: 'City',
           schemaKey: 'createCity',
           query: query.createCity(config.fragment),

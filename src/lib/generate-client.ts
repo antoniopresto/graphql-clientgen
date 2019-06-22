@@ -63,7 +63,7 @@ function mountClient(schema: GraphQLSchema, clientBase: string) {
         return this.exec<${info.argsTSName}, Maybe<${info.returnTSName}>>(${
       hasArgs ? 'variables, ' : 'undefined, '
     } {
-        apiURL: this.apiURL,
+        url: this.url,
         entityName: '${info.entityName}',
         schemaKey: '${info.schemaKey}',
         query: query.${info.schemaKey}(config.fragment), ...config});
@@ -129,7 +129,7 @@ function addTabs(str = '', n = 8) {
 const getClientBase = async () => {
   const dest = __dirname + '/clientbase.ts';
   const url =
-    'https://raw.githubusercontent.com/antoniopresto/graphql-clientgen/ba4cb94dfe076988879b48fee10c67189d1d44c8/src/lib/clientbase.ts';
+    'https://raw.githubusercontent.com/antoniopresto/graphql-clientgen/e68b1ddbd8b4098cece3bc12e042cf05b6b4d328/src/lib/clientbase.ts';
 
   if (fs.existsSync(dest)) {
     return fs.readFileSync(dest, 'utf8');
