@@ -29,6 +29,7 @@ export type FetcherConfig<V, R> = {
   middleware?: Middleware<V, R>[] | Middleware<V, R>;
   fragment?: string;
   querySuffix?: string;
+  cache?: boolean;
 };
 
 const queryFetcher = async function queryFetcher<Variables, Return>(
@@ -117,9 +118,14 @@ type QueueItem = {
   config: FetcherConfig<any, any>;
 };
 
+export type GraphQLClientConfig = {
+  url?: string;
+  middleware?: Middleware | Middleware[];
+};
+
 export class GraphQLClient {
-  private url = '/graphql';
-  private middleware: Middleware<any>[] = [];
+  url = '/graphql';
+  middleware: Middleware<any>[] = [];
 
   private queryBachTimeout!: any; //NodeJS.Timer;
   private mutationBachTimeout!: any; //NodeJS.Timer;
@@ -130,10 +136,7 @@ export class GraphQLClient {
   private queueLimit = 20;
   private timeoutLimit = 50;
 
-  constructor(config: {
-    url?: string;
-    middleware?: Middleware | Middleware[];
-  }) {
+  constructor(config: GraphQLClientConfig) {
     // apply global client instance middleware
     if (config.middleware) {
       const _instanceMiddleware = applyMiddleware(
@@ -318,7 +321,7 @@ function compose(...funcs: Middleware<any>[]) {
   return funcs.reduce((a, b) => (...args) => a(b(...args)));
 }
 
-const applyMiddleware = <V = any>(
+export const applyMiddleware = <V = any>(
   middleware: Middleware<V>[]
 ): Middleware<V> => {
   return (context: Context<V>) => {
@@ -326,7 +329,7 @@ const applyMiddleware = <V = any>(
   };
 };
 
-function ensureArray(el: any) {
+export function ensureArray(el: any) {
   if (!el) return [];
   if (Array.isArray(el)) return el;
   return [el];
