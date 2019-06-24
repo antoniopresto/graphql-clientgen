@@ -64,8 +64,7 @@ export async function main(cli: meow.Result): Promise<void> {
   });
 
   if (client.status === 'err') {
-    console.warn(client.message);
-    return;
+    throw new Error(client.message);
   }
 
   console.clear();

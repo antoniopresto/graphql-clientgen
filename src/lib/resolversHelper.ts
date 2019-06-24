@@ -20,6 +20,7 @@ export type ResolverStoreItem = {
   isSubscription: boolean;
   field: GraphQLField<any, any>;
   isNonNull: boolean;
+  kind: string // mutation, subscription, query
 };
 
 export type ResolversStore = Map<string, ResolverStoreItem>;
@@ -81,6 +82,8 @@ export function getResolversHelper(schema: GraphQLSchema) {
     if (isSubscription) {
       argsPrefix = 'Subscription';
     }
+    
+    const kind = argsPrefix.toLowerCase();
 
     let argsTSName = field.args.length
       ? `${argsPrefix}${upperFirst(camelCase(schemaKey))}Args`
@@ -100,7 +103,8 @@ export function getResolversHelper(schema: GraphQLSchema) {
       isQuery,
       isSubscription,
       field,
-      isNonNull
+      isNonNull,
+      kind
     };
 
     _resolversStore.set(schemaKey, item);

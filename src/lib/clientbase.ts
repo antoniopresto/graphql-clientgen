@@ -1,3 +1,9 @@
+export enum OpKind {
+  mutation = 'mutation',
+  query = 'query'
+  // subscription = 'subscription',
+}
+
 export enum Actions {
   complete = 'complete',
   abort = 'abort',
@@ -30,6 +36,7 @@ export type FetcherConfig<V, R> = {
   fragment?: string;
   querySuffix?: string;
   cache?: boolean;
+  kind: OpKind;
 };
 
 const queryFetcher = async function queryFetcher<Variables, Return>(
@@ -155,7 +162,7 @@ export class GraphQLClient {
     }
   }
 
-  private fetchQueue = (queue: QueueItem[], kind: 'mutation' | 'query') => {
+  private fetchQueue = (queue: QueueItem[], kind: OpKind) => {
     let batchMiddleware: Middleware<any>[] = [];
     let headers: Dict = {};
     let finalQueryBody = '';
@@ -210,7 +217,8 @@ export class GraphQLClient {
     queryFetcher<any, any>(finalVariables, {
       url: this.url,
       query,
-      middleware: batchMiddleware
+      middleware: batchMiddleware,
+      kind
     }).then(ctx => {
       Object.keys(resolverMap).forEach(key => {
         const { resolver, config, variables } = resolverMap[key];
@@ -235,9 +243,11 @@ export class GraphQLClient {
     _variables: V,
     _config: FetcherConfig<V, R>
   ): Promise<Context<V, R>> => {
-    const kind = _config.query.trim().startsWith('query')
-      ? 'query'
-      : 'mutation';
+    const { kind } = _config;
+
+    if (kind !== OpKind.mutation && kind !== OpKind.query) {
+      throw new Error(`invalid kind of operation: ${kind}`);
+    }
 
     const config = {
       ..._config,
@@ -270,13 +280,13 @@ export class GraphQLClient {
       queueItem.resolver = r;
     });
 
-    if (kind === 'query') {
+    if (kind === OpKind.query) {
       this.queryQueue.push(queueItem);
 
       const fulfill = () => {
         let queue = [...this.queryQueue];
         this.queryQueue = [];
-        this.fetchQueue(queue, 'query');
+        this.fetchQueue(queue, kind);
       };
 
       clearTimeout(this.queryBachTimeout);
@@ -285,13 +295,13 @@ export class GraphQLClient {
       if (this.queryQueue.length >= this.queueLimit) {
         fulfill();
       }
-    } else {
+    } else if (kind === OpKind.mutation) {
       this.mutationQueue.push(queueItem);
 
       const fulfill = () => {
         let queue = [...this.mutationQueue];
         this.mutationQueue = [];
-        this.fetchQueue(queue, 'mutation');
+        this.fetchQueue(queue, kind);
       };
 
       clearTimeout(this.mutationBachTimeout);

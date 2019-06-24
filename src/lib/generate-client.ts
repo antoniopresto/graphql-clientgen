@@ -67,6 +67,7 @@ function mountClient(schema: GraphQLSchema, clientBase: string) {
         entityName: '${info.entityName}',
         schemaKey: '${info.schemaKey}',
         query: query.${info.schemaKey}(config.fragment), ...config});
+        kind: '${info.kind}'
       },
     `;
 
@@ -128,13 +129,18 @@ function addTabs(str = '', n = 8) {
 
 const getClientBase = async () => {
   const dest = __dirname + '/clientbase.ts';
-  const url = 'https://raw.githubusercontent.com/antoniopresto/graphql-clientgen/f65fbbc30a15de875a8c387a48e2621b65bd9a38/src/lib/clientbase.ts';
+  const url =
+    'https://raw.githubusercontent.com/antoniopresto/graphql-clientgen/d2be9fc48ed272e169547aaf6dc88ee23a4e9bdd/src/lib/clientbase.ts';
 
   if (fs.existsSync(dest)) {
     return fs.readFileSync(dest, 'utf8');
   }
 
-  const response = await got(url);
+  const response = await got(url).catch((err: any) => {
+    console.log(err);
+    throw new Error(`failed to get ${url}`);
+  });
+
   fs.writeFileSync(dest, response.body);
   return response.body;
 };
