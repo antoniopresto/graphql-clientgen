@@ -1,10 +1,27 @@
 # graphql-clientgen
+>  [Work in progress]
 
 Generate typescript [client script](https://github.com/antoniopresto/graphql-clientgen/blob/master/examples/generated.ts#L73) with batch queries for graphql projects.
-One client-side method is generated for each query/mutation, with a default and customizable `fragment`:
+One client-side method is generated for each query/mutation, with a default and customizable `fragment`.
+
+## Basic usage
+1 ) `npm install --save graphql-clientgen` or `yarn add graphql-clientgen`
+
+2 ) Generate the client code:
+
+Insert this script in the `scripts` section in your package.json
+```json
+  "scripts": {
+    "get-client": "get-client http://localhost:3777/graphql > generated-client.ts",
+  }
+```
+then run: `npm run get-client`
+
+3) Using the generated code
 
 ```ts
-// using the generated GraphQLClient:
+import GraphQLClient from './generated-client.ts';
+
 const { client } = new GraphQLClient({
   url: "http://localhost:3777/graphql",
 });
@@ -19,17 +36,6 @@ client.posts({}); // Promise<Post[]>
 // but we can pass a custom fragment.
 client.posts({}, { fragment: `id title` }); // Promise<(Partial<Post>)[]>
 ```
-
-
-# [Work in progress]
-
-### Installation
-
-`npm install --save graphql-clientgen`
-or
-`yarn add graphql-clientgen`
-
-## Basic usage
 
 ### cli:
 
@@ -52,17 +58,6 @@ const { status, client } = await printFromEndpoint(
 );
 
 fs.writeFile(__dirname + '/client.ts', client);
-```
-
-### client
-
-```
-const { client } = new GraphQLClient({
-  apiURL: "http://localhost:3777/graphql",
-});
-
-client.posts({}); // Promise<Post[]>
-client.posts({}, {fragment: `id title`}); // Promise<(Partial<Post>)[]>
 ```
 
 [Complete generated code example](https://github.com/antoniopresto/graphql-clientgen/blob/master/client.ts#L152)
