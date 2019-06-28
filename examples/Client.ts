@@ -14,6 +14,7 @@ export const query = {
                   `
                         avatarUrl
                         description
+                        descriptionHtml
                         epicsEnabled
                         fullName
                         fullPath
@@ -45,6 +46,7 @@ export const query = {
                 ${fragment ||
                   `
                         description
+                        descriptionHtml
                         fullName
                         fullPath
                         id
@@ -67,6 +69,7 @@ export const query = {
                         containerRegistryEnabled
                         createdAt
                         description
+                        descriptionHtml
                         forksCount
                         fullPath
                         httpUrlToRepo
@@ -491,6 +494,8 @@ export type EpicIssue = Noteable & {
   confidential: Scalars['Boolean'];
   createdAt: Scalars['Time'];
   description?: Maybe<Scalars['String']>;
+  /** The GitLab Flavored Markdown rendering of `description` */
+  descriptionHtml?: Maybe<Scalars['String']>;
   designs?: Maybe<DesignCollection>;
   discussionLocked: Scalars['Boolean'];
   /** All discussions on this noteable */
@@ -509,6 +514,8 @@ export type EpicIssue = Noteable & {
   state: IssueState;
   taskCompletionStatus: TaskCompletionStatus;
   title: Scalars['String'];
+  /** The GitLab Flavored Markdown rendering of `title` */
+  titleHtml?: Maybe<Scalars['String']>;
   updatedAt: Scalars['Time'];
   upvotes: Scalars['Int'];
   userNotesCount: Scalars['Int'];
@@ -600,6 +607,8 @@ export type Group = {
   __typename?: 'Group';
   avatarUrl?: Maybe<Scalars['String']>;
   description?: Maybe<Scalars['String']>;
+  /** The GitLab Flavored Markdown rendering of `description` */
+  descriptionHtml?: Maybe<Scalars['String']>;
   epic?: Maybe<Epic>;
   epics?: Maybe<EpicConnection>;
   epicsEnabled?: Maybe<Scalars['Boolean']>;
@@ -661,6 +670,8 @@ export type Issue = Noteable & {
   confidential: Scalars['Boolean'];
   createdAt: Scalars['Time'];
   description?: Maybe<Scalars['String']>;
+  /** The GitLab Flavored Markdown rendering of `description` */
+  descriptionHtml?: Maybe<Scalars['String']>;
   designs?: Maybe<DesignCollection>;
   discussionLocked: Scalars['Boolean'];
   /** All discussions on this noteable */
@@ -677,6 +688,8 @@ export type Issue = Noteable & {
   state: IssueState;
   taskCompletionStatus: TaskCompletionStatus;
   title: Scalars['String'];
+  /** The GitLab Flavored Markdown rendering of `title` */
+  titleHtml?: Maybe<Scalars['String']>;
   updatedAt: Scalars['Time'];
   upvotes: Scalars['Int'];
   userNotesCount: Scalars['Int'];
@@ -769,6 +782,8 @@ export type Label = {
   __typename?: 'Label';
   color: Scalars['String'];
   description?: Maybe<Scalars['String']>;
+  /** The GitLab Flavored Markdown rendering of `description` */
+  descriptionHtml?: Maybe<Scalars['String']>;
   textColor: Scalars['String'];
   title: Scalars['String'];
 };
@@ -797,6 +812,8 @@ export type MergeRequest = Noteable & {
   createdAt: Scalars['Time'];
   defaultMergeCommitMessage?: Maybe<Scalars['String']>;
   description?: Maybe<Scalars['String']>;
+  /** The GitLab Flavored Markdown rendering of `description` */
+  descriptionHtml?: Maybe<Scalars['String']>;
   diffHeadSha?: Maybe<Scalars['String']>;
   /** All discussions on this noteable */
   discussions: DiscussionConnection;
@@ -833,6 +850,8 @@ export type MergeRequest = Noteable & {
   targetProjectId: Scalars['Int'];
   taskCompletionStatus: TaskCompletionStatus;
   title: Scalars['String'];
+  /** The GitLab Flavored Markdown rendering of `title` */
+  titleHtml?: Maybe<Scalars['String']>;
   updatedAt: Scalars['Time'];
   upvotes: Scalars['Int'];
   userNotesCount?: Maybe<Scalars['Int']>;
@@ -970,6 +989,8 @@ export type MutationMergeRequestSetWipArgs = {
 export type Namespace = {
   __typename?: 'Namespace';
   description?: Maybe<Scalars['String']>;
+  /** The GitLab Flavored Markdown rendering of `description` */
+  descriptionHtml?: Maybe<Scalars['String']>;
   fullName: Scalars['String'];
   fullPath: Scalars['ID'];
   id: Scalars['ID'];
@@ -995,6 +1016,8 @@ export type Note = {
   author: User;
   /** The content note itself */
   body: Scalars['String'];
+  /** The GitLab Flavored Markdown rendering of `note` */
+  bodyHtml?: Maybe<Scalars['String']>;
   createdAt: Scalars['Time'];
   /** The discussion this note is a part of */
   discussion?: Maybe<Discussion>;
@@ -1150,6 +1173,8 @@ export type Project = {
   containerRegistryEnabled?: Maybe<Scalars['Boolean']>;
   createdAt?: Maybe<Scalars['Time']>;
   description?: Maybe<Scalars['String']>;
+  /** The GitLab Flavored Markdown rendering of `description` */
+  descriptionHtml?: Maybe<Scalars['String']>;
   forksCount: Scalars['Int'];
   fullPath: Scalars['ID'];
   group?: Maybe<Group>;
@@ -1534,21 +1559,33 @@ export type UserEdge = {
   node?: Maybe<User>;
 };
 
-export enum Actions {
-  init = 'init',
-  complete = 'complete'
+export enum OpKind {
+  mutation = 'mutation',
+  query = 'query'
+  // subscription = 'subscription',
 }
 
-type Context<V, R = any> = {
+export enum Actions {
+  complete = 'complete',
+  abort = 'abort',
+  willQueue = 'willQueue',
+  initFetch = 'initFetch',
+  completeFetch = 'completeFetch'
+}
+
+export type Context<V = any, R = any> = {
   requestConfig: RequestInit;
   variables: V;
   config: FetcherConfig<V, R>;
   action: Actions;
   errors?: string[];
   result?: R | null;
+  querySuffix?: string;
 };
 
-type Middleware<V = any, R = any> = (config: Context<V, R>) => Context<V, R>;
+export type Middleware<V = any, R = any> = (
+  config: Context<V, R>
+) => Promise<Context<V, R>>;
 
 export type FetcherConfig<V, R> = {
   url: string;
@@ -1558,6 +1595,9 @@ export type FetcherConfig<V, R> = {
   schemaKey?: string;
   middleware?: Middleware<V, R>[] | Middleware<V, R>;
   fragment?: string;
+  querySuffix?: string;
+  cache?: boolean;
+  kind: OpKind;
 };
 
 const queryFetcher = async function queryFetcher<Variables, Return>(
@@ -1574,24 +1614,30 @@ const queryFetcher = async function queryFetcher<Variables, Return>(
     }
   };
 
-  const middleware: Middleware<Variables, Return> = config.middleware
-    ? applyMiddleware(ensureArray(config.middleware))
-    : ctx => ctx;
+  const middleware: Middleware<Variables, Return> =
+    typeof config.middleware === 'function'
+      ? config.middleware
+      : applyMiddleware(ensureArray(config.middleware));
 
-  const context = middleware({
+  const context = await middleware({
     requestConfig,
     variables,
     config,
-    action: Actions.init
+    action: Actions.initFetch,
+    querySuffix: config.querySuffix
   });
+
+  if (context.action === Actions.abort) {
+    return context;
+  }
 
   context.requestConfig.body = JSON.stringify({
     query: context.config.query,
     variables: context.variables
   });
 
-  return fetch(context.config.url, context.requestConfig).then(
-    async response => {
+  return fetch(context.config.url, context.requestConfig)
+    .then(async response => {
       const contentType = response.headers.get('Content-Type');
       const isJSON = contentType && contentType.startsWith('application/json');
 
@@ -1601,35 +1647,53 @@ const queryFetcher = async function queryFetcher<Variables, Return>(
         return middleware({
           ...context,
           result: null,
-          action: Actions.complete,
+          action: Actions.completeFetch,
           errors: [fetchError]
         });
       }
 
       let { errors, data } = await response.json();
 
+      if (errors && !Array.isArray(errors)) {
+        errors = [errors];
+      }
+
       return middleware({
         ...context,
         errors,
-        action: Actions.complete,
+        action: Actions.completeFetch,
         result: data ? (config.schemaKey ? data[config.schemaKey] : data) : null
       });
-    }
-  );
+    })
+    .catch(err => {
+      return middleware({
+        ...context,
+        errors: [err],
+        action: Actions.completeFetch,
+        result: null
+      });
+    });
 };
 
 export type QueryFetcher = typeof queryFetcher;
 
-type Resolver = (r: Context<any, any>) => void;
-type QueueItem = FetcherConfig<any, any> & {
+type Resolver = (r: ReturnType<Middleware<any>>) => void;
+
+type QueueItem = {
   resolver: Resolver | null;
   variables: Dict;
   kind: 'mutation' | 'query';
+  config: FetcherConfig<any, any>;
+};
+
+export type GraphQLClientConfig = {
+  url?: string;
+  middleware?: Middleware | Middleware[];
 };
 
 export class GraphQLClient {
-  private url = '/graphql';
-  private middleware: Middleware<any>[];
+  url = '/graphql';
+  middleware: Middleware<any>[] = [];
 
   private queryBachTimeout!: any; //NodeJS.Timer;
   private mutationBachTimeout!: any; //NodeJS.Timer;
@@ -1640,19 +1704,27 @@ export class GraphQLClient {
   private queueLimit = 20;
   private timeoutLimit = 50;
 
-  constructor(config: {
-    url?: string;
-    middleware?: Middleware | Middleware[];
-  }) {
-    this.middleware = ensureArray(config.middleware);
+  constructor(config: GraphQLClientConfig) {
+    // apply global client instance middleware
+    if (config.middleware) {
+      const _instanceMiddleware = applyMiddleware(
+        ensureArray(config.middleware)
+      );
+
+      this.middleware = [
+        function instanceMiddleware(ctx: Context<any, any>) {
+          return _instanceMiddleware(ctx);
+        }
+      ];
+    }
 
     if (config.url) {
       this.url = config.url;
     }
   }
 
-  private fetchQueue = (queue: QueueItem[], kind: 'mutation' | 'query') => {
-    let middleware: any[] = [];
+  private fetchQueue = (queue: QueueItem[], kind: OpKind) => {
+    let batchMiddleware: Middleware<any>[] = [];
     let headers: Dict = {};
     let finalQueryBody = '';
     let finalQueryHeader = '';
@@ -1661,16 +1733,17 @@ export class GraphQLClient {
 
     queue.forEach((q, key) => {
       const qiKey = `${kind}_${key}`;
-      let qiQuery = q.query;
+      let qiQuery = q.config.query;
       const qiHeader = getHeader(qiQuery.trim().split('\n')[0]);
       resolverMap[qiKey] = q;
 
-      if (q.middleware) {
-        middleware = middleware.concat(ensureArray(q.middleware));
+      if (q.config.middleware) {
+        const m = ensureArray(q.config.middleware);
+        batchMiddleware = batchMiddleware.concat(m);
       }
 
-      if (q.headers) {
-        headers = { ...headers, ...q.headers };
+      if (q.config.middleware) {
+        headers = { ...headers, ...q.config.headers };
       }
 
       if (q.variables) {
@@ -1704,27 +1777,61 @@ export class GraphQLClient {
 
     queryFetcher<any, any>(finalVariables, {
       url: this.url,
-      query
+      query,
+      middleware: batchMiddleware,
+      kind
     }).then(ctx => {
-      if (ctx.result) {
-        Object.keys(resolverMap).forEach(key => {
-          const { resolver } = resolverMap[key];
-          if (!resolver) return;
-          resolver({ ...ctx, result: ctx.result[key] });
-        });
-      }
+      Object.keys(resolverMap).forEach(key => {
+        const { resolver, config, variables } = resolverMap[key];
+        if (!resolver) return;
+        const middleware = applyMiddleware(ensureArray(config.middleware));
+
+        resolver(
+          middleware({
+            ...ctx,
+            result: ctx.result ? ctx.result[key] : null,
+            action: Actions.complete,
+            variables,
+            config: config,
+            querySuffix: key
+          })
+        );
+      });
     });
   };
 
-  exec = <V, R>(_variables: V, _config: FetcherConfig<V, R>) => {
-    const kind = _config.query.trim().startsWith('query')
-      ? 'query'
-      : 'mutation';
+  exec = async <V, R>(
+    _variables: V,
+    _config: FetcherConfig<V, R>
+  ): Promise<Context<V, R>> => {
+    const { kind } = _config;
 
-    const queueItem: QueueItem = {
-      url: this.url,
+    if (kind !== OpKind.mutation && kind !== OpKind.query) {
+      throw new Error(`invalid kind of operation: ${kind}`);
+    }
+
+    const config = {
       ..._config,
-      middleware: [...this.middleware, ...ensureArray(_config.middleware)],
+      url: this.url,
+      middleware: [...this.middleware, ...ensureArray(_config.middleware)]
+    };
+
+    const context = await applyMiddleware(config.middleware as [])({
+      requestConfig: {},
+      variables: _variables,
+      config,
+      action: Actions.willQueue
+      // errors?: string[];
+      // result?: R | null;
+      // querySuffix?: string;
+    });
+
+    if (context.action === Actions.abort) {
+      return Promise.resolve(context);
+    }
+
+    let queueItem: QueueItem = {
+      config: context.config,
       resolver: null,
       variables: _variables,
       kind
@@ -1734,13 +1841,13 @@ export class GraphQLClient {
       queueItem.resolver = r;
     });
 
-    if (kind === 'query') {
+    if (kind === OpKind.query) {
       this.queryQueue.push(queueItem);
 
       const fulfill = () => {
         let queue = [...this.queryQueue];
         this.queryQueue = [];
-        this.fetchQueue(queue, 'query');
+        this.fetchQueue(queue, kind);
       };
 
       clearTimeout(this.queryBachTimeout);
@@ -1749,13 +1856,13 @@ export class GraphQLClient {
       if (this.queryQueue.length >= this.queueLimit) {
         fulfill();
       }
-    } else {
+    } else if (kind === OpKind.mutation) {
       this.mutationQueue.push(queueItem);
 
       const fulfill = () => {
         let queue = [...this.mutationQueue];
         this.mutationQueue = [];
-        this.fetchQueue(queue, 'mutation');
+        this.fetchQueue(queue, kind);
       };
 
       clearTimeout(this.mutationBachTimeout);
@@ -1769,119 +1876,85 @@ export class GraphQLClient {
     return promise;
   };
 
-  client = {
-    echo: (
-      variables: QueryEchoArgs,
-      config: Partial<FetcherConfig<QueryEchoArgs, Query['echo']>> = {}
-    ) => {
-      return this.exec<QueryEchoArgs, Query['echo']>(variables, {
+  methods: Methods = {
+    echo: (variables, config) => {
+      return this.exec(variables, {
         url: this.url,
         entityName: 'String',
         schemaKey: 'echo',
-        query: query.echo(config.fragment),
+        query: query.echo(config ? config.fragment : undefined),
+        kind: OpKind.query,
         ...config
       });
     },
 
-    group: (
-      variables: QueryGroupArgs,
-      config: Partial<FetcherConfig<QueryGroupArgs, Maybe<Query['group']>>> = {}
-    ) => {
-      return this.exec<QueryGroupArgs, Maybe<Query['group']>>(variables, {
+    group: (variables, config) => {
+      return this.exec(variables, {
         url: this.url,
         entityName: 'Group',
         schemaKey: 'group',
-        query: query.group(config.fragment),
+        query: query.group(config ? config.fragment : undefined),
+        kind: OpKind.query,
         ...config
       });
     },
 
-    metadata: (
-      config: Partial<FetcherConfig<{}, Maybe<Query['metadata']>>> = {}
-    ) => {
-      return this.exec<{}, Maybe<Query['metadata']>>(
+    metadata: ({}, config) => {
+      return this.exec(
         {},
         {
           url: this.url,
           entityName: 'Metadata',
           schemaKey: 'metadata',
-          query: query.metadata(config.fragment),
+          query: query.metadata(config ? config.fragment : undefined),
+          kind: OpKind.query,
           ...config
         }
       );
     },
 
-    namespace: (
-      variables: QueryNamespaceArgs,
-      config: Partial<
-        FetcherConfig<QueryNamespaceArgs, Maybe<Query['namespace']>>
-      > = {}
-    ) => {
-      return this.exec<QueryNamespaceArgs, Maybe<Query['namespace']>>(
-        variables,
-        {
-          url: this.url,
-          entityName: 'Namespace',
-          schemaKey: 'namespace',
-          query: query.namespace(config.fragment),
-          ...config
-        }
-      );
+    namespace: (variables, config) => {
+      return this.exec(variables, {
+        url: this.url,
+        entityName: 'Namespace',
+        schemaKey: 'namespace',
+        query: query.namespace(config ? config.fragment : undefined),
+        kind: OpKind.query,
+        ...config
+      });
     },
 
-    project: (
-      variables: QueryProjectArgs,
-      config: Partial<
-        FetcherConfig<QueryProjectArgs, Maybe<Query['project']>>
-      > = {}
-    ) => {
-      return this.exec<QueryProjectArgs, Maybe<Query['project']>>(variables, {
+    project: (variables, config) => {
+      return this.exec(variables, {
         url: this.url,
         entityName: 'Project',
         schemaKey: 'project',
-        query: query.project(config.fragment),
+        query: query.project(config ? config.fragment : undefined),
+        kind: OpKind.query,
         ...config
       });
     },
 
-    designManagementUpload: (
-      variables: MutationDesignManagementUploadArgs,
-      config: Partial<
-        FetcherConfig<
-          MutationDesignManagementUploadArgs,
-          Maybe<Mutation['designManagementUpload']>
-        >
-      > = {}
-    ) => {
-      return this.exec<
-        MutationDesignManagementUploadArgs,
-        Maybe<Mutation['designManagementUpload']>
-      >(variables, {
+    designManagementUpload: (variables, config) => {
+      return this.exec(variables, {
         url: this.url,
         entityName: 'DesignManagementUploadPayload',
         schemaKey: 'designManagementUpload',
-        query: query.designManagementUpload(config.fragment),
+        query: query.designManagementUpload(
+          config ? config.fragment : undefined
+        ),
+        kind: OpKind.mutation,
         ...config
       });
     },
 
-    mergeRequestSetWip: (
-      variables: MutationMergeRequestSetWipArgs,
-      config: Partial<
-        FetcherConfig<
-          MutationMergeRequestSetWipArgs,
-          Maybe<Mutation['mergeRequestSetWip']>
-        >
-      > = {}
-    ) => {
-      return this.exec<
-        MutationMergeRequestSetWipArgs,
-        Maybe<Mutation['mergeRequestSetWip']>
-      >(variables, {
+    mergeRequestSetWip: (variables, config) => {
+      return this.exec(variables, {
         url: this.url,
         entityName: 'MergeRequestSetWipPayload',
         schemaKey: 'mergeRequestSetWip',
-        query: query.mergeRequestSetWip(config.fragment),
+        query: query.mergeRequestSetWip(config ? config.fragment : undefined),
+        kind: OpKind.mutation,
         ...config
       });
     }
@@ -1889,27 +1962,30 @@ export class GraphQLClient {
 }
 
 // compose(f, g, h) is identical to doing (...args) => f(g(h(...args))).
-function compose(...funcs: Middleware<any>[]) {
-  if (funcs.length === 0) {
-    return (arg: any) => arg;
+function compose(funcs: Middleware<any>[]) {
+  if (!Array.isArray(funcs) || funcs.length === 0) {
+    return (arg => Promise.resolve(arg)) as Middleware<any>;
   }
 
   if (funcs.length === 1) {
     return funcs[0];
   }
 
-  return funcs.reduce((a, b) => (...args) => a(b(...args)));
+  return funcs.reduce((a, b) => async context => {
+    return await a(await b(context));
+    // return await a(await b(cloneDeep(context)));
+  });
 }
 
-const applyMiddleware = <V = any>(
+export const applyMiddleware = <V = any>(
   middleware: Middleware<V>[]
 ): Middleware<V> => {
   return (context: Context<V>) => {
-    return compose(...middleware)(context);
+    return compose(middleware)(context);
   };
 };
 
-function ensureArray(el: any) {
+export function ensureArray(el: any) {
   if (!el) return [];
   if (Array.isArray(el)) return el;
   return [el];
@@ -1925,4 +2001,37 @@ function getHeader(str: string) {
   );
 }
 
-type Dict = { [key: string]: any };
+export type Dict<T = any> = { [key: string]: T };
+
+export type Method<
+  Variables = any,
+  ReturnType = any,
+  Config = Partial<FetcherConfig<Variables, ReturnType | undefined | null>>
+> = (
+  variables: Variables,
+  config?: Config
+) => Promise<Context<Variables, ReturnType | undefined | null>>;
+
+type MethodsDict = { [key: string]: Method };
+
+export interface Methods extends MethodsDict {
+  echo: Method<QueryEchoArgs, Query['echo']>;
+
+  group: Method<QueryGroupArgs, Maybe<Query['group']>>;
+
+  metadata: Method<{}, Maybe<Query['metadata']>>;
+
+  namespace: Method<QueryNamespaceArgs, Maybe<Query['namespace']>>;
+
+  project: Method<QueryProjectArgs, Maybe<Query['project']>>;
+
+  designManagementUpload: Method<
+    MutationDesignManagementUploadArgs,
+    Maybe<Mutation['designManagementUpload']>
+  >;
+
+  mergeRequestSetWip: Method<
+    MutationMergeRequestSetWipArgs,
+    Maybe<Mutation['mergeRequestSetWip']>
+  >;
+}

@@ -4,7 +4,7 @@ import { printClient } from '../lib/generate-client';
 import { getClient, getJSFile, getTSFile, TEST_API } from '../dev/helpers';
 
 test('generate file from schema (smoke test)', async t => {
-  const client = await printClient(schema);
+  const { client } = await printClient(schema);
   t.is(client.length > 9000, true);
 });
 

@@ -1,6 +1,7 @@
 import { plugin as tsPlugin } from '@graphql-codegen/typescript';
 import { GraphQLSchema } from 'graphql';
 import fs from 'fs';
+import path from 'path';
 
 import { generateQuery } from './expand-client-fields';
 import { getResolversHelper } from './resolversHelper';
@@ -20,9 +21,9 @@ function mountClient(schema: GraphQLSchema, clientBase: string) {
     export const query = {
   `;
 
-  let actionsBody = `
-    client = {
-  `;
+  let methodsType = ``;
+
+  let actionsBody = ``;
 
   storeItems.forEach(info => {
     let clientEntry = ``;
@@ -49,32 +50,31 @@ function mountClient(schema: GraphQLSchema, clientBase: string) {
       `;
 
     const hasArgs = !!info.field.args.length;
-    let variablesDeclaration = '';
+    let variablesDeclaration = '{}, ';
     if (hasArgs) {
-      variablesDeclaration = `variables: ${info.argsTSName}, `;
+      variablesDeclaration = `variables, `;
     }
 
+    methodsType += `
+      ${info.schemaKey} : Method<${info.argsTSName}, ${info.returnTSName}>;
+    `;
+
     clientEntry += `
-      ${
-        info.schemaKey
-      }: (${variablesDeclaration}config: Partial<FetcherConfig<${
-      info.argsTSName
-    }, ${info.returnTSName}>> = {}) => {
-        return this.exec<${info.argsTSName}, ${info.returnTSName}>(${
-      hasArgs ? 'variables, ' : '{}, '
-    } {
+      ${info.schemaKey}: (${variablesDeclaration}config) => {
+        return this.exec(${hasArgs ? 'variables, ' : '{}, '} {
         url: this.url,
         entityName: '${info.entityName}',
         schemaKey: '${info.schemaKey}',
-        query: query.${info.schemaKey}(config.fragment), ...config});
-        kind: '${info.kind}'
+        query: query.${info.schemaKey}(config ? config.fragment : undefined),
+        kind: OpKind.${info.kind},
+        ...config
+        });
+        
       },
     `;
 
     actionsBody += clientEntry;
   });
-
-  actionsBody += '}'; // close client
 
   // prepend queries
   prependBody += `
@@ -84,7 +84,9 @@ function mountClient(schema: GraphQLSchema, clientBase: string) {
 
   return {
     prependBody,
-    clientBody: clientBase.replace('//[actions]//', actionsBody),
+    clientBody: clientBase
+      .replace('//[methods]//', actionsBody)
+      .replace('//[methodsType]//', methodsType),
     query: [...queryHelpers.values()].reduce(
       (prev, next) => `${prev}\n\n ${next.query}`,
       ''
@@ -93,7 +95,7 @@ function mountClient(schema: GraphQLSchema, clientBase: string) {
 }
 
 export async function printClient(schema: GraphQLSchema) {
-  const clientBase = await getClientBase();
+  const base = await getClientBase();
 
   const tsTypes = await tsPlugin(schema, [], {});
 
@@ -102,9 +104,9 @@ export async function printClient(schema: GraphQLSchema) {
       ? tsTypes
       : (tsTypes.prepend || []).join('\n') + '\n\n' + tsTypes.content;
 
-  const { prependBody, clientBody } = mountClient(schema, clientBase);
+  const { prependBody, clientBody } = mountClient(schema, base.client);
 
-  return prettify(
+  const client = await prettify(
     'client.ts',
     `
       ${prependBody}
@@ -112,6 +114,11 @@ export async function printClient(schema: GraphQLSchema) {
       ${clientBody}
      `
   );
+
+  return {
+    ...base,
+    client
+  };
 }
 
 function addTabs(str = '', n = 8) {
@@ -127,20 +134,16 @@ function addTabs(str = '', n = 8) {
     .join('\n');
 }
 
+const basePath = path.resolve(__dirname, '../../template');
+
 const getClientBase = async () => {
-  const dest = __dirname + '/clientbase.ts';
-  const url =
-    'https://raw.githubusercontent.com/antoniopresto/graphql-clientgen/d2be9fc48ed272e169547aaf6dc88ee23a4e9bdd/src/lib/clientbase.ts';
+  const client = fs.readFileSync(basePath + '/Client.ts', 'utf8');
+  const provider = fs.readFileSync(basePath + '/Provider.tsx', 'utf8');
+  const store = fs.readFileSync(basePath + '/Store.tsx', 'utf8');
 
-  if (fs.existsSync(dest)) {
-    return fs.readFileSync(dest, 'utf8');
-  }
-
-  const response = await got(url).catch((err: any) => {
-    console.log(err);
-    throw new Error(`failed to get ${url}`);
-  });
-
-  fs.writeFileSync(dest, response.body);
-  return response.body;
+  return {
+    client,
+    provider,
+    store
+  };
 };

@@ -12,7 +12,7 @@ export enum Actions {
   completeFetch = 'completeFetch'
 }
 
-export type Context<V, R = any> = {
+export type Context<V = any, R = any> = {
   requestConfig: RequestInit;
   variables: V;
   config: FetcherConfig<V, R>;
@@ -24,7 +24,7 @@ export type Context<V, R = any> = {
 
 export type Middleware<V = any, R = any> = (
   config: Context<V, R>
-) => Context<V, R>;
+) => Promise<Context<V, R>>;
 
 export type FetcherConfig<V, R> = {
   url: string;
@@ -58,7 +58,7 @@ const queryFetcher = async function queryFetcher<Variables, Return>(
       ? config.middleware
       : applyMiddleware(ensureArray(config.middleware));
 
-  const context = middleware({
+  const context = await middleware({
     requestConfig,
     variables,
     config,
@@ -116,7 +116,7 @@ const queryFetcher = async function queryFetcher<Variables, Return>(
 
 export type QueryFetcher = typeof queryFetcher;
 
-type Resolver = (r: Context<any, any>) => void;
+type Resolver = (r: ReturnType<Middleware<any>>) => void;
 
 type QueueItem = {
   resolver: Resolver | null;
@@ -239,7 +239,7 @@ export class GraphQLClient {
     });
   };
 
-  exec = <V, R>(
+  exec = async <V, R>(
     _variables: V,
     _config: FetcherConfig<V, R>
   ): Promise<Context<V, R>> => {
@@ -255,7 +255,7 @@ export class GraphQLClient {
       middleware: [...this.middleware, ...ensureArray(_config.middleware)]
     };
 
-    const context = applyMiddleware(config.middleware as [])({
+    const context = await applyMiddleware(config.middleware as [])({
       requestConfig: {},
       variables: _variables,
       config,
@@ -315,27 +315,32 @@ export class GraphQLClient {
     return promise;
   };
 
-  //[actions]//
+  methods: Methods = {
+    //[methods]//
+  }
 }
 
 // compose(f, g, h) is identical to doing (...args) => f(g(h(...args))).
-function compose(...funcs: Middleware<any>[]) {
-  if (funcs.length === 0) {
-    return (arg: any) => arg;
+function compose(funcs: Middleware<any>[]) {
+  if (!Array.isArray(funcs) || funcs.length === 0) {
+    return (arg => Promise.resolve(arg)) as Middleware<any>;
   }
 
   if (funcs.length === 1) {
     return funcs[0];
   }
 
-  return funcs.reduce((a, b) => (...args) => a(b(...args)));
+  return funcs.reduce((a, b) => async context => {
+    return await a(await b(context));
+    // return await a(await b(cloneDeep(context)));
+  });
 }
 
 export const applyMiddleware = <V = any>(
   middleware: Middleware<V>[]
 ): Middleware<V> => {
   return (context: Context<V>) => {
-    return compose(...middleware)(context);
+    return compose(middleware)(context);
   };
 };
 
@@ -355,4 +360,19 @@ function getHeader(str: string) {
   );
 }
 
-type Dict = { [key: string]: any };
+export type Dict<T = any> = { [key: string]: T };
+
+export type Method<
+  Variables = any,
+  ReturnType = any,
+  Config = Partial<FetcherConfig<Variables, ReturnType | undefined | null>>
+> = (
+  variables: Variables,
+  config?: Config
+) => Promise<Context<Variables, ReturnType | undefined | null>>;
+
+type MethodsDict = {[key: string]: Method};
+
+export interface Methods extends MethodsDict {
+  //[methodsType]//
+}

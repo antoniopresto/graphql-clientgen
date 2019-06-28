@@ -20,7 +20,7 @@ export async function getJSFile(tsContet: string) {
 }
 
 export async function getTSFile() {
-  const client = await printFromEndpoint(TEST_API);
+  const client = await printFromEndpoint('http://localhost:3777');
   if (client.status !== 'ok') {
     throw new Error(client.message);
   }

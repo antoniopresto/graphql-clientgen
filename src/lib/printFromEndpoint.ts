@@ -10,7 +10,7 @@ type Options = {
 };
 
 type Return =
-  | { status: 'ok'; client: string }
+  | { status: 'ok'; client: string, provider: string, store: string }
   | { status: 'err'; message: string };
 
 export async function printFromEndpoint(
@@ -29,9 +29,9 @@ export async function printFromEndpoint(
   try {
     const source = new Source(response.schema);
     const gqlSchema = buildSchema(source);
-    const client = await printClient(gqlSchema);
+    const { client, provider, store } = await printClient(gqlSchema);
 
-    return { status: 'ok', client };
+    return { status: 'ok', client, provider, store };
   } catch (e) {
     return { status: 'err', message: e.message };
   }

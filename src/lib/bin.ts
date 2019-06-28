@@ -3,11 +3,13 @@
 import meow from 'meow';
 import { printFromEndpoint } from './printFromEndpoint';
 import qs from 'querystring';
+import fs from 'fs-extra';
+import path from 'path';
 
 const cli = meow(
   `
 Usage: 
-  $ graphql-clientgen ENDPOINT_URL > client.ts
+  $ graphql-clientgen ENDPOINT_URL destination-folder/
   
   Fetch and print the GraphQL Client from a GraphQL HTTP endpoint.
   
@@ -40,12 +42,20 @@ if (process.env.NODE_ENV !== 'test') main(cli);
  */
 export async function main(cli: meow.Result): Promise<void> {
   /* Get remote endpoint from args */
-  const [endpoint] = cli.input;
+  let [endpoint, destination] = cli.input;
 
   if (!endpoint) {
     console.warn('No endpoint provided');
     return;
   }
+
+  if (!destination) {
+    destination = process.cwd() + '/generated';
+  }
+
+  const folder = path.resolve(destination);
+
+  await fs.mkdirp(folder);
 
   /* Headers */
   const defaultHeaders = {
@@ -67,8 +77,18 @@ export async function main(cli: meow.Result): Promise<void> {
     throw new Error(client.message);
   }
 
-  console.clear();
-  console.log(client.client);
+  const clientPath = `${folder}/Client.ts`;
+  const providerPath = `${folder}/Provider.tsx`;
+  const storePath = `${folder}/Store.tsx`;
+
+  console.log(`writing ${clientPath}`);
+  fs.writeFileSync(clientPath, client.client);
+
+  console.log(`writing ${providerPath}`);
+  fs.writeFileSync(providerPath, client.provider);
+
+  console.log(`writing ${storePath}`);
+  fs.writeFileSync(storePath, client.store);
 }
 
 export function getHeadersFromInput(cli: meow.Result) {
