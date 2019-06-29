@@ -1,7 +1,7 @@
 import test from 'ava';
 import { schema } from '../dev/schema-demo';
 import { printClient } from '../lib/generate-client';
-import { getClient, getJSFile, getTSFile, TEST_API } from '../dev/helpers';
+import { getClient, transpileTSSource, getTSFile } from '../dev/helpers';
 
 test('generate file from schema (smoke test)', async t => {
   const { client } = await printClient(schema);
@@ -15,7 +15,7 @@ test('generate file remote host (smoke test)', async t => {
 
 test('generate js', async t => {
   const tsContent = await getTSFile();
-  const js = await getJSFile(tsContent);
+  const js = await transpileTSSource(tsContent);
   t.is(js.length > 5000, true);
 });
 

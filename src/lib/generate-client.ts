@@ -7,8 +7,6 @@ import { generateQuery } from './expand-client-fields';
 import { getResolversHelper } from './resolversHelper';
 import { prettify } from '../utils/prettify';
 
-const got = require('got');
-
 function mountClient(schema: GraphQLSchema, clientBase: string) {
   let prependBody = '';
 

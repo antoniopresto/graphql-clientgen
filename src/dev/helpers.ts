@@ -7,7 +7,7 @@ global.fetch = require('node-fetch');
 
 export const TEST_API = 'https://gitlab.com/api/graphql';
 
-export async function getJSFile(tsContet: string) {
+export async function transpileTSSource(tsContet: string) {
   const tsConfigText = fs.readFileSync(
     process.cwd() + '/tsconfig.json',
     'utf8'
@@ -20,7 +20,7 @@ export async function getJSFile(tsContet: string) {
 }
 
 export async function getTSFile() {
-  const client = await printFromEndpoint('http://localhost:3777');
+  const client = await printFromEndpoint(TEST_API);
   if (client.status !== 'ok') {
     throw new Error(client.message);
   }
@@ -29,7 +29,7 @@ export async function getTSFile() {
 
 export async function getClient() {
   const tsContent = await getTSFile();
-  const js = await getJSFile(tsContent);
+  const js = await transpileTSSource(tsContent);
   const Client = eval(js);
   const { client } = new Client({ url: TEST_API });
   return client;

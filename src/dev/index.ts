@@ -1,9 +1,10 @@
 import shell from 'shelljs';
-import fs from 'fs';
-import { schema } from './schema-demo';
-import { printClient } from '../index';
-import { getClient, getTSFile, TEST_API } from './helpers';
+// import fs from 'fs';
+// import { schema } from './schema-demo';
+// import { printClient } from '../index';
+// import { getClient, getTSFile, TEST_API } from './helpers';
 import { GraphQLClient } from './generated-remote';
+import { TEST_API } from './helpers';
 
 const destPath = process.cwd() + '/examples';
 // (async () => {
