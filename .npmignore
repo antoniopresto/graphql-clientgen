@@ -12,3 +12,5 @@ build/docs
 coverage
 .nyc_output
 *.log
+build/main/dev
+build/module/dev
