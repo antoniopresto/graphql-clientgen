@@ -81,19 +81,19 @@
 				<p>3) Using the generated code</p>
 				<pre><code class="language-ts"><span class="hljs-keyword">import</span> GraphQLClient <span class="hljs-keyword">from</span> <span class="hljs-string">'./Client.ts'</span>;
 
-<span class="hljs-keyword">const</span> { client } = <span class="hljs-keyword">new</span> GraphQLClient({
+<span class="hljs-keyword">const</span> { methods } = <span class="hljs-keyword">new</span> GraphQLClient({
   url: <span class="hljs-string">"http://localhost:3777/graphql"</span>,
 });
 
 <span class="hljs-comment">// assuming there is a query called findUser, the generated code will accept</span>
 <span class="hljs-comment">// arguments for the corresponding input type</span>
-client.findUser({ filter: { name: <span class="hljs-string">'Maggie'</span> } }); <span class="hljs-comment">// Promise&lt;Maybe&lt;User&gt;&gt;</span>
+methods.findUser({ filter: { name: <span class="hljs-string">'Maggie'</span> } }); <span class="hljs-comment">// Promise&lt;Maybe&lt;User&gt;&gt;</span>
 
-client.posts({}); <span class="hljs-comment">// Promise&lt;Post[]&gt;</span>
+methods.posts({}); <span class="hljs-comment">// Promise&lt;Post[]&gt;</span>
 
 <span class="hljs-comment">// one default query is generated for each query/mutation,</span>
 <span class="hljs-comment">// but we can pass a custom fragment.</span>
-client.posts({}, { fragment: <span class="hljs-string">`id title`</span> }); <span class="hljs-comment">// Promise&lt;(Partial&lt;Post&gt;)[]&gt;</span></code></pre>
+methods.posts({}, { fragment: <span class="hljs-string">`id title`</span> }); <span class="hljs-comment">// Promise&lt;(Partial&lt;Post&gt;)[]&gt;</span></code></pre>
 				<h3 id="cli-">cli:</h3>
 				<p><code>$ get-client http://localhost:3777/graphql</code></p>
 				<p><code>$ get-client --help</code></p>
