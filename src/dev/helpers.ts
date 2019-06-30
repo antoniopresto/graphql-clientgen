@@ -7,7 +7,8 @@ global.fetch = require('node-fetch');
 
 export const TEST_API = 'https://gitlab.com/api/graphql';
 
-export async function transpileTSSource(tsContet: string) {
+// return a GraphQLClient class from a ts source text
+export async function transpileTSSource(tsContent: string) {
   const tsConfigText = fs.readFileSync(
     process.cwd() + '/tsconfig.json',
     'utf8'
@@ -15,8 +16,15 @@ export async function transpileTSSource(tsContet: string) {
   let config: any = {};
   eval(`config = ${tsConfigText}`);
   config.compilerOptions.inlineSourceMap = false;
-  let result = ts.transpileModule(tsContet, config);
-  return result.outputText;
+  const js = ts.transpile(tsContent, config);
+
+  const GraphQLClient = new Function(`
+    const exports = {};
+    ${js};
+    return GraphQLClient;
+  `);
+
+  return GraphQLClient();
 }
 
 export async function getTSFile() {
@@ -27,10 +35,9 @@ export async function getTSFile() {
   return client.client;
 }
 
-export async function getClient() {
+export async function getMethodsFromEndpoint(url = TEST_API) {
   const tsContent = await getTSFile();
-  const js = await transpileTSSource(tsContent);
-  const Client = eval(js);
-  const { client } = new Client({ url: TEST_API });
-  return client;
+  const GraphQLClient = await transpileTSSource(tsContent);
+  const { methods } = new GraphQLClient({ url });
+  return methods;
 }
