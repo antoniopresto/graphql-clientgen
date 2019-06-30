@@ -135,7 +135,6 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
-  /** Time represented in ISO 8601 */
   Time: any;
   Upload: any;
 };

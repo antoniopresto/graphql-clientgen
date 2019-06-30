@@ -68,8 +68,7 @@ export async function main(cli: meow.Result): Promise<void> {
   const client = await printFromEndpoint(endpoint, {
     fetchOptions: {
       method: cli.flags.method,
-      headers,
-      json: cli.flags.json
+      headers
     }
   });
 
