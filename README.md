@@ -22,19 +22,19 @@ then run: `npm run get-client`
 ```ts
 import GraphQLClient from './Client.ts';
 
-const { client } = new GraphQLClient({
+const { methods } = new GraphQLClient({
   url: "http://localhost:3777/graphql",
 });
 
 // assuming there is a query called findUser, the generated code will accept
 // arguments for the corresponding input type
-client.findUser({ filter: { name: 'Maggie' } }); // Promise<Maybe<User>>
+methods.findUser({ filter: { name: 'Maggie' } }); // Promise<Maybe<User>>
 
-client.posts({}); // Promise<Post[]>
+methods.posts({}); // Promise<Post[]>
 
 // one default query is generated for each query/mutation,
 // but we can pass a custom fragment.
-client.posts({}, { fragment: `id title` }); // Promise<(Partial<Post>)[]>
+methods.posts({}, { fragment: `id title` }); // Promise<(Partial<Post>)[]>
 ```
 
 ### cli:
