@@ -99,3 +99,87 @@ test('should mount node with Provider', t => {
   );
 });
 
+test('should get store from useClient', t => {
+  const { Provider, Client, useClient } = imported;
+  const client = new Client({ url: TEST_API });
+
+  const Child = () => {
+    const [, , store] = useClient('echo');
+    return <div>{Object.keys(store.client.methods).join('')}</div>;
+  };
+
+  const wrapper = mount(
+    <Provider client={client}>
+      <Child />
+    </Provider>
+  );
+
+  t.is(
+    wrapper.find('div').getDOMNode().innerHTML,
+    Object.keys(client.methods).join('')
+  );
+
+  t.is(Object.keys(client.methods).length > 1, true);
+});
+
+test('should get response from useClient', async t => {
+  const { Provider, Client, useClient } = imported;
+  const client = new Client({ url: TEST_API });
+  let resolve: Function;
+  const promise = new Promise(r => (resolve = r));
+
+  const Child = () => {
+    const [state] = useClient('echo', { variables: { text: 'hey' } });
+
+    React.useEffect(() => {
+      if (state.result) {
+        resolve(state);
+      }
+    }, [state.loading]);
+
+    return <div>{state.result}</div>;
+  };
+
+  const wrapper = mount(
+    <Provider client={client}>
+      <Child />
+    </Provider>
+  );
+
+  await promise;
+
+  t.is(wrapper.getDOMNode().innerHTML, 'nil says: hey');
+});
+
+test('should render only 3 times', async t => {
+  const { Provider, Client, useClient } = imported;
+  const client = new Client({ url: TEST_API });
+  let resolve: Function;
+  const promise = new Promise(r => (resolve = r));
+  let renderCount = 0;
+
+  const Child = () => {
+    const [state] = useClient('echo', { variables: { text: 'hey' } });
+
+    React.useEffect(() => {
+      if (state.result) {
+        resolve(state);
+      }
+    }, [state.loading]);
+
+    renderCount++;
+    
+    return <div>{state.result}</div>;
+  };
+
+  const wrapper = mount(
+    <Provider client={client}>
+      <Child />
+    </Provider>
+  );
+
+  await promise;
+
+  t.is(wrapper.getDOMNode().innerHTML, 'nil says: hey');
+  t.is(renderCount, 3);
+});
