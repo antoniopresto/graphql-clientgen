@@ -24,11 +24,10 @@ export class GraphQLProvider extends React.Component<Props> {
   }
 
   render() {
-    return (
-      <GraphQLStoreContext.Provider value={this.store}>
-        {this.props.children}
-      </GraphQLStoreContext.Provider>
-    );
+    return React.createElement(GraphQLStoreContext.Provider, {
+      children: this.props.children,
+      value: this.store
+    });
   }
 }
 

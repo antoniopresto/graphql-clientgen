@@ -3,7 +3,7 @@ import { schema } from '../dev/schema-demo';
 import { printClient } from '../lib/generate-client';
 import {
   getMethodsFromEndpoint,
-  transpileTSSource,
+  getClientFromTSSource,
   getTSFile,
   TEST_API
 } from '../dev/helpers';
@@ -21,7 +21,7 @@ test('generate ts file from remote host (smoke test)', async t => {
 
 test('generate js', async t => {
   const tsContent = await getTSFile();
-  const js = await transpileTSSource(tsContent);
+  const js = await getClientFromTSSource(tsContent);
 
   t.is(typeof js, 'function');
   t.is(js.name, 'GraphQLClient');
