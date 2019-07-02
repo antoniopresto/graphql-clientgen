@@ -168,7 +168,7 @@ test('should render only 3 times', async t => {
     }, [state.loading]);
 
     renderCount++;
-    
+
     return <div>{state.result}</div>;
   };
 
@@ -182,4 +182,50 @@ test('should render only 3 times', async t => {
 
   t.is(wrapper.getDOMNode().innerHTML, 'nil says: hey');
   t.is(renderCount, 3);
+});
+
+// default query and the first query in useEffect should render at
+// same time(batch), the second in setTimeout should render alone
+// the component should render for 6 state changes
+test('should render only 6 times', async t => {
+  const { Provider, Client, useClient } = imported;
+  const client = new Client({ url: TEST_API });
+  let resolve: Function;
+  const promise = new Promise(r => (resolve = r));
+  let loadingStates: (boolean | undefined)[] = [];
+
+  const Child = () => {
+    const [state, echo] = useClient('echo', { variables: { text: 'hey' } });
+
+    React.useEffect(() => {
+      echo({ text: 'how' }).then(() => {
+        setTimeout(() => {
+          echo({ text: 'lets go!' }).then(() => resolve());
+        }, 200);
+      });
+    }, []);
+
+    loadingStates.push(state.loading);
+
+    return <div>{state.result}</div>;
+  };
+
+  const wrapper = mount(
+    <Provider client={client}>
+      <Child />
+    </Provider>
+  );
+
+  await promise;
+
+  t.is(wrapper.getDOMNode().innerHTML, 'nil says: lets go!');
+  t.deepEqual(loadingStates, [
+    false, // initial
+    true, // started first batch - update state from default fetch
+    true, // second fetch should be attached to the first batch queue
+    false, // finish first batch fetch
+    false, // start second batch fetch
+    true, // start loading
+    false // finish second batch
+  ]);
 });
