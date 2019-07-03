@@ -1,7 +1,6 @@
 import * as React from 'react';
 import ava from 'ava';
-import Adapter from 'enzyme-adapter-react-16';
-import { configure, mount } from 'enzyme';
+import { mount } from 'enzyme';
 import { transpileTSSource, TEST_API } from '../dev/helpers';
 import fs from 'fs-extra';
 import { printFromEndpoint } from '..';
@@ -13,12 +12,9 @@ import {
   useClient
 } from '../template/Provider';
 import { GraphQLStore } from '../template/Store';
+import '../dev/prepareClientEnv';
 
 const test = ava.serial;
-
-require('jsdom-global/register');
-
-configure({ adapter: new Adapter() });
 
 const dest = path.resolve(__dirname, '../generated');
 
@@ -129,13 +125,15 @@ test('should get response from useClient', async t => {
   const promise = new Promise(r => (resolve = r));
 
   const Child = () => {
-    const [state] = useClient('echo', { variables: { text: 'hey' } });
+    const [state, , store] = useClient('echo', { variables: { text: 'hey' } });
 
     React.useEffect(() => {
-      if (state.result) {
-        resolve(state);
-      }
-    }, [state.loading]);
+      return store.subscribe(state => {
+        if (state.resolved) {
+          resolve();
+        }
+      });
+    }, []);
 
     return <div>{state.result}</div>;
   };
@@ -148,7 +146,7 @@ test('should get response from useClient', async t => {
 
   await promise;
 
-  t.is(wrapper.getDOMNode().innerHTML, 'nil says: hey');
+  t.is(wrapper.getDOMNode().innerHTML, 'mock');
 });
 
 test('should render only 3 times', async t => {
@@ -180,14 +178,14 @@ test('should render only 3 times', async t => {
 
   await promise;
 
-  t.is(wrapper.getDOMNode().innerHTML, 'nil says: hey');
+  t.is(wrapper.getDOMNode().innerHTML, 'mock');
   t.is(renderCount, 3);
 });
 
 // default query and the first query in useEffect should render at
 // same time(batch), the second in setTimeout should render alone
 // the component should render for 6 state changes
-test('should render only 6 times', async t => {
+test('should render loading state in the correct order', async t => {
   const { Provider, Client, useClient } = imported;
   const client = new Client({ url: TEST_API });
   let resolve: Function;
@@ -218,7 +216,7 @@ test('should render only 6 times', async t => {
 
   await promise;
 
-  t.is(wrapper.getDOMNode().innerHTML, 'nil says: lets go!');
+  t.is(wrapper.getDOMNode().innerHTML, 'mock');
   t.deepEqual(loadingStates, [
     false, // initial
     true, // started first batch - update state from default fetch

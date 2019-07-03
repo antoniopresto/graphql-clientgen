@@ -5,9 +5,13 @@ import {
   getMethodsFromEndpoint,
   getClientFromTSSource,
   getTSFile,
-  TEST_API
+  TEST_API,
+  monkeyPatchGot
 } from '../dev/helpers';
 import { getRemoteSchema } from '../lib/printFromEndpoint';
+
+// mock network request from "got" package
+monkeyPatchGot();
 
 test('generate ts file from schema (smoke test)', async t => {
   const { client } = await printClient(schema);
@@ -81,11 +85,11 @@ test('using generated file', async t => {
   const client = await getMethodsFromEndpoint();
 
   // echo
-  t.is((await client.echo({ text: 'HY! echo' })).result, 'nil says: HY! echo');
+  t.is((await client.echo({ text: 'mock' })).result, 'mock');
 
   // mutation
   t.is(
     (await client.designManagementUpload()).errors[0].message,
-    'Variable input_0 of type DesignManagementUploadInput! was provided invalid value'
+    'Variable "$input_0" of required type "DesignManagementUploadInput!" was not provided.'
   );
 });

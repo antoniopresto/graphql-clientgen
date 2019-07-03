@@ -1,0 +1,926 @@
+type Blob implements Entry {
+  flatPath: String!
+  id: ID!
+  lfsOid: String
+  name: String!
+  path: String!
+  type: EntryType!
+  webUrl: String
+}
+
+type BlobConnection {
+  edges: [BlobEdge]
+  pageInfo: PageInfo!
+}
+
+type BlobEdge {
+  cursor: String!
+  node: Blob
+}
+
+type Design implements Noteable {
+  discussions(
+    first: Int
+    after: String
+    last: Int
+    before: String
+  ): DiscussionConnection!
+  filename: String!
+  id: ID!
+  image: String!
+  issue: Issue!
+  notes(first: Int, after: String, last: Int, before: String): NoteConnection!
+  project: Project!
+  versions(
+    first: Int
+    after: String
+    last: Int
+    before: String
+  ): DesignVersionConnection!
+}
+
+type DesignCollection {
+  designs(
+    first: Int
+    after: String
+    last: Int
+    before: String
+  ): DesignConnection!
+  issue: Issue!
+  project: Project!
+  versions(
+    first: Int
+    after: String
+    last: Int
+    before: String
+  ): DesignVersionConnection!
+}
+
+type DesignConnection {
+  edges: [DesignEdge]
+  pageInfo: PageInfo!
+}
+
+type DesignEdge {
+  cursor: String!
+  node: Design
+}
+
+input DesignManagementUploadInput {
+  projectPath: ID!
+  iid: ID!
+  files: [Upload!]!
+  clientMutationId: String
+}
+
+type DesignManagementUploadPayload {
+  clientMutationId: String
+  designs: [Design!]!
+  errors: [String!]!
+}
+
+type DesignVersion {
+  designs(
+    first: Int
+    after: String
+    last: Int
+    before: String
+  ): DesignConnection!
+  sha: ID!
+}
+
+type DesignVersionConnection {
+  edges: [DesignVersionEdge]
+  pageInfo: PageInfo!
+}
+
+type DesignVersionEdge {
+  cursor: String!
+  node: DesignVersion
+}
+
+type DetailedStatus {
+  detailsPath: String!
+  favicon: String!
+  group: String!
+  hasDetails: Boolean!
+  icon: String!
+  label: String!
+  text: String!
+  tooltip: String!
+}
+
+type DiffPosition {
+  baseSha: String
+  filePath: String!
+  headSha: String!
+  height: Int
+  newLine: Int
+  newPath: String
+  oldLine: Int
+  oldPath: String
+  positionType: DiffPositionType!
+  startSha: String!
+  width: Int
+  x: Int
+  y: Int
+}
+
+enum DiffPositionType {
+  text
+  image
+}
+
+type Discussion {
+  createdAt: Time!
+  id: ID!
+  notes(first: Int, after: String, last: Int, before: String): NoteConnection!
+}
+
+type DiscussionConnection {
+  edges: [DiscussionEdge]
+  pageInfo: PageInfo!
+}
+
+type DiscussionEdge {
+  cursor: String!
+  node: Discussion
+}
+
+interface Entry {
+  flatPath: String!
+  id: ID!
+  name: String!
+  path: String!
+  type: EntryType!
+}
+
+enum EntryType {
+  tree
+  blob
+  commit
+}
+
+type Epic implements Noteable {
+  author: User!
+  children(
+    first: Int
+    after: String
+    last: Int
+    before: String
+    iid: ID
+    iids: [ID!]
+  ): EpicConnection
+  closedAt: Time
+  createdAt: Time
+  description: String
+  discussions(
+    first: Int
+    after: String
+    last: Int
+    before: String
+  ): DiscussionConnection!
+  dueDate: Time
+  dueDateFixed: Time
+  dueDateFromMilestones: Time
+  dueDateIsFixed: Boolean
+  group: Group!
+  hasChildren: Boolean!
+  hasIssues: Boolean!
+  id: ID!
+  iid: ID!
+  issues(
+    first: Int
+    after: String
+    last: Int
+    before: String
+  ): EpicIssueConnection
+  notes(first: Int, after: String, last: Int, before: String): NoteConnection!
+  parent: Epic
+  reference(full: Boolean = false): String!
+  relationPath: String
+  startDate: Time
+  startDateFixed: Time
+  startDateFromMilestones: Time
+  startDateIsFixed: Boolean
+  state: EpicState!
+  title: String
+  updatedAt: Time
+  userPermissions: EpicPermissions!
+  webPath: String!
+  webUrl: String!
+}
+
+type EpicConnection {
+  edges: [EpicEdge]
+  pageInfo: PageInfo!
+}
+
+type EpicEdge {
+  cursor: String!
+  node: Epic
+}
+
+type EpicIssue implements Noteable {
+  assignees(
+    first: Int
+    after: String
+    last: Int
+    before: String
+  ): UserConnection
+  author: User!
+  closedAt: Time
+  confidential: Boolean!
+  createdAt: Time!
+  description: String
+  descriptionHtml: String
+  designs: DesignCollection
+  discussionLocked: Boolean!
+  discussions(
+    first: Int
+    after: String
+    last: Int
+    before: String
+  ): DiscussionConnection!
+  downvotes: Int!
+  dueDate: Time
+  epicIssueId: ID!
+  iid: ID!
+  labels(first: Int, after: String, last: Int, before: String): LabelConnection
+  milestone: Milestone
+  notes(first: Int, after: String, last: Int, before: String): NoteConnection!
+  reference(full: Boolean = false): String!
+  relationPath: String
+  relativePosition: Int
+  state: IssueState!
+  taskCompletionStatus: TaskCompletionStatus!
+  title: String!
+  titleHtml: String
+  updatedAt: Time!
+  upvotes: Int!
+  userNotesCount: Int!
+  userPermissions: IssuePermissions!
+  webPath: String!
+  webUrl: String!
+  weight: Int
+}
+
+type EpicIssueConnection {
+  edges: [EpicIssueEdge]
+  pageInfo: PageInfo!
+}
+
+type EpicIssueEdge {
+  cursor: String!
+  node: EpicIssue
+}
+
+type EpicPermissions {
+  adminEpic: Boolean!
+  awardEmoji: Boolean!
+  createEpic: Boolean!
+  createNote: Boolean!
+  destroyEpic: Boolean!
+  readEpic: Boolean!
+  readEpicIid: Boolean!
+  updateEpic: Boolean!
+}
+
+enum EpicState {
+  opened
+  closed
+}
+
+type Group {
+  avatarUrl: String
+  description: String
+  descriptionHtml: String
+  epic(iid: ID, iids: [ID!]): Epic
+  epics(
+    first: Int
+    after: String
+    last: Int
+    before: String
+    iid: ID
+    iids: [ID!]
+  ): EpicConnection
+  epicsEnabled: Boolean
+  fullName: String!
+  fullPath: ID!
+  id: ID!
+  lfsEnabled: Boolean
+  name: String!
+  parent: Group
+  path: String!
+  projects(
+    first: Int
+    after: String
+    last: Int
+    before: String
+    includeSubgroups: Boolean = false
+  ): ProjectConnection!
+  requestAccessEnabled: Boolean
+  userPermissions: GroupPermissions!
+  visibility: String
+  webUrl: String!
+}
+
+type GroupPermissions {
+  readGroup: Boolean!
+}
+
+enum IssuableState {
+  opened
+  closed
+  locked
+}
+
+type Issue implements Noteable {
+  assignees(
+    first: Int
+    after: String
+    last: Int
+    before: String
+  ): UserConnection
+  author: User!
+  closedAt: Time
+  confidential: Boolean!
+  createdAt: Time!
+  description: String
+  descriptionHtml: String
+  designs: DesignCollection
+  discussionLocked: Boolean!
+  discussions(
+    first: Int
+    after: String
+    last: Int
+    before: String
+  ): DiscussionConnection!
+  downvotes: Int!
+  dueDate: Time
+  iid: ID!
+  labels(first: Int, after: String, last: Int, before: String): LabelConnection
+  milestone: Milestone
+  notes(first: Int, after: String, last: Int, before: String): NoteConnection!
+  reference(full: Boolean = false): String!
+  relativePosition: Int
+  state: IssueState!
+  taskCompletionStatus: TaskCompletionStatus!
+  title: String!
+  titleHtml: String
+  updatedAt: Time!
+  upvotes: Int!
+  userNotesCount: Int!
+  userPermissions: IssuePermissions!
+  webPath: String!
+  webUrl: String!
+  weight: Int
+}
+
+type IssueConnection {
+  edges: [IssueEdge]
+  pageInfo: PageInfo!
+}
+
+type IssueEdge {
+  cursor: String!
+  node: Issue
+}
+
+type IssuePermissions {
+  adminIssue: Boolean!
+  createDesign: Boolean!
+  createNote: Boolean!
+  destroyDesign: Boolean!
+  readDesign: Boolean!
+  readIssue: Boolean!
+  reopenIssue: Boolean!
+  updateIssue: Boolean!
+}
+
+enum IssueState {
+  opened
+  closed
+  locked
+}
+
+type Label {
+  color: String!
+  description: String
+  descriptionHtml: String
+  textColor: String!
+  title: String!
+}
+
+type LabelConnection {
+  edges: [LabelEdge]
+  pageInfo: PageInfo!
+}
+
+type LabelEdge {
+  cursor: String!
+  node: Label
+}
+
+type MergeRequest implements Noteable {
+  allowCollaboration: Boolean
+  createdAt: Time!
+  defaultMergeCommitMessage: String
+  description: String
+  descriptionHtml: String
+  diffHeadSha: String
+  discussions(
+    first: Int
+    after: String
+    last: Int
+    before: String
+  ): DiscussionConnection!
+  downvotes: Int!
+  forceRemoveSourceBranch: Boolean
+  headPipeline: Pipeline
+  id: ID!
+  iid: String!
+  inProgressMergeCommitSha: String
+  mergeCommitMessage: String
+    @deprecated(reason: "Renamed to defaultMergeCommitMessage")
+  mergeCommitSha: String
+  mergeError: String
+  mergeOngoing: Boolean!
+  mergeStatus: String
+  mergeWhenPipelineSucceeds: Boolean
+  mergeableDiscussionsState: Boolean
+  notes(first: Int, after: String, last: Int, before: String): NoteConnection!
+  pipelines(
+    first: Int
+    after: String
+    last: Int
+    before: String
+    status: PipelineStatusEnum
+    ref: String
+    sha: String
+  ): PipelineConnection!
+  project: Project!
+  projectId: Int!
+  rebaseCommitSha: String
+  rebaseInProgress: Boolean!
+  shouldBeRebased: Boolean!
+  shouldRemoveSourceBranch: Boolean
+  sourceBranch: String!
+  sourceBranchExists: Boolean!
+  sourceProject: Project
+  sourceProjectId: Int
+  state: MergeRequestState!
+  subscribed: Boolean!
+  targetBranch: String!
+  targetProject: Project!
+  targetProjectId: Int!
+  taskCompletionStatus: TaskCompletionStatus!
+  title: String!
+  titleHtml: String
+  updatedAt: Time!
+  upvotes: Int!
+  userNotesCount: Int
+  userPermissions: MergeRequestPermissions!
+  webUrl: String
+  workInProgress: Boolean!
+}
+
+type MergeRequestConnection {
+  edges: [MergeRequestEdge]
+  pageInfo: PageInfo!
+}
+
+type MergeRequestEdge {
+  cursor: String!
+  node: MergeRequest
+}
+
+type MergeRequestPermissions {
+  adminMergeRequest: Boolean!
+  cherryPickOnCurrentMergeRequest: Boolean!
+  createNote: Boolean!
+  pushToSourceBranch: Boolean!
+  readMergeRequest: Boolean!
+  removeSourceBranch: Boolean!
+  revertOnCurrentMergeRequest: Boolean!
+  updateMergeRequest: Boolean!
+}
+
+input MergeRequestSetWipInput {
+  projectPath: ID!
+  iid: String!
+  clientMutationId: String
+}
+
+type MergeRequestSetWipPayload {
+  clientMutationId: String
+  errors: [String!]!
+  mergeRequest: MergeRequest
+}
+
+enum MergeRequestState {
+  opened
+  closed
+  locked
+  merged
+}
+
+type Metadata {
+  revision: String!
+  version: String!
+}
+
+type Milestone {
+  createdAt: Time!
+  description: String
+  dueDate: Time
+  startDate: Time
+  state: String!
+  title: String!
+  updatedAt: Time!
+}
+
+type Mutation {
+  designManagementUpload(
+    input: DesignManagementUploadInput!
+  ): DesignManagementUploadPayload
+  mergeRequestSetWip(input: MergeRequestSetWipInput!): MergeRequestSetWipPayload
+}
+
+type Namespace {
+  description: String
+  descriptionHtml: String
+  fullName: String!
+  fullPath: ID!
+  id: ID!
+  lfsEnabled: Boolean
+  name: String!
+  path: String!
+  projects(
+    first: Int
+    after: String
+    last: Int
+    before: String
+    includeSubgroups: Boolean = false
+  ): ProjectConnection!
+  requestAccessEnabled: Boolean
+  visibility: String
+}
+
+type Note {
+  author: User!
+  body: String!
+  bodyHtml: String
+  createdAt: Time!
+  discussion: Discussion
+  id: ID!
+  position: DiffPosition
+  project: Project
+  resolvable: Boolean!
+  resolvedAt: Time
+  resolvedBy: User
+  system: Boolean!
+  updatedAt: Time!
+  userPermissions: NotePermissions!
+}
+
+interface Noteable {
+  discussions(
+    first: Int
+    after: String
+    last: Int
+    before: String
+  ): DiscussionConnection!
+  notes(first: Int, after: String, last: Int, before: String): NoteConnection!
+}
+
+type NoteConnection {
+  edges: [NoteEdge]
+  pageInfo: PageInfo!
+}
+
+type NoteEdge {
+  cursor: String!
+  node: Note
+}
+
+type NotePermissions {
+  adminNote: Boolean!
+  awardEmoji: Boolean!
+  createNote: Boolean!
+  readNote: Boolean!
+  resolveNote: Boolean!
+}
+
+type PageInfo {
+  endCursor: String
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: String
+}
+
+type Pipeline {
+  beforeSha: String
+  committedAt: Time
+  coverage: Float
+  createdAt: Time!
+  detailedStatus: DetailedStatus!
+  duration: Int
+  finishedAt: Time
+  id: ID!
+  iid: String!
+  sha: String!
+  startedAt: Time
+  status: PipelineStatusEnum!
+  updatedAt: Time!
+  userPermissions: PipelinePermissions!
+}
+
+type PipelineConnection {
+  edges: [PipelineEdge]
+  pageInfo: PageInfo!
+}
+
+type PipelineEdge {
+  cursor: String!
+  node: Pipeline
+}
+
+type PipelinePermissions {
+  adminPipeline: Boolean!
+  destroyPipeline: Boolean!
+  updatePipeline: Boolean!
+}
+
+enum PipelineStatusEnum {
+  CREATED
+  PREPARING
+  PENDING
+  RUNNING
+  FAILED
+  SUCCESS
+  CANCELED
+  SKIPPED
+  MANUAL
+  SCHEDULED
+}
+
+type Project {
+  archived: Boolean
+  avatarUrl: String
+  containerRegistryEnabled: Boolean
+  createdAt: Time
+  description: String
+  descriptionHtml: String
+  forksCount: Int!
+  fullPath: ID!
+  group: Group
+  httpUrlToRepo: String
+  id: ID!
+  importStatus: String
+  issue(
+    iid: String
+    iids: [String!]
+    state: IssuableState
+    labelName: [String]
+    createdBefore: Time
+    createdAfter: Time
+    updatedBefore: Time
+    updatedAfter: Time
+    closedBefore: Time
+    closedAfter: Time
+    search: String
+    sort: Sort = created_desc
+  ): Issue
+  issues(
+    first: Int
+    after: String
+    last: Int
+    before: String
+    iid: String
+    iids: [String!]
+    state: IssuableState
+    labelName: [String]
+    createdBefore: Time
+    createdAfter: Time
+    updatedBefore: Time
+    updatedAfter: Time
+    closedBefore: Time
+    closedAfter: Time
+    search: String
+    sort: Sort = created_desc
+  ): IssueConnection
+  issuesEnabled: Boolean
+  jobsEnabled: Boolean
+  lastActivityAt: Time
+  lfsEnabled: Boolean
+  mergeRequest(iid: String, iids: [String!]): MergeRequest
+  mergeRequests(
+    first: Int
+    after: String
+    last: Int
+    before: String
+    iid: String
+    iids: [String!]
+  ): MergeRequestConnection
+  mergeRequestsEnabled: Boolean
+  mergeRequestsFfOnlyEnabled: Boolean
+  name: String!
+  nameWithNamespace: String!
+  namespace: Namespace
+  onlyAllowMergeIfAllDiscussionsAreResolved: Boolean
+  onlyAllowMergeIfPipelineSucceeds: Boolean
+  openIssuesCount: Int
+  path: String!
+  pipelines(
+    first: Int
+    after: String
+    last: Int
+    before: String
+    status: PipelineStatusEnum
+    ref: String
+    sha: String
+  ): PipelineConnection
+  printingMergeRequestLinkEnabled: Boolean
+  publicJobs: Boolean
+  repository: Repository
+  requestAccessEnabled: Boolean
+  sharedRunnersEnabled: Boolean
+  snippetsEnabled: Boolean
+  sshUrlToRepo: String
+  starCount: Int!
+  statistics: ProjectStatistics
+  tagList: String
+  userPermissions: ProjectPermissions!
+  visibility: String
+  webUrl: String
+  wikiEnabled: Boolean
+}
+
+type ProjectConnection {
+  edges: [ProjectEdge]
+  pageInfo: PageInfo!
+}
+
+type ProjectEdge {
+  cursor: String!
+  node: Project
+}
+
+type ProjectPermissions {
+  adminProject: Boolean!
+  adminRemoteMirror: Boolean!
+  adminWiki: Boolean!
+  archiveProject: Boolean!
+  changeNamespace: Boolean!
+  changeVisibilityLevel: Boolean!
+  createDeployment: Boolean!
+  createDesign: Boolean!
+  createIssue: Boolean!
+  createLabel: Boolean!
+  createMergeRequestFrom: Boolean!
+  createMergeRequestIn: Boolean!
+  createPages: Boolean!
+  createPipeline: Boolean!
+  createPipelineSchedule: Boolean!
+  createProjectSnippet: Boolean!
+  createWiki: Boolean!
+  destroyDesign: Boolean!
+  destroyPages: Boolean!
+  destroyWiki: Boolean!
+  downloadCode: Boolean!
+  downloadWikiCode: Boolean!
+  forkProject: Boolean!
+  pushCode: Boolean!
+  pushToDeleteProtectedBranch: Boolean!
+  readCommitStatus: Boolean!
+  readCycleAnalytics: Boolean!
+  readDesign: Boolean!
+  readPagesContent: Boolean!
+  readProject: Boolean!
+  readProjectMember: Boolean!
+  readWiki: Boolean!
+  removeForkProject: Boolean!
+  removePages: Boolean!
+  removeProject: Boolean!
+  renameProject: Boolean!
+  requestAccess: Boolean!
+  updatePages: Boolean!
+  updateWiki: Boolean!
+  uploadFile: Boolean!
+}
+
+type ProjectStatistics {
+  buildArtifactsSize: Int!
+  commitCount: Int!
+  lfsObjectsSize: Int!
+  packagesSize: Int!
+  repositorySize: Int!
+  storageSize: Int!
+  wikiSize: Int
+}
+
+type Query {
+  echo(text: String): String!
+  group(fullPath: ID!): Group
+  metadata: Metadata
+  namespace(fullPath: ID!): Namespace
+  project(fullPath: ID!): Project
+}
+
+type Repository {
+  empty: Boolean!
+  exists: Boolean!
+  rootRef: String
+  tree(
+    path: String = ""
+    ref: String = "head"
+    recursive: Boolean = false
+  ): Tree
+}
+
+enum Sort {
+  updated_desc
+  updated_asc
+  created_desc
+  created_asc
+}
+
+type Submodule implements Entry {
+  flatPath: String!
+  id: ID!
+  name: String!
+  path: String!
+  type: EntryType!
+}
+
+type SubmoduleConnection {
+  edges: [SubmoduleEdge]
+  pageInfo: PageInfo!
+}
+
+type SubmoduleEdge {
+  cursor: String!
+  node: Submodule
+}
+
+type TaskCompletionStatus {
+  completedCount: Int!
+  count: Int!
+}
+
+scalar Time
+
+type Tree {
+  blobs(first: Int, after: String, last: Int, before: String): BlobConnection!
+  submodules(
+    first: Int
+    after: String
+    last: Int
+    before: String
+  ): SubmoduleConnection!
+  trees(
+    first: Int
+    after: String
+    last: Int
+    before: String
+  ): TreeEntryConnection!
+}
+
+type TreeEntry implements Entry {
+  flatPath: String!
+  id: ID!
+  name: String!
+  path: String!
+  type: EntryType!
+  webUrl: String
+}
+
+type TreeEntryConnection {
+  edges: [TreeEntryEdge]
+  pageInfo: PageInfo!
+}
+
+type TreeEntryEdge {
+  cursor: String!
+  node: TreeEntry
+}
+
+scalar Upload
+
+type User {
+  avatarUrl: String!
+  name: String!
+  username: String!
+  webUrl: String!
+}
+
+type UserConnection {
+  edges: [UserEdge]
+  pageInfo: PageInfo!
+}
+
+type UserEdge {
+  cursor: String!
+  node: User
+}

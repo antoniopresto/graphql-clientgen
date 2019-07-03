@@ -1,8 +1,18 @@
-import { getMethodsFromEndpoint } from './helpers';
+import './helpers';
+
+import { getClientFromTSSource, getTSFile, monkeyPatchGot } from './helpers';
 
 (async () => {
-  const cli = await getMethodsFromEndpoint();
-  console.log(cli)
+  const t = Date.now();
+  monkeyPatchGot();
+  
+  await getClientFromTSSource(await getTSFile());
+
+  const Cli = await getClientFromTSSource(await getTSFile());
+  const { methods } = new Cli({});
+  const { result } = await methods.echo();
+
+  console.log((Date.now() - t) / 1000, result);
 })();
 
 // import { schema } from './schema-demo';

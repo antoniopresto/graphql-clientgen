@@ -33,15 +33,15 @@ export class GraphQLProvider extends React.Component<Props> {
 
 export const useClient: UseClient = (methodName, initialFetchConfig) => {
   const store = React.useContext(GraphQLStoreContext);
-  
+
   if (!store) {
     throw new Error('store is not present in React Context');
   }
-  
+
   if (!store.client) {
-    throw new Error('client is not present in GraphQLStore')
+    throw new Error('client is not present in GraphQLStore');
   }
-  
+
   const unsubscribeRef = React.useRef(() => {});
   const mounted = React.useRef(false);
   const method: Method = store.client.methods[methodName];

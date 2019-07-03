@@ -1,9 +1,48 @@
+import fs from 'fs-extra';
+import path from 'path';
 import ts from 'typescript';
 import { printFromEndpoint } from '..';
-import * as fs from 'fs';
+import { mockServer as apolloMockServer } from 'graphql-tools';
+const Response = require('node-fetch').Response;
+
+const mocksPath = path.resolve(__dirname, '../../../mock');
+const gitLabTypeDefs = fs.readFileSync(mocksPath + '/schema.graphql', 'utf8');
+const gitLabIntrospection = fs.readFileSync(
+  mocksPath + '/introspection.json',
+  'utf8'
+);
+
+// make got "package" to always return the introspection mock
+export function monkeyPatchGot() {
+  const got = require('got');
+  const original = got.post;
+  got.post = () => ({ body: gitLabIntrospection });
+
+  return () => {
+    require('got').post = original;
+  };
+}
+
+const mockServer = apolloMockServer(gitLabTypeDefs, {
+  String: () => `mock`
+});
 
 // @ts-ignore
-global.fetch = require('node-fetch');
+global.fetch = async function(url: any, init?: RequestInit) {
+  if (typeof url !== 'string')
+    throw new Error('fetch url argument is not a string');
+
+  const body: string =
+    init && typeof init.body === 'string' ? init.body || '' : '';
+
+  return mockServer.query(JSON.parse(body).query).then(
+    res =>
+      new Response(JSON.stringify(res), {
+        status: 200,
+        headers: { 'Content-type': 'application/json' }
+      })
+  );
+};
 
 const CWD = process.cwd();
 export const TEST_API = 'https://gitlab.com/api/graphql';
