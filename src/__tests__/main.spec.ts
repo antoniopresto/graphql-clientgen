@@ -1,17 +1,15 @@
 import test from 'ava';
 import { schema } from '../dev/schema-demo';
 import { printClient } from '../lib/generate-client';
+
 import {
   getMethodsFromEndpoint,
   getClientFromTSSource,
   getTSFile,
-  TEST_API,
-  monkeyPatchGot
+  TEST_API
 } from '../dev/helpers';
-import { getRemoteSchema } from '../lib/printFromEndpoint';
 
-// mock network request from "got" package
-monkeyPatchGot();
+import { getRemoteSchema } from '../lib/printFromEndpoint';
 
 test('generate ts file from schema (smoke test)', async t => {
   const { client } = await printClient(schema);

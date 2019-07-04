@@ -37,6 +37,44 @@ export type StoreListener = (
   schemaKey: string
 ) => any;
 
+type SubMiddlewareArgs = {
+  info: ParsedContextInfo;
+  schemaKey: string;
+};
+
+/**
+ * Parse info from Middleware context
+ * @param ctx
+ */
+function parseContextInfo(ctx: Context) {
+  const isMutation = ctx.config.kind === OpKind.mutation;
+  const isQuery = ctx.config.kind === OpKind.query;
+  const shouldCacheByConfig = ctx.config.cache !== false;
+  const isActionComplete = ctx.action === Actions.complete;
+  const isActionWillQueue = ctx.action === Actions.willQueue;
+  const isActionAbort = ctx.action === Actions.abort;
+
+  return {
+    isMutation,
+    isQuery,
+    canCache: shouldCacheByConfig && isQuery,
+    isActionWillQueue,
+    isActionAbort,
+    isActionComplete,
+
+    // true if the action is a state action
+    // and not a fetch action for example
+    // there is no schemaKey in fetch actions, because they are generics to
+    // a group of queries in a batch - and each one can have one schemaKey
+    isStateAction:
+      [Actions.abort, Actions.willQueue, Actions.complete].indexOf(
+        ctx.action
+      ) !== -1
+  };
+}
+
+type ParsedContextInfo = ReturnType<typeof parseContextInfo>;
+
 export class GraphQLStore {
   client: GraphQLClient;
   private store: Store = {};
@@ -50,16 +88,10 @@ export class GraphQLStore {
   getListeners = () => [...this._listeners];
 
   middleware: Middleware<any> = async ctx => {
-    if (ctx.config.cache === false) return ctx;
+    const info = parseContextInfo(ctx);
 
-    if (ctx.config.kind !== OpKind.query) return ctx;
-
-    const isActionComplete = ctx.action === Actions.complete;
-    const isActionWillQueue = ctx.action === Actions.willQueue;
-
-    if (!isActionComplete && !isActionWillQueue) {
-      return ctx;
-    }
+    // there is no schemaKey in fetch actions (initFetch, fetchComplete)
+    if (!info.isStateAction) return ctx;
 
     if (!ctx.config.schemaKey) {
       throw new Error('ctx.config.schemaKey is undefined');
@@ -67,10 +99,31 @@ export class GraphQLStore {
 
     const { schemaKey } = ctx.config;
 
+    if (info.isQuery && info.canCache) {
+      return this.handleCacheQuery({ info, schemaKey })(ctx);
+    }
+
+    return ctx;
+  };
+
+  handleCacheQuery = (args: SubMiddlewareArgs): Middleware => async ctx => {
+    const { schemaKey, info } = args;
     const cacheKey = this.mountCacheKey(schemaKey, ctx.variables);
     const entry = this.getItem(cacheKey);
 
-    if (isActionComplete) {
+    if (entry && info.isActionAbort) {
+      if (entry.context.action !== Actions.abort) {
+        this.dispatch(
+          cacheKey,
+          { ...entry, context: { ...entry.context, action: Actions.abort } },
+          schemaKey
+        );
+      }
+
+      return ctx;
+    }
+
+    if (info.isActionComplete) {
       if (!entry) {
         throw new Error(
           `reached complete action but store has no entry for cacheKey: "${cacheKey}"`
@@ -92,7 +145,7 @@ export class GraphQLStore {
       return ctx;
     }
 
-    if (isActionWillQueue) {
+    if (info.isActionWillQueue) {
       if (entry) {
         if (entry.resolved) {
           return {
@@ -195,7 +248,7 @@ export class GraphQLStore {
       typeof (this.client.methods as { [key: string]: Method })[schemaKey] !==
       'function'
     ) {
-      console.log('valid schemaKeys:', Object.keys(this.client.methods));
+      console.warn('valid schemaKeys:', Object.keys(this.client.methods));
       throw new Error(
         `Expected "schemaKey" to be a valid entry, received: "${schemaKey}"`
       );

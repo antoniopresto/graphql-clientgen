@@ -1,18 +1,18 @@
 import './helpers';
+import sinon from 'sinon';
 
-import { getClientFromTSSource, getTSFile, monkeyPatchGot } from './helpers';
+import { getClientFromTSSource, getTSFile } from './helpers';
 
 (async () => {
   const t = Date.now();
-  monkeyPatchGot();
-  
+
   await getClientFromTSSource(await getTSFile());
 
   const Cli = await getClientFromTSSource(await getTSFile());
   const { methods } = new Cli({});
-  const { result } = await methods.echo();
+  const { result, errors } = await methods.namespace({ fullPath: 'aaaa' });
 
-  console.log((Date.now() - t) / 1000, result);
+  console.log((Date.now() - t) / 1000, result, errors);
 })();
 
 // import { schema } from './schema-demo';

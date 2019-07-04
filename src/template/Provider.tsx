@@ -1,13 +1,8 @@
 import * as React from 'react';
 
 import { GraphQLStore, StoreState } from './Store';
-import {
-  Context,
-  FetcherConfig,
-  GraphQLClient,
-  Method,
-  Methods
-} from './Client';
+import { Actions, Context, FetcherConfig, GraphQLClient, Method, Methods } from './Client';
+
 export const GraphQLStoreContext = React.createContext({} as GraphQLStore);
 
 type Props = {
@@ -99,7 +94,9 @@ export const useClient: UseClient = (methodName, initialFetchConfig) => {
         );
       }
 
-      setState({ ...value, ...value.context });
+      if (value.context.action !== Actions.abort) {
+        setState({ ...value, ...value.context });
+      }
     });
   }, [cacheKey]);
 

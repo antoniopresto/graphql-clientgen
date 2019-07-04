@@ -1,84 +1,34 @@
 import * as React from 'react';
 import ava from 'ava';
+import sinon from 'sinon';
 import { mount } from 'enzyme';
-import { transpileTSSource, TEST_API } from '../dev/helpers';
-import fs from 'fs-extra';
-import { printFromEndpoint } from '..';
-import * as path from 'path';
-import { GraphQLClient } from '../template/Client';
 import {
-  GraphQLProvider,
-  GraphQLStoreContext,
-  useClient
-} from '../template/Provider';
-import { GraphQLStore } from '../template/Store';
+  TEST_API,
+  hope,
+  fetchMock,
+  getGeneratedModules,
+  mapObjectTypes
+} from '../dev/helpers';
+
 import '../dev/prepareClientEnv';
 
 const test = ava.serial;
 
-const dest = path.resolve(__dirname, '../generated');
-
-const filePaths = {
-  client: dest + '/Client.js',
-  store: dest + '/Store.js',
-  provider: dest + '/Provider.js'
-};
-
-// cache imported modules
-let imported = {} as {
-  Client: typeof GraphQLClient;
-  Provider: typeof GraphQLProvider;
-  Store: typeof GraphQLStore;
-  Context: typeof GraphQLStoreContext;
-  useClient: typeof useClient;
-};
-
-test('write generated JS files', async t => {
-  const response = await printFromEndpoint(TEST_API);
-  if (response.status !== 'ok') {
-    throw new Error('invalid printFromEndpoint response');
-  }
-  const { client, store, provider } = response;
-
-  const clientJS = transpileTSSource(client);
-  const storeJS = transpileTSSource(store);
-  const providerJS = transpileTSSource(provider);
-
-  await fs.mkdirp(dest);
-  await fs.writeFile(filePaths.client, clientJS);
-  await fs.writeFile(filePaths.store, storeJS);
-  await fs.writeFile(filePaths.provider, providerJS);
-
-  t.is(clientJS.length > 100, true);
-  t.is(storeJS.length > 100, true);
-  t.is(providerJS.length > 100, true);
+ava.afterEach(() => {
+  sinon.restore();
 });
 
 test('should import generated files', async t => {
-  const client = await import(filePaths.client);
-  const provider = await import(filePaths.provider);
-  const store = await import(filePaths.store);
+  const { Client, Provider, Store, useClient } = await getGeneratedModules();
 
-  imported = {
-    Client: client.GraphQLClient,
-    Provider: provider.GraphQLProvider,
-    Store: store.GraphQLStore,
-    useClient: provider.useClient,
-    Context: provider.GraphQLStoreContext
-  };
-
-  t.is(client.__esModule, true);
-  t.is(provider.__esModule, true);
-  t.is(store.__esModule, true);
-
-  t.is(typeof imported.Client, 'function');
-  t.is(typeof imported.Provider, 'function');
-  t.is(typeof imported.Store, 'function');
-  t.is(typeof imported.useClient, 'function');
+  t.is(typeof Client, 'function');
+  t.is(typeof Provider, 'function');
+  t.is(typeof Store, 'function');
+  t.is(typeof useClient, 'function');
 });
 
-test('should mount node with Provider', t => {
-  const { Provider, Client, Context } = imported;
+test('should mount node with Provider', async t => {
+  const { Provider, Client, Context } = await getGeneratedModules();
   const client = new Client({ url: TEST_API });
 
   const wrapper = mount(
@@ -95,8 +45,8 @@ test('should mount node with Provider', t => {
   );
 });
 
-test('should get store from useClient', t => {
-  const { Provider, Client, useClient } = imported;
+test('should get store from useClient', async t => {
+  const { Provider, Client, useClient } = await getGeneratedModules();
   const client = new Client({ url: TEST_API });
 
   const Child = () => {
@@ -119,7 +69,7 @@ test('should get store from useClient', t => {
 });
 
 test('should get response from useClient', async t => {
-  const { Provider, Client, useClient } = imported;
+  const { Provider, Client, useClient } = await getGeneratedModules();
   const client = new Client({ url: TEST_API });
   let resolve: Function;
   const promise = new Promise(r => (resolve = r));
@@ -150,10 +100,9 @@ test('should get response from useClient', async t => {
 });
 
 test('should render only 3 times', async t => {
-  const { Provider, Client, useClient } = imported;
+  const { Provider, Client, useClient } = await getGeneratedModules();
   const client = new Client({ url: TEST_API });
-  let resolve: Function;
-  const promise = new Promise(r => (resolve = r));
+  const { resolve, promise } = hope();
   let renderCount = 0;
 
   const Child = () => {
@@ -186,10 +135,9 @@ test('should render only 3 times', async t => {
 // same time(batch), the second in setTimeout should render alone
 // the component should render for 6 state changes
 test('should render loading state in the correct order', async t => {
-  const { Provider, Client, useClient } = imported;
+  const { Provider, Client, useClient } = await getGeneratedModules();
   const client = new Client({ url: TEST_API });
-  let resolve: Function;
-  const promise = new Promise(r => (resolve = r));
+  const { promise, resolve } = hope();
   let loadingStates: (boolean | undefined)[] = [];
 
   const Child = () => {
@@ -227,3 +175,186 @@ test('should render loading state in the correct order', async t => {
     false // finish second batch
   ]);
 });
+
+test('store should batch multiple queries', async t => {
+  const stub = sinon.stub(global, 'fetch').callsFake(fetchMock);
+  const {
+    Provider,
+    Client,
+    useClient,
+    Context,
+    Store
+  } = await getGeneratedModules();
+  const client = new Client({ url: TEST_API });
+  const firstCall = hope();
+
+  let listen = false;
+  let context = {} as (typeof Store.prototype);
+  const promises: Promise<any>[] = [];
+  let stateResults: (string | null | undefined)[] = [];
+
+  const Child = () => {
+    context = React.useContext(Context);
+
+    if (!listen) {
+      listen = true;
+      context.subscribe((s, c) => {
+        if (c === 'echo(text:predefined_query)' && s.resolved) {
+          firstCall.resolve();
+        }
+      });
+    }
+
+    const [state, echo] = useClient('echo', {
+      variables: { text: 'predefined_query' }
+    });
+
+    stateResults.push(state.result);
+
+    React.useEffect(() => {
+      promises.push(echo({ text: 'shouldBatch1' }));
+      promises.push(echo({ text: 'shouldBatch2' }));
+      promises.push(echo({ text: 'shouldBatch3' }));
+      promises.push(echo({ text: 'shouldBatch4' }));
+    }, []);
+
+    return <div>{state.result}</div>;
+  };
+
+  const wrapper = mount(
+    <Provider client={client}>
+      <Child />
+    </Provider>
+  );
+
+  t.is(promises.length, 4);
+
+  await firstCall.promise;
+  await Promise.all(promises);
+
+  t.is(wrapper.getDOMNode().innerHTML, 'mock');
+  t.is(stub.callCount, 1);
+});
+
+test('store should cache', async t => {
+  const stub = sinon.stub(global, 'fetch').callsFake(fetchMock);
+  const { Provider, Client, useClient, Context } = await getGeneratedModules();
+  const client = new Client({ url: TEST_API });
+
+  const firstCall = hope();
+  let renderCount = 0;
+  let aborts: string[] = []; // should abort when cached
+  const promises: Promise<any>[] = [];
+  const errors: any[] = [];
+
+  let listen = false;
+
+  const Child = () => {
+    const context = React.useContext(Context);
+
+    if (!listen) {
+      listen = true;
+      context.subscribe((s, c) => {
+        const testStateID = `${s.context.action}_${c}`;
+
+        if (s.context.errors) {
+          errors.push({
+            testStateID,
+            errors: s.context.errors,
+            requestConfig: s.context.requestConfig
+          });
+        }
+        
+        if (s.context.action === 'abort') {
+          aborts.push(testStateID);
+        }
+
+        if (c === 'echo(text:predefined_query)' && s.resolved) {
+          firstCall.resolve();
+        }
+      });
+    }
+
+    const [state, echo] = useClient('echo', {
+      variables: { text: 'predefined_query' }
+    });
+
+    const [namespace, callNamespace] = useClient('namespace');
+
+    React.useEffect(() => {
+      (async () => {
+        promises.push(echo({ text: 'shouldCache1' }));
+        promises.push(echo({ text: 'shouldCache1' }));
+        promises.push(echo({ text: 'shouldCache1' }));
+        promises.push(echo({ text: 'shouldCache1' }));
+        promises.push(echo({ text: 'shouldCache2' }));
+        promises.push(callNamespace({ fullPath: 'myFullPath' }));
+      })();
+    }, []);
+  
+    renderCount++;
+    
+    return (
+      <div>
+        <span className={'echo'}>{state.result}</span>
+        <span className={'fullPath'}>
+          {namespace.result && namespace.result.fullPath}
+        </span>
+      </div>
+    );
+  };
+
+  const wrapper = mount(
+    <Provider client={client}>
+      <Child />
+    </Provider>
+  );
+
+  t.is(promises.length, 6);
+  const promisedResults = await Promise.all(promises);
+  await firstCall.promise;
+
+  const namespaceResult = promisedResults[5].result;
+
+  t.deepEqual(
+    mapObjectTypes(namespaceResult),
+
+    mapObjectTypes({
+      description: 'mock',
+      descriptionHtml: 'mock',
+      fullName: 'mock',
+      fullPath: 'e8be6f80-7e23-4508-9a09-2e37e4651a77',
+      id: '6820e8fa-76c6-4acc-83c3-8162a170f5e3',
+      lfsEnabled: true,
+      name: 'mock',
+      path: 'mock',
+      requestAccessEnabled: false,
+      visibility: 'mock'
+    })
+  );
+
+  t.is(stub.callCount, 1);
+  
+  t.is(errors.length, 0);
+  
+  t.is(wrapper.find('.echo').getDOMNode().innerHTML, 'mock');
+  
+  t.is(
+    wrapper.find('.fullPath').getDOMNode().innerHTML,
+    namespaceResult.fullPath
+  );
+  
+  t.is(aborts.length, 3);
+  
+  // 1 initial state + 2 for echo state + 2 for namespace state
+  // although only one fetch was made
+  t.is(renderCount, 5);
+});
+
+// TODO
+// listener should emit even if cache is false
+// should wait if have one query with the same cacheKey waiting api response
+// should ignore previous cached
+// echo({ text: 'predefined_query' }, { cache: false }).then(() => {
+//   secondCall.resolve();
+// });
