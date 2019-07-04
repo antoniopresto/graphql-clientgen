@@ -39,83 +39,6 @@ export type FetcherConfig<V, R> = {
   kind: OpKind;
 };
 
-const queryFetcher = async function queryFetcher<Variables, Return>(
-  variables: Variables,
-  config: FetcherConfig<Variables, Return>
-): Promise<Context<Variables, Return>> {
-  let requestConfig: RequestInit = {
-    method: 'POST',
-    credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-      ...config.headers
-    }
-  };
-
-  const middleware: Middleware<Variables, Return> =
-    typeof config.middleware === 'function'
-      ? config.middleware
-      : applyMiddleware(ensureArray(config.middleware));
-
-  const context = await middleware({
-    requestConfig,
-    variables,
-    config,
-    action: Actions.initFetch,
-    querySuffix: config.querySuffix
-  });
-
-  if (context.action === Actions.abort) {
-    return context;
-  }
-
-  context.requestConfig.body = JSON.stringify({
-    query: context.config.query,
-    variables: context.variables
-  });
-
-  return fetch(context.config.url, context.requestConfig)
-    .then(async response => {
-      const contentType = response.headers.get('Content-Type');
-      const isJSON = contentType && contentType.startsWith('application/json');
-
-      if (!isJSON) {
-        const fetchError = await response.text();
-
-        return middleware({
-          ...context,
-          result: null,
-          action: Actions.completeFetch,
-          errors: [fetchError]
-        });
-      }
-
-      let { errors, data } = await response.json();
-
-      if (errors && !Array.isArray(errors)) {
-        errors = [errors];
-      }
-
-      return middleware({
-        ...context,
-        errors,
-        action: Actions.completeFetch,
-        result: data ? (config.schemaKey ? data[config.schemaKey] : data) : null
-      });
-    })
-    .catch(err => {
-      return middleware({
-        ...context,
-        errors: [err],
-        action: Actions.completeFetch,
-        result: null
-      });
-    });
-};
-
-export type QueryFetcher = typeof queryFetcher;
-
 type Resolver = (r: ReturnType<Middleware<any>>) => void;
 
 type QueueItem = {
@@ -214,7 +137,7 @@ export class GraphQLClient {
       ${finalQueryBody}
     }`;
 
-    queryFetcher<any, any>(finalVariables, {
+    this.queryFetcher<any, any>(finalVariables, {
       url: this.url,
       query,
       middleware: batchMiddleware,
@@ -317,7 +240,87 @@ export class GraphQLClient {
 
   methods: Methods = {
     //[methods]//
-  }
+  };
+
+  queryFetcher = async <Variables, Return>(
+    variables: Variables,
+    config: FetcherConfig<Variables, Return>
+  ): Promise<Context<Variables, Return>> => {
+    let requestConfig: RequestInit = {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+        ...config.headers
+      }
+    };
+
+    const middleware: Middleware<Variables, Return> =
+      typeof config.middleware === 'function'
+        ? config.middleware
+        : applyMiddleware(ensureArray(config.middleware));
+
+    const context = await middleware({
+      requestConfig,
+      variables,
+      config,
+      action: Actions.initFetch,
+      querySuffix: config.querySuffix
+    });
+
+    if (context.action === Actions.abort) {
+      return context;
+    }
+
+    context.requestConfig.body = JSON.stringify({
+      query: context.config.query,
+      variables: context.variables
+    });
+
+    return fetch(context.config.url, context.requestConfig)
+      .then(async response => {
+        const contentType = response.headers.get('Content-Type');
+        const isJSON =
+          contentType && contentType.startsWith('application/json');
+
+        if (!isJSON) {
+          const fetchError = await response.text();
+
+          return middleware({
+            ...context,
+            result: null,
+            action: Actions.completeFetch,
+            errors: [fetchError]
+          });
+        }
+
+        let { errors, data } = await response.json();
+
+        if (errors && !Array.isArray(errors)) {
+          errors = [errors];
+        }
+
+        return middleware({
+          ...context,
+          errors,
+          action: Actions.completeFetch,
+          result: data
+            ? config.schemaKey
+              ? data[config.schemaKey]
+              : data
+            : null
+        });
+      })
+      .catch(err => {
+        return middleware({
+          ...context,
+          errors: [err],
+          action: Actions.completeFetch,
+          result: null
+        });
+      });
+  };
 }
 
 // compose(f, g, h) is identical to doing (...args) => f(g(h(...args))).
@@ -371,7 +374,7 @@ export type Method<
   config?: Config
 ) => Promise<Context<Variables, ReturnType | undefined | null>>;
 
-type MethodsDict = {[key: string]: Method};
+type MethodsDict = { [key: string]: Method };
 
 export interface Methods extends MethodsDict {
   //[methodsType]//
