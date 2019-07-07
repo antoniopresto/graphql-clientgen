@@ -1,7 +1,14 @@
 import * as React from 'react';
 
 import { GraphQLStore, StoreState } from './Store';
-import { Actions, Context, FetcherConfig, GraphQLClient, Method, Methods } from './Client';
+import {
+  Actions,
+  Context,
+  FetcherConfig,
+  GraphQLClient,
+  Method,
+  Methods
+} from './Client';
 
 export const GraphQLStoreContext = React.createContext({} as GraphQLStore);
 
@@ -38,15 +45,22 @@ export const useClient: UseClient = (methodName, initialFetchConfig) => {
   }
 
   const unsubscribeRef = React.useRef(() => {});
-  const mounted = React.useRef(false);
+  const wasStartedTheDefaultFetch = React.useRef(false);
   const method: Method = store.client.methods[methodName];
+
+  // as setState is async, we also save cacheKey in a ref to prevent
+  // setCacheKey to be called during a state update
   const cacheKeyRef = React.useRef('');
 
+  // if there is a initialConfig, we generate a default cacheKey with
+  // this config - otherwise this cacheKey will be set on a new request
   const [cacheKey, _setCacheKey] = React.useState(() => {
     if (!initialFetchConfig) {
       return '';
     }
 
+    // if cacheKey is false, the local state will be set when the request
+    // is made in the fetcher function below, independently of the cache
     if (
       initialFetchConfig.config &&
       initialFetchConfig.config.cache === false
@@ -58,6 +72,7 @@ export const useClient: UseClient = (methodName, initialFetchConfig) => {
       methodName as string,
       initialFetchConfig.variables
     );
+
     cacheKeyRef.current = ck;
     return ck;
   });
@@ -77,7 +92,7 @@ export const useClient: UseClient = (methodName, initialFetchConfig) => {
 
   // subscription
   React.useEffect(() => {
-    // there is no cacheKey because config.cache is false
+    // if there is no cacheKey because config.cache is false
     // or fetcher is not called yet.
     // if config.cache is false the state is set via middleware in fetcher below
     if (!cacheKey) return;
@@ -129,8 +144,8 @@ export const useClient: UseClient = (methodName, initialFetchConfig) => {
     };
   }, []);
 
-  if (!mounted.current && initialFetchConfig) {
-    mounted.current = true;
+  if (!wasStartedTheDefaultFetch.current && initialFetchConfig) {
+    wasStartedTheDefaultFetch.current = true;
     fetcher(initialFetchConfig.variables, initialFetchConfig.config);
   }
 

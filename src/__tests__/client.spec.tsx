@@ -264,7 +264,7 @@ test('store should cache', async t => {
             requestConfig: s.context.requestConfig
           });
         }
-        
+
         if (s.context.action === 'abort') {
           aborts.push(testStateID);
         }
@@ -291,9 +291,9 @@ test('store should cache', async t => {
         promises.push(callNamespace({ fullPath: 'myFullPath' }));
       })();
     }, []);
-  
+
     renderCount++;
-    
+
     return (
       <div>
         <span className={'echo'}>{state.result}</span>
@@ -334,24 +334,216 @@ test('store should cache', async t => {
   );
 
   t.is(stub.callCount, 1);
-  
+
   t.is(errors.length, 0);
-  
+
   t.is(wrapper.find('.echo').getDOMNode().innerHTML, 'mock');
-  
+
   t.is(
     wrapper.find('.fullPath').getDOMNode().innerHTML,
     namespaceResult.fullPath
   );
-  
+
   t.is(aborts.length, 3);
-  
+
   // 1 initial state + 2 for echo state + 2 for namespace state
   // although only one fetch was made
   t.is(renderCount, 5);
 });
 
+test('should make default fetch even if cache is false', async t => {
+  const stub = sinon.stub(global, 'fetch').callsFake(fetchMock);
+  const {
+    Provider,
+    Client,
+    useClient,
+    Context,
+    Store
+  } = await getGeneratedModules();
+
+  const client = new Client({ url: TEST_API });
+  const firstCall = hope();
+
+  let context = {} as (typeof Store.prototype);
+  let stateResults: ((string | null | undefined)[])[] = [];
+
+  const Child = () => {
+    context = React.useContext(Context);
+
+    const [state] = useClient('echo', {
+      variables: { text: 'testingCache' },
+      config: {
+        cache: false,
+      }
+    });
+    
+    stateResults.push([state.result]);
+
+    if (state.result) {
+      firstCall.resolve();
+    }
+    
+    return <div>{state.result}</div>;
+  };
+
+  const wrapper = mount(
+    <Provider client={client}>
+      <Child />
+    </Provider>
+  );
+
+  await firstCall.promise;
+
+  t.is(wrapper.getDOMNode().innerHTML, 'mock');
+  t.is(stub.callCount, 1);
+  t.is(stateResults.length, 3);
+  t.deepEqual(context.getState(), {});
+});
+
+test('should ignore cache when cache is false', async t => {
+  const stub = sinon.stub(global, 'fetch').callsFake(fetchMock);
+  const {
+    Provider,
+    Client,
+    useClient,
+    Context,
+    Store
+  } = await getGeneratedModules();
+
+  const client = new Client({ url: TEST_API });
+  const firstCall = hope();
+  const secondCall = hope();
+
+  let context = {} as (typeof Store.prototype);
+  let stateResults: ((string | null | undefined)[])[] = [];
+
+  const Child = () => {
+    context = React.useContext(Context);
+
+    const [state, echo] = useClient('echo', {
+      variables: { text: 'testingCache' },
+      config: {
+        cache: false,
+        async middleware(ctx) {
+          if (ctx.action === 'complete') {
+            firstCall.resolve();
+          }
+          return ctx;
+        }
+      }
+    });
+
+    React.useEffect(() => {
+      firstCall.promise.then(() => {
+        echo({ text: 'testingCache' }, { cache: false }).then(() =>
+          secondCall.resolve()
+        );
+      });
+    }, []);
+
+    stateResults.push([state.result]);
+
+    return <div>{state.result}</div>;
+  };
+
+  const wrapper = mount(
+    <Provider client={client}>
+      <Child />
+    </Provider>
+  );
+
+  await firstCall.promise;
+  await secondCall.promise;
+
+  t.is(wrapper.getDOMNode().innerHTML, 'mock');
+  t.is(stub.callCount, 2);
+  t.is(stateResults.length, 5);
+  t.deepEqual(context.getState(), {});
+});
+
+test('should ignore cache when mixed cache false/true', async t => {
+  const stub = sinon.stub(global, 'fetch').callsFake(fetchMock);
+
+  const {
+    Provider,
+    Client,
+    useClient,
+    Context,
+    Store
+  } = await getGeneratedModules();
+
+  const client = new Client({ url: TEST_API });
+  const firstCall = hope();
+  const secondCall = hope();
+  const thirdCall = hope();
+
+  let context = {} as (typeof Store.prototype);
+  let stateResults: ((string | null | undefined)[])[] = [];
+
+  const Child = () => {
+    context = React.useContext(Context);
+
+    const [state, echo] = useClient('echo', {
+      variables: { text: 'testingCache' },
+      config: {
+        cache: false,
+        async middleware(ctx) {
+          if (ctx.action === 'complete') {
+            firstCall.resolve();
+          }
+          return ctx;
+        }
+      }
+    });
+
+    const [state2, echo2] = useClient('echo', {
+      variables: { text: 'testingCache' },
+      config: {
+        cache: false,
+        async middleware(ctx) {
+          if (ctx.action === 'complete') {
+            secondCall.resolve();
+          }
+          return ctx;
+        }
+      }
+    });
+
+    React.useEffect(() => {
+      (async () => {
+        await echo({ text: 'testingCache' }, { cache: false });
+        await echo({ text: 'testingCache' });
+        await echo2({ text: 'testingCache' }, { cache: false });
+        await echo2({ text: 'testingCache' });
+        thirdCall.resolve();
+      })();
+    }, []);
+
+    stateResults.push([state.result, state2.result]);
+
+    return <div>{state.result}</div>;
+  };
+
+  const wrapper = mount(
+    <Provider client={client}>
+      <Child />
+    </Provider>
+  );
+
+  await firstCall.promise;
+  await secondCall.promise;
+  await thirdCall.promise;
+
+  t.is(wrapper.getDOMNode().innerHTML, 'mock');
+
+  // 1 call will batch 3 echos (2 in the component body and one in effect)
+  // 2 will run without cache
+  // 1 will use cache
+  t.is(stub.callCount, 3);
+});
+
 // TODO
+// should make default fetch even if cache is false
 // listener should emit even if cache is false
 // should wait if have one query with the same cacheKey waiting api response
 // should ignore previous cached
