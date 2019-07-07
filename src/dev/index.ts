@@ -4,15 +4,13 @@ import sinon from 'sinon';
 import { getClientFromTSSource, getTSFile } from './helpers';
 
 (async () => {
-  const t = Date.now();
-
   await getClientFromTSSource(await getTSFile());
 
   const Cli = await getClientFromTSSource(await getTSFile());
   const { methods } = new Cli({});
-  const { result, errors } = await methods.namespace({ fullPath: 'aaaa' });
-
-  console.log((Date.now() - t) / 1000, result, errors);
+  methods.echo({ text: 'mymymy' });
+  methods.echo({ text: 'mymymy2' });
+  methods.echo({ text: 'mymymy3' }).then(console.log);
 })();
 
 // import { schema } from './schema-demo';

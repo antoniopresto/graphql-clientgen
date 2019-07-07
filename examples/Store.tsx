@@ -10,7 +10,7 @@ import {
 } from './Client';
 
 // when a fetch is called but there is already a query with same
-// cacheKey loading, we add a listener to wait the first call complete
+// requestSignature loading, we add a listener to wait the first call complete
 type SameCacheKeyListener = (ctx: Context<any, any>) => any;
 
 export type StoreState<Result = any, V = any> = {
@@ -27,13 +27,13 @@ export type Store = {
 export type Config = { client: GraphQLClient };
 
 export type MiddlewareWrapper = (
-  cacheKey: string,
+  requestSignature: string,
   schemaKey: string
 ) => Middleware<any>;
 
 export type StoreListener = (
   value: StoreState,
-  cacheKey: string,
+  requestSignature: string,
   schemaKey: string
 ) => any;
 
@@ -67,13 +67,13 @@ export class GraphQLStore {
 
     const { schemaKey } = ctx.config;
 
-    const cacheKey = this.mountCacheKey(schemaKey, ctx.variables);
-    const entry = this.getItem(cacheKey);
+    const requestSignature = this.mountRequestSignature(schemaKey, ctx.variables);
+    const entry = this.getItem(requestSignature);
 
     if (isActionComplete) {
       if (!entry) {
         throw new Error(
-          `reached complete action but store has no entry for cacheKey: "${cacheKey}"`
+          `reached complete action but store has no entry for requestSignature: "${requestSignature}"`
         );
       }
 
@@ -83,7 +83,7 @@ export class GraphQLStore {
       entry.loading = false;
       entry.listeners = [];
 
-      this.setItem(cacheKey, entry, schemaKey);
+      this.setItem(requestSignature, entry, schemaKey);
 
       listeners.forEach(fn => {
         fn(ctx);
@@ -108,7 +108,7 @@ export class GraphQLStore {
         });
       } else {
         this.setItem(
-          cacheKey,
+          requestSignature,
           {
             loading: true,
             resolved: false,
@@ -122,20 +122,20 @@ export class GraphQLStore {
       return ctx;
     }
 
-    if (!this.store[cacheKey]) {
+    if (!this.store[requestSignature]) {
       throw new Error(
-        `reached the end of middleware without store set for "${cacheKey}"`
+        `reached the end of middleware without store set for "${requestSignature}"`
       );
     }
 
     return ctx;
   };
 
-  getItem = (cacheKey: string) => {
-    return this.store[cacheKey];
+  getItem = (requestSignature: string) => {
+    return this.store[requestSignature];
   };
 
-  setItem = (cacheKey: string, state: StoreState, schemaKey: string) => {
+  setItem = (requestSignature: string, state: StoreState, schemaKey: string) => {
     if (!this.client.methods[schemaKey as keyof Methods]) {
       throw new Error(
         `schemaKey "${schemaKey}" is not present in client methods: ${Object.keys(
@@ -144,11 +144,11 @@ export class GraphQLStore {
       );
     }
 
-    this.store[cacheKey] = state;
-    this.dispatch(cacheKey, state, schemaKey);
+    this.store[requestSignature] = state;
+    this.dispatch(requestSignature, state, schemaKey);
   };
 
-  dispatch = (cacheKey: string, state: StoreState, schemaKey?: string) => {
+  dispatch = (requestSignature: string, state: StoreState, schemaKey?: string) => {
     if (!schemaKey || !this.client.methods[schemaKey as keyof Methods]) {
       throw new Error(
         `schemaKey "${schemaKey}" is not present in client methods: ${Object.keys(
@@ -158,7 +158,7 @@ export class GraphQLStore {
     }
 
     this._listeners.forEach(fn => {
-      fn(state, cacheKey, schemaKey);
+      fn(state, requestSignature, schemaKey);
     });
   };
 
@@ -190,7 +190,7 @@ export class GraphQLStore {
    * @param schemaKey
    * @param variables
    */
-  mountCacheKey(schemaKey: string, variables: Dict) {
+  mountRequestSignature(schemaKey: string, variables: Dict) {
     if (
       typeof (this.client.methods as { [key: string]: Method })[schemaKey] !==
       'function'

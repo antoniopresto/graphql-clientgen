@@ -5,28 +5,33 @@ export enum OpKind {
 }
 
 export enum Actions {
-  // called when one query is completed (but not aborted) - with success or not
-  // to handle when a query completes even if the result comes from the cache,
-  // you should listen to 'abort' too
-  complete = 'complete',
-
-  // called when one query in a batch of queries is aborted, probably because
-  // the query is already cached or have one identical query in progress
-  abort = 'abort',
-
+  // 1
   // when a query fetch will be queued, use to handle loading states
-  // this actions is called for each query that will be added to a
+  // this action is called for each query that will be added to a
   // batch of queries
   willQueue = 'willQueue',
 
+  // 2 - never called if abort is called
   // when the fetch is started can be used to update requestConfig
   // to update loading state use willQueue, because initFetch
   // will be called only one time for a batch of queries
   initFetch = 'initFetch',
 
+  // 2 or never
+  // called when one query in a batch of queries is aborted, probably because
+  // the query is already cached or have one identical query in progress
+  abort = 'abort',
+
+  // 3 - never called if aborted
   // called when fetch ends - called for a batch of queries, to handle
   // each query independently, you should listen to the 'complete' action
-  completeFetch = 'completeFetch'
+  completeFetch = 'completeFetch',
+  
+  // 4 - never called if aborted
+  // called when one query is completed (but not aborted) - with success or not
+  // to handle when a query completes even if the result comes from the cache,
+  // you should listen to 'abort' too
+  complete = 'complete',
 }
 
 export type Context<V = any, R = any> = {

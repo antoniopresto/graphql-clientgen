@@ -83,7 +83,7 @@ test('using generated file', async t => {
   const client = await getMethodsFromEndpoint();
 
   // echo
-  t.is((await client.echo({ text: 'mock' })).result, 'mock');
+  t.is((await client.echo({ text: 'mock' })).result, 'nil says: mock');
 
   // mutation
   t.is(

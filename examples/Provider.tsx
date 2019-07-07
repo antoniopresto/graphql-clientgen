@@ -37,9 +37,9 @@ export const useClient: UseClient = (methodName, initialFetchConfig) => {
   const mounted = React.useRef(false);
   const store = React.useContext(GraphQLStoreContext);
   const method: Method = store.client.methods[methodName];
-  const cacheKeyRef = React.useRef('');
+  const requestSignatureRef = React.useRef('');
 
-  const [cacheKey, _setCacheKey] = React.useState(() => {
+  const [requestSignature, _setCacheKey] = React.useState(() => {
     if (!initialFetchConfig) {
       return '';
     }
@@ -51,37 +51,37 @@ export const useClient: UseClient = (methodName, initialFetchConfig) => {
       return '';
     }
 
-    const ck = store.mountCacheKey(
+    const signature = store.mountRequestSignature(
       methodName as string,
       initialFetchConfig.variables
     );
-    cacheKeyRef.current = ck;
-    return ck;
+    requestSignatureRef.current = signature;
+    return signature;
   });
 
   const [state, setState] = React.useState<HookState<any, any>>(() => {
-    const cached = store.getItem(cacheKey);
+    const cached = store.getItem(requestSignature);
     if (!cached) return { loading: false };
     return { ...cached, result: cached.context.result };
   });
 
   function setCacheKey(nck: string) {
-    if (nck === cacheKeyRef.current) return;
+    if (nck === requestSignatureRef.current) return;
     _setCacheKey(nck);
     unsubscribeRef.current();
-    cacheKeyRef.current = nck;
+    requestSignatureRef.current = nck;
   }
 
   // subscription
   React.useEffect(() => {
-    // there is no cacheKey because config.cache is false
+    // there is no requestSignature because config.cache is false
     // or fetcher is not called yet.
     // if config.cache is false the state is set via middleware in fetcher below
-    if (!cacheKey) return;
-    setState(store.getItem(cacheKey) || { loading: true });
+    if (!requestSignature) return;
+    setState(store.getItem(requestSignature) || { loading: true });
 
-    unsubscribeRef.current = store.subscribe((value, _cacheKey, _schemaKey) => {
-      if (cacheKeyRef.current !== _cacheKey) {
+    unsubscribeRef.current = store.subscribe((value, _requestSignature, _schemaKey) => {
+      if (requestSignatureRef.current !== _requestSignature) {
         return;
       }
 
@@ -93,7 +93,7 @@ export const useClient: UseClient = (methodName, initialFetchConfig) => {
 
       setState({ ...value, ...value.context });
     });
-  }, [cacheKey]);
+  }, [requestSignature]);
 
   const fetcher = React.useMemo(() => {
     return (
@@ -105,7 +105,7 @@ export const useClient: UseClient = (methodName, initialFetchConfig) => {
       if (usingCache) {
         // using cache, we will subscribe to cache store in
         // the React.useEffect above
-        const nck = store.mountCacheKey(methodName as string, variables);
+        const nck = store.mountRequestSignature(methodName as string, variables);
         setCacheKey(nck);
         return method(variables, config);
       } else {

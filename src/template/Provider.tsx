@@ -2,7 +2,6 @@ import * as React from 'react';
 
 import { GraphQLStore, StoreState } from './Store';
 import {
-  Actions,
   Context,
   FetcherConfig,
   GraphQLClient,
@@ -44,22 +43,32 @@ export const useClient: UseClient = (methodName, initialFetchConfig) => {
     throw new Error('client is not present in GraphQLStore');
   }
 
-  const unsubscribeRef = React.useRef(() => {});
-  const wasStartedTheDefaultFetch = React.useRef(false);
+  // the corresponding graphql method fetcher
   const method: Method = store.client.methods[methodName];
 
-  // as setState is async, we also save cacheKey in a ref to prevent
-  // setCacheKey to be called during a state update
-  const cacheKeyRef = React.useRef('');
+  if (typeof method !== 'function') {
+    throw new Error(
+      `expected method with name "${methodName}" to be a function. found "${typeof method}"`
+    );
+  }
 
-  // if there is a initialConfig, we generate a default cacheKey with
-  // this config - otherwise this cacheKey will be set on a new request
-  const [cacheKey, _setCacheKey] = React.useState(() => {
+  // as setState is async, we also save requestSignature in a ref to prevent
+  // setCacheKey to be called during a state update
+  const requestSignatureRef = React.useRef('');
+
+  // to unsubscribe when unmount or when requestSignature changes
+  const unsubscribeRef = React.useRef(() => {});
+
+  // if there is a initialConfig, we generate a default requestSignature with
+  // this config - otherwise the requestSignature will be set on
+  // the first request and possible changed with setCacheKey if
+  // requestSignature changes between fetches or renders
+  const [requestSignature, updateReqSignatureState] = React.useState(() => {
     if (!initialFetchConfig) {
       return '';
     }
 
-    // if cacheKey is false, the local state will be set when the request
+    // if requestSignature is false, the local state will be set when the request
     // is made in the fetcher function below, independently of the cache
     if (
       initialFetchConfig.config &&
@@ -68,52 +77,66 @@ export const useClient: UseClient = (methodName, initialFetchConfig) => {
       return '';
     }
 
-    const ck = store.mountCacheKey(
+    const reqSign = store.mountRequestSignature(
       methodName as string,
       initialFetchConfig.variables
     );
 
-    cacheKeyRef.current = ck;
-    return ck;
+    requestSignatureRef.current = reqSign;
+    return reqSign;
   });
 
   const [state, setState] = React.useState<HookState<any, any>>(() => {
-    const cached = store.getItem(cacheKey);
-    if (!cached) return { loading: false };
-    return { ...cached, result: cached.context.result };
+    // if there is a initial fetch config and cache !== false we have
+    // a requestSignature at the first render
+    if (requestSignature) {
+      const cached = store.getItem(requestSignature);
+      return storeStateToHookState(cached);
+    }
+
+    return storeStateToHookState();
   });
 
-  function setCacheKey(nck: string) {
-    if (nck === cacheKeyRef.current) return;
-    _setCacheKey(nck);
-    unsubscribeRef.current();
-    cacheKeyRef.current = nck;
+  function updateSignature(newSignature: string) {
+    if (newSignature === requestSignatureRef.current) return;
+    updateReqSignatureState(newSignature);
+    requestSignatureRef.current = newSignature;
+
+    const cached = store.getItem(newSignature);
+    setState(storeStateToHookState(cached));
   }
 
   // subscription
   React.useEffect(() => {
-    // if there is no cacheKey because config.cache is false
-    // or fetcher is not called yet.
-    // if config.cache is false the state is set via middleware in fetcher below
-    if (!cacheKey) return;
-    setState(store.getItem(cacheKey) || { loading: true });
+    unsubscribeRef.current();
 
-    unsubscribeRef.current = store.subscribe((value, _cacheKey, _schemaKey) => {
-      if (cacheKeyRef.current !== _cacheKey) {
-        return;
-      }
+    unsubscribeRef.current = store.subscribe(
+      (value, _requestSignature, _schemaKey) => {
+        // This listener  observes all app requests.
+        // Requests with cache === false can not update state from
+        // other requests with the same requestSignature - they should only
+        // set local state - local state are set from inside the "fetcher"
+        if (value.context.config.cache === false) {
+          return;
+        }
 
-      if (methodName !== _schemaKey) {
-        throw new Error(
-          `expected subscription schemaKey to be "${methodName}" but received ${_schemaKey}`
-        );
-      }
+        // check if current update should reflect in this hook local state
+        if (requestSignatureRef.current !== _requestSignature) {
+          return;
+        }
 
-      if (value.context.action !== Actions.abort) {
+        if (methodName !== _schemaKey) {
+          throw new Error(
+            `expected subscription schemaKey to be "${methodName}" but received ${_schemaKey}`
+          );
+        }
+
         setState({ ...value, ...value.context });
       }
-    });
-  }, [cacheKey]);
+    );
+
+    return unsubscribeRef.current;
+  }, []);
 
   const fetcher = React.useMemo(() => {
     return (
@@ -125,31 +148,51 @@ export const useClient: UseClient = (methodName, initialFetchConfig) => {
       if (usingCache) {
         // using cache, we will subscribe to cache store in
         // the React.useEffect above
-        const nck = store.mountCacheKey(methodName as string, variables);
-        setCacheKey(nck);
+        const newReqId = store.mountRequestSignature(
+          methodName as string,
+          variables
+        );
+        updateSignature(newReqId);
         return method(variables, config);
       } else {
         // not using cache, set state from a
         // independently fetch call
-        setState({ ...state, loading: true });
-        return method(variables, config).then(ctx => {
-          setState({
-            ...state,
-            ...ctx
-          });
+        if (!state.loading) {
+          setState({ ...state, loading: true });
+        }
 
+        return method(variables, config).then(ctx => {
+          setState(
+            storeStateToHookState({
+              context: ctx,
+              loading: false,
+              resolved: true,
+              listeners: []
+            })
+          );
           return ctx;
         });
       }
     };
   }, []);
 
+  // if there is a default fetch config, fetch it on first render
+  const wasStartedTheDefaultFetch = React.useRef(false);
   if (!wasStartedTheDefaultFetch.current && initialFetchConfig) {
     wasStartedTheDefaultFetch.current = true;
     fetcher(initialFetchConfig.variables, initialFetchConfig.config);
   }
 
   return [state, fetcher, store];
+};
+
+const storeStateToHookState = (cached?: StoreState): HookState<any, any> => {
+  return {
+    ...cached,
+    result: cached ? cached.context.result : undefined,
+    loading: cached ? cached.loading : true,
+    resolved: cached ? cached.resolved : false
+  };
 };
 
 // type ArgumentTypes<T> = T extends (...args: infer U) => infer _ ? U : never;
@@ -182,5 +225,9 @@ type UseClient = <
   GraphQLStore
 ];
 
-type HookState<T, V> = Partial<StoreState<T, V>> &
-  Partial<StoreState<T, V>['context']>;
+type HookState<T, V> = {
+  loading: boolean;
+  resolved: boolean;
+  context?: StoreState<T, V>['context'];
+  result?: StoreState<T, V>['context']['result'];
+};

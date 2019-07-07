@@ -1,6 +1,6 @@
 {
   "name": "graphql-clientgen",
-  "version": "2.0.1",
+  "version": "2.0.3-beta.1",
   "description": "Generate client script for graphql projects",
   "main": "build/main/index.js",
   "typings": "build/main/index.d.ts",
@@ -81,6 +81,7 @@
     "graphql": "^14.3.1",
     "graphql-compose": "^7.1.0",
     "graphql-tools": "^4.0.5",
+    "jest-diff": "^24.8.0",
     "jsdom": "^15.1.1",
     "jsdom-global": "^3.0.2",
     "node-fetch": "^2.6.0",
@@ -99,7 +100,6 @@
     "typescript": "^3.1.6"
   },
   "ava": {
-    "failFast": true,
     "files": [
       "build/main/**/*.spec.js"
     ],

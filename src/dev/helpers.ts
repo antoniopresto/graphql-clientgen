@@ -36,7 +36,18 @@ const gitLabIntrospection = () => {
 
 const mockServer = memo(async () => {
   return apolloMockServer(await gitLabTypeDefs(), {
-    String: () => 'mock'
+    String: (...args: any) => {
+      try {
+        // mock gitlab 'echo' graphql query
+        const { fieldNodes, variableValues } = args[3];
+        const suffix = fieldNodes[0].alias.value.match(/(_\d*)/gm);
+        const varName = suffix ? `text${suffix[0]}` : '';
+        const textValue = variableValues[varName];
+        return textValue !== undefined ? `nil says: ${textValue}` : 'mock';
+      } catch (e) {
+        return 'mock';
+      }
+    }
   });
 });
 
@@ -57,6 +68,21 @@ export const fetchMock = async function(url: any, init?: RequestInit) {
         headers: { 'Content-type': 'application/json' }
       })
   );
+};
+
+export const delayedFetchMock = (
+  url: any,
+  init?: RequestInit & { __delay?: number }
+) => {
+  const delay = (init && init.__delay) || 500;
+
+  return new Promise<Response>((resolve, reject) => {
+    setTimeout(() => {
+      fetchMock(url, init)
+        .then(resolve)
+        .catch(reject);
+    }, delay);
+  });
 };
 
 global.fetch = fetchMock;
