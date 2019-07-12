@@ -78,7 +78,7 @@ export async function main(cli: meow.Result): Promise<void> {
 
   const clientPath = `${folder}/Client.ts`;
   const providerPath = `${folder}/Provider.tsx`;
-  const storePath = `${folder}/Store.tsx`;
+  const storePath = `${folder}/Store.ts`;
 
   console.log(`writing ${clientPath}`);
   fs.writeFileSync(clientPath, client.client);

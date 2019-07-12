@@ -137,7 +137,7 @@ const basePath = path.resolve(__dirname, '../../template');
 const getClientBase = async () => {
   const client = fs.readFileSync(basePath + '/Client.ts', 'utf8');
   const provider = fs.readFileSync(basePath + '/Provider.tsx', 'utf8');
-  const store = fs.readFileSync(basePath + '/Store.tsx', 'utf8');
+  const store = fs.readFileSync(basePath + '/Store.ts', 'utf8');
 
   return {
     client,

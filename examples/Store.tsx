@@ -202,7 +202,7 @@ export class GraphQLStore {
     }
 
     const variablesString = Object.keys(variables)
-      .map(key => key.replace(/_(\d)*/, '')) // remove batch query suffix
+      .map(key => key.replace(/_(\d)*$/, '')) // remove batch query suffix
       .sort()
       .reduce((prev, key) => {
         const acc = prev ? prev + ',' : prev;
@@ -210,9 +210,6 @@ export class GraphQLStore {
         return `${acc}${key}:${value}`;
       }, '');
 
-    return `${schemaKey}(${variablesString})`.replace(
-      /[^a-z0-9._\-;,():]/gim,
-      ''
-    );
+    return `${schemaKey}(${variablesString})`.replace(/\n/mig, ' ').trim();
   }
 }
