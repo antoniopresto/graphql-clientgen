@@ -8,7 +8,8 @@ import {
   hope,
   fetchMock,
   getGeneratedModules,
-  mapObjectTypes, delayedFetchMock
+  mapObjectTypes,
+  delayedFetchMock
 } from '../dev/helpers';
 
 import '../dev/prepareClientEnv';
@@ -414,7 +415,7 @@ test('should ignore cache when cache is false', async t => {
       variables: { text: 'testingCache' },
       config: {
         cache: false,
-        async middleware(ctx) {
+        async middleware(ctx: any) {
           if (ctx.action === 'complete') {
             firstCall.resolve();
           }
@@ -454,30 +455,19 @@ test('should ignore cache when cache is false', async t => {
 test('should ignore cache when mixed cache false/true', async t => {
   const stub = sinon.stub(global, 'fetch').callsFake(fetchMock);
 
-  const {
-    Provider,
-    Client,
-    useClient,
-    Context,
-    Store
-  } = await getGeneratedModules();
+  const { Provider, Client, useClient } = await getGeneratedModules();
 
   const client = new Client({ url: TEST_API });
   const firstCall = hope();
   const secondCall = hope();
   const thirdCall = hope();
 
-  let context = {} as (typeof Store.prototype);
-  let stateResults: ((string | null | undefined)[])[] = [];
-
   const Child = () => {
-    context = React.useContext(Context);
-
     const [state, echo] = useClient('echo', {
       variables: { text: 'testingCache' },
       config: {
         cache: false,
-        async middleware(ctx) {
+        async middleware(ctx: any) {
           if (ctx.action === 'complete') {
             firstCall.resolve();
           }
@@ -486,7 +476,7 @@ test('should ignore cache when mixed cache false/true', async t => {
       }
     });
 
-    const [state2, echo2] = useClient('echo', {
+    const [, echo2] = useClient('echo', {
       variables: { text: 'testingCache' },
       config: {
         cache: false,
@@ -508,8 +498,6 @@ test('should ignore cache when mixed cache false/true', async t => {
         thirdCall.resolve();
       })();
     }, []);
-
-    stateResults.push([state.result, state2.result]);
 
     return <div>{state.result}</div>;
   };
@@ -549,7 +537,6 @@ test('should run listener even if cache is false', async t => {
 
   let listen = false;
   let subscription1Count = 0;
-  let subscription2Count = 0;
 
   const Child = () => {
     context = React.useContext(Context);
@@ -564,7 +551,6 @@ test('should run listener even if cache is false', async t => {
 
         if (requestSignature === 'echo(text:second_call)' && state.resolved) {
           secondCall.resolve(requestSignature);
-          subscription2Count++;
         }
       });
     }
@@ -600,19 +586,11 @@ test('should run listener even if cache is false', async t => {
 test('should not change the loadingState of an already loaded item', async t => {
   const stub = sinon.stub(global, 'fetch').callsFake(fetchMock);
 
-  const {
-    Provider,
-    Client,
-    useClient,
-    Context,
-    Store
-  } = await getGeneratedModules(false);
+  const { Provider, Client, useClient } = await getGeneratedModules(false);
 
   const client = new Client({ url: TEST_API });
   const firstCall = hope();
   const secondCall = hope();
-
-  let context = {} as (typeof Store.prototype);
 
   let renderCount = 0;
 
@@ -631,8 +609,6 @@ test('should not change the loadingState of an already loaded item', async t => 
   }
 
   const Child = () => {
-    context = React.useContext(Context);
-
     const [state1] = useClient('echo', {
       variables: { text: 'holly shit' },
       config: {
@@ -651,7 +627,7 @@ test('should not change the loadingState of an already loaded item', async t => 
     const [state3, echo3] = useClient('echo');
 
     React.useEffect(() => {
-      firstCall.promise.then(res => {
+      firstCall.promise.then(() => {
         echo2({ text: 'hy' }).then(() => {
           echo3({ text: 'hy' }, { cache: false });
         });
@@ -693,20 +669,11 @@ test('should not change the loadingState of an already loaded item', async t => 
 test('one cacheable request should wait if there is one with same signature in progress', async t => {
   const stub = sinon.stub(global, 'fetch').callsFake(delayedFetchMock);
 
-  const {
-    Provider,
-    Client,
-    useClient,
-    Context,
-    Store
-  } = await getGeneratedModules(false);
+  const { Provider, Client, useClient } = await getGeneratedModules(false);
 
   const client = new Client({ url: TEST_API });
   const firstCall = hope();
   const secondCall = hope();
-  let renderCount = 0;
-
-  let context = {} as (typeof Store.prototype);
 
   let stateLoadingChanges = {
     1: [] as boolean[],
@@ -723,8 +690,6 @@ test('one cacheable request should wait if there is one with same signature in p
   }
 
   const Child = () => {
-    context = React.useContext(Context);
-
     const [state1] = useClient('echo', {
       variables: { text: 'hy' }
     });
@@ -753,7 +718,6 @@ test('one cacheable request should wait if there is one with same signature in p
     pushIfDiff(state1.loading, 1);
     pushIfDiff(state2.loading, 2);
     pushIfDiff(state3.loading, 3);
-    renderCount++;
 
     return <div>{state3.result}</div>;
   };
@@ -768,15 +732,13 @@ test('one cacheable request should wait if there is one with same signature in p
   await secondCall.promise;
 
   t.is(stub.callCount, 1);
-  
+
   t.deepEqual(stateLoadingChanges[1], [true, false]);
   t.deepEqual(stateLoadingChanges[2], [true, false]);
   t.deepEqual(stateLoadingChanges[3], [true, false]);
-  
 
   t.is(wrapper.getDOMNode().innerHTML, 'nil says: hy');
 });
-
 
 // TODO
 // does not permit to insert or delete middleware after call started

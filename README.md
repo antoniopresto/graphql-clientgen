@@ -76,4 +76,3 @@ fs.writeFile(__dirname + '/client.ts', client);
 - [ ] print query
 - [ ] improve docs
 - [ ] generate pure javascript version of the client
-- [ ] generate jsdoc

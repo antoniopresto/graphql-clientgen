@@ -1,5 +1,4 @@
 import './helpers';
-import sinon from 'sinon';
 
 import { getClientFromTSSource, getTSFile } from './helpers';
 
