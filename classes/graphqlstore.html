@@ -99,8 +99,9 @@
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="graphqlstore.html#getitem" class="tsd-kind-icon">get<wbr>Item</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="graphqlstore.html#getlisteners" class="tsd-kind-icon">get<wbr>Listeners</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="graphqlstore.html#getstate" class="tsd-kind-icon">get<wbr>State</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="graphqlstore.html#handlecachequery" class="tsd-kind-icon">handle<wbr>Cache<wbr>Query</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="graphqlstore.html#middleware" class="tsd-kind-icon">middleware</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="graphqlstore.html#mountcachekey" class="tsd-kind-icon">mount<wbr>Cache<wbr>Key</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="graphqlstore.html#mountrequestsignature" class="tsd-kind-icon">mount<wbr>Request<wbr>Signature</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="graphqlstore.html#setitem" class="tsd-kind-icon">set<wbr>Item</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="graphqlstore.html#subscribe" class="tsd-kind-icon">subscribe</a></li>
 							</ul>
@@ -120,7 +121,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/a2d6978/src/template/Store.tsx#L43">template/Store.tsx:43</a></li>
+									<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/614692e/src/template/Store.tsx#L126">template/Store.tsx:126</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -142,17 +143,17 @@
 					<div class="tsd-signature tsd-kind-icon">_listeners<span class="tsd-signature-symbol">:</span> <a href="../globals.html#storelistener" class="tsd-signature-type">StoreListener</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> =&nbsp;[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/a2d6978/src/template/Store.tsx#L43">template/Store.tsx:43</a></li>
+							<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/614692e/src/template/Store.tsx#L126">template/Store.tsx:126</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="client" class="tsd-anchor"></a>
 					<h3>client</h3>
-					<div class="tsd-signature tsd-kind-icon">client<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">GraphQLClient</span></div>
+					<div class="tsd-signature tsd-kind-icon">client<span class="tsd-signature-symbol">:</span> <a href="graphqlclient.html" class="tsd-signature-type">GraphQLClient</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/a2d6978/src/template/Store.tsx#L41">template/Store.tsx:41</a></li>
+							<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/614692e/src/template/Store.tsx#L124">template/Store.tsx:124</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -162,7 +163,7 @@
 					<div class="tsd-signature tsd-kind-icon">store<span class="tsd-signature-symbol">:</span> <a href="../globals.html#store" class="tsd-signature-type">Store</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/a2d6978/src/template/Store.tsx#L42">template/Store.tsx:42</a></li>
+							<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/614692e/src/template/Store.tsx#L125">template/Store.tsx:125</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -173,19 +174,19 @@
 					<a name="dispatch" class="tsd-anchor"></a>
 					<h3>dispatch</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">dispatch<span class="tsd-signature-symbol">(</span>cacheKey<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, state<span class="tsd-signature-symbol">: </span><a href="../globals.html#storestate" class="tsd-signature-type">StoreState</a>, schemaKey<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">dispatch<span class="tsd-signature-symbol">(</span>requestSignature<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, state<span class="tsd-signature-symbol">: </span><a href="../globals.html#storestate" class="tsd-signature-type">StoreState</a>, schemaKey<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/a2d6978/src/template/Store.tsx#L151">template/Store.tsx:151</a></li>
+									<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/614692e/src/template/Store.tsx#L271">template/Store.tsx:271</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>cacheKey: <span class="tsd-signature-type">string</span></h5>
+									<h5>requestSignature: <span class="tsd-signature-type">string</span></h5>
 								</li>
 								<li>
 									<h5>state: <a href="../globals.html#storestate" class="tsd-signature-type">StoreState</a></h5>
@@ -202,19 +203,19 @@
 					<a name="getitem" class="tsd-anchor"></a>
 					<h3>get<wbr>Item</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">get<wbr>Item<span class="tsd-signature-symbol">(</span>cacheKey<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">object</span></li>
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Item<span class="tsd-signature-symbol">(</span>requestSignature<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">object</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/a2d6978/src/template/Store.tsx#L134">template/Store.tsx:134</a></li>
+									<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/614692e/src/template/Store.tsx#L254">template/Store.tsx:254</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>cacheKey: <span class="tsd-signature-type">string</span></h5>
+									<h5>requestSignature: <span class="tsd-signature-type">string</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">undefined</span>
@@ -234,7 +235,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/a2d6978/src/template/Store.tsx#L50">template/Store.tsx:50</a></li>
+									<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/614692e/src/template/Store.tsx#L133">template/Store.tsx:133</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">function</span><span class="tsd-signature-symbol">[]</span></h4>
@@ -251,7 +252,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/a2d6978/src/template/Store.tsx#L165">template/Store.tsx:165</a></li>
+									<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/614692e/src/template/Store.tsx#L285">template/Store.tsx:285</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">object</span></h4>
@@ -260,6 +261,29 @@
 									<h5><span class="tsd-signature-symbol">[</span>key: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]: </span><a href="../globals.html#storestate" class="tsd-signature-type">StoreState</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span></h5>
 								</li>
 							</ul>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="handlecachequery" class="tsd-anchor"></a>
+					<h3>handle<wbr>Cache<wbr>Query</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">handle<wbr>Cache<wbr>Query<span class="tsd-signature-symbol">(</span>args<span class="tsd-signature-symbol">: </span><a href="../globals.html#submiddlewareargs" class="tsd-signature-type">SubMiddlewareArgs</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../globals.html#middleware" class="tsd-signature-type">Middleware</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/614692e/src/template/Store.tsx#L175">template/Store.tsx:175</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>args: <a href="../globals.html#submiddlewareargs" class="tsd-signature-type">SubMiddlewareArgs</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="../globals.html#middleware" class="tsd-signature-type">Middleware</a></h4>
 						</li>
 					</ul>
 				</section>
@@ -273,7 +297,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/a2d6978/src/template/Store.tsx#L52">template/Store.tsx:52</a></li>
+									<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/614692e/src/template/Store.tsx#L135">template/Store.tsx:135</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -282,7 +306,7 @@
 									<h5>ctx: <span class="tsd-signature-type">object</span></h5>
 									<ul class="tsd-parameters">
 										<li class="tsd-parameter">
-											<h5>action<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Actions</span></h5>
+											<h5>action<span class="tsd-signature-symbol">: </span><a href="../enums/actions.html" class="tsd-signature-type">Actions</a></h5>
 										</li>
 										<li class="tsd-parameter">
 											<h5>config<span class="tsd-signature-symbol">: </span><a href="../globals.html#fetcherconfig" class="tsd-signature-type">FetcherConfig</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">V</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">R</span><span class="tsd-signature-symbol">&gt;</span></h5>
@@ -310,16 +334,16 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-					<a name="mountcachekey" class="tsd-anchor"></a>
-					<h3>mount<wbr>Cache<wbr>Key</h3>
+					<a name="mountrequestsignature" class="tsd-anchor"></a>
+					<h3>mount<wbr>Request<wbr>Signature</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">mount<wbr>Cache<wbr>Key<span class="tsd-signature-symbol">(</span>schemaKey<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, variables<span class="tsd-signature-symbol">: </span><a href="../globals.html#dict" class="tsd-signature-type">Dict</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
+						<li class="tsd-signature tsd-kind-icon">mount<wbr>Request<wbr>Signature<span class="tsd-signature-symbol">(</span>schemaKey<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, variables<span class="tsd-signature-symbol">: </span><a href="../globals.html#dict" class="tsd-signature-type">Dict</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/a2d6978/src/template/Store.tsx#L193">template/Store.tsx:193</a></li>
+									<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/614692e/src/template/Store.tsx#L313">template/Store.tsx:313</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -346,19 +370,19 @@
 					<a name="setitem" class="tsd-anchor"></a>
 					<h3>set<wbr>Item</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">set<wbr>Item<span class="tsd-signature-symbol">(</span>cacheKey<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, state<span class="tsd-signature-symbol">: </span><a href="../globals.html#storestate" class="tsd-signature-type">StoreState</a>, schemaKey<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">set<wbr>Item<span class="tsd-signature-symbol">(</span>requestSignature<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, state<span class="tsd-signature-symbol">: </span><a href="../globals.html#storestate" class="tsd-signature-type">StoreState</a>, schemaKey<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/a2d6978/src/template/Store.tsx#L138">template/Store.tsx:138</a></li>
+									<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/614692e/src/template/Store.tsx#L258">template/Store.tsx:258</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>cacheKey: <span class="tsd-signature-type">string</span></h5>
+									<h5>requestSignature: <span class="tsd-signature-type">string</span></h5>
 								</li>
 								<li>
 									<h5>state: <a href="../globals.html#storestate" class="tsd-signature-type">StoreState</a></h5>
@@ -381,7 +405,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/a2d6978/src/template/Store.tsx#L167">template/Store.tsx:167</a></li>
+									<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/614692e/src/template/Store.tsx#L287">template/Store.tsx:287</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -436,10 +460,13 @@
 								<a href="graphqlstore.html#getstate" class="tsd-kind-icon">get<wbr>State</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="graphqlstore.html#handlecachequery" class="tsd-kind-icon">handle<wbr>Cache<wbr>Query</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="graphqlstore.html#middleware" class="tsd-kind-icon">middleware</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="graphqlstore.html#mountcachekey" class="tsd-kind-icon">mount<wbr>Cache<wbr>Key</a>
+								<a href="graphqlstore.html#mountrequestsignature" class="tsd-kind-icon">mount<wbr>Request<wbr>Signature</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="graphqlstore.html#setitem" class="tsd-kind-icon">set<wbr>Item</a>
