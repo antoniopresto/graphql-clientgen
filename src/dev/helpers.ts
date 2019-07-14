@@ -136,11 +136,11 @@ export async function getMethodsFromEndpoint(url = TEST_API) {
   return methods;
 }
 
-export function hope(timeout = 0, rejectOnTimeout = false) {
+export function hope<T = any>(timeout = 0, rejectOnTimeout = false) {
   let resolve: Function = () => {};
   let reject: Function = () => {};
 
-  const promise = new Promise((s, e) => {
+  const promise = new Promise<T>((s, e) => {
     resolve = s;
     reject = e;
   });

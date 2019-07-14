@@ -141,7 +141,8 @@ export class GraphQLClient {
       // following format: "originalName" + "_" + childQueryIndex
       const firstQueryLine = qiQuery.trim().split('\n')[0];
       const variablesMatch = firstQueryLine.match(/\((.*)\)/);
-      if (variablesMatch) { // if this child batched query has variables
+      if (variablesMatch) {
+        // if this child batched query has variables
         variablesMatch[1]
           .split(',')
           .map(pair =>
@@ -172,11 +173,11 @@ export class GraphQLClient {
         '\n';
     });
 
-    
-    if (finalQueryHeader) { // if this child query has variables
-      finalQueryHeader = `(${finalQueryHeader})`
+    if (finalQueryHeader) {
+      // if this child query has variables
+      finalQueryHeader = `(${finalQueryHeader})`;
     }
-    
+
     const query = `${kind} ${finalQueryHeader} {
       ${finalQueryBody}
     }`;
@@ -349,6 +350,12 @@ export class GraphQLClient {
 
         if (errors && !Array.isArray(errors)) {
           errors = [errors];
+        }
+
+        if (errors) {
+          errors = errors.map((e: any) =>
+            e && e.message ? e.message : JSON.stringify(e)
+          );
         }
 
         return middleware({

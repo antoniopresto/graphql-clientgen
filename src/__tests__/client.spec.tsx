@@ -101,6 +101,103 @@ test('should get response from useClient', async t => {
   t.is(wrapper.getDOMNode().innerHTML, 'nil says: hey');
 });
 
+test('useClient should update state', async t => {
+  const { Provider, Client, useClient } = await getGeneratedModules();
+  const client = new Client({ url: TEST_API });
+
+  let initialState1: any = {};
+  let initialState2: any = {};
+
+  let renderCount = 0;
+
+  const hope1 = hope();
+  const hope2 = hope();
+  const hope3 = hope();
+
+  const Child = () => {
+    const [state1, echo1] = useClient('echo');
+    const [state2] = useClient('echo', { variables: { text: 'foo' } });
+    const [state3, group] = useClient('group');
+
+    if (renderCount === 0) {
+      initialState1 = state1;
+      initialState2 = state2;
+
+      setTimeout(() => {
+        echo1({ text: 'echo1' }).then(() => {
+          group({ shouldThrow: 1234 });
+        });
+      }, 100);
+    }
+
+    if (state1.resolved) {
+      hope1.resolve(state1);
+    }
+
+    if (state2.resolved) {
+      hope2.resolve(state2);
+    }
+
+    if (state3.resolved) {
+      hope3.resolve(state3);
+    }
+
+    renderCount++;
+    return <div>{state2.result}</div>;
+  };
+
+  const wrapper = mount(
+    <Provider client={client}>
+      <Child />
+    </Provider>
+  );
+
+  const { context, ...finalState1 } = await hope1.promise;
+  const { context: c2, ...finalState2 } = await hope2.promise;
+  const { context: c3, ...finalState3 } = await hope3.promise;
+
+  t.deepEqual(initialState1, {
+    error: null,
+    loading: false,
+    resolved: false,
+    result: undefined
+  });
+
+  t.deepEqual(initialState2, {
+    error: null,
+    loading: true,
+    resolved: false,
+    result: undefined
+  });
+
+  t.deepEqual(finalState1, {
+    error: null,
+    loading: false,
+    resolved: true,
+    result: 'nil says: echo1',
+    listeners: []
+  });
+
+  t.deepEqual(finalState2, {
+    error: null,
+    loading: false,
+    resolved: true,
+    result: 'nil says: foo',
+    listeners: []
+  });
+
+  t.deepEqual(finalState3, {
+    error:
+      'Variable "$fullPath_0" of required type "ID!" was not provided.',
+    loading: false,
+    resolved: true,
+    result: null,
+    listeners: []
+  });
+
+  t.is(wrapper.getDOMNode().innerHTML, 'nil says: foo');
+});
+
 test('should render only 2 times', async t => {
   const { Provider, Client, useClient } = await getGeneratedModules();
   const client = new Client({ url: TEST_API });
@@ -652,7 +749,7 @@ test('should not change the loadingState of an already loaded item', async t => 
   await secondCall.promise;
 
   t.is(stub.callCount, 3);
-  
+
   t.deepEqual(stateLoadingChanges[1], [true, false]);
   t.deepEqual(stateLoadingChanges[2], [false, true, false]);
   t.deepEqual(stateLoadingChanges[3], [false, true, false]);
