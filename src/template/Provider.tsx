@@ -87,14 +87,16 @@ export const useClient: UseClient = (methodName, initialFetchConfig) => {
   });
 
   const [state, setState] = React.useState<HookState<any, any>>(() => {
+    const isLoading = !!initialFetchConfig;
+    
     // if there is a initial fetch config and cache !== false we have
     // a requestSignature at the first render
     if (requestSignature) {
       const cached = store.getItem(requestSignature);
-      return storeStateToHookState(cached);
+      return storeStateToHookState(cached, isLoading);
     }
 
-    return storeStateToHookState();
+    return storeStateToHookState(undefined, isLoading);
   });
 
   function updateSignature(newSignature: string) {
@@ -131,7 +133,7 @@ export const useClient: UseClient = (methodName, initialFetchConfig) => {
           );
         }
 
-        setState({ ...value, ...value.context });
+        setState(storeStateToHookState(value));
       }
     );
 
@@ -187,12 +189,16 @@ export const useClient: UseClient = (methodName, initialFetchConfig) => {
   return [state, fetcher, store];
 };
 
-const storeStateToHookState = (cached?: StoreState): HookState<any, any> => {
+const storeStateToHookState = (state?: StoreState, isLoadingIfNotCached?: boolean): HookState<any, any> => {
   return {
-    ...cached,
-    result: cached ? cached.context.result : undefined,
-    loading: cached ? cached.loading : false,
-    resolved: cached ? cached.resolved : false
+    ...state,
+    result: state ? state.context.result : undefined,
+    loading: state ? state.loading : !!isLoadingIfNotCached,
+    resolved: state ? state.resolved : false,
+    error:
+      state && state.context && state.context.errors
+        ? state.context.errors.join('\n')
+        : null
   };
 };
 
@@ -231,4 +237,5 @@ type HookState<T, V> = {
   resolved: boolean;
   context?: StoreState<T, V>['context'];
   result?: StoreState<T, V>['context']['result'];
+  error?: string | null;
 };

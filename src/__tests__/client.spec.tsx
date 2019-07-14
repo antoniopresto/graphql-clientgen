@@ -592,8 +592,6 @@ test('should not change the loadingState of an already loaded item', async t => 
   const firstCall = hope();
   const secondCall = hope();
 
-  let renderCount = 0;
-
   let stateLoadingChanges = {
     1: [] as boolean[],
     2: [] as boolean[],
@@ -642,8 +640,6 @@ test('should not change the loadingState of an already loaded item', async t => 
     pushIfDiff(state2.loading, 2);
     pushIfDiff(state3.loading, 3);
 
-    renderCount++;
-
     return <div>{state3.result}</div>;
   };
 
@@ -656,12 +652,10 @@ test('should not change the loadingState of an already loaded item', async t => 
   await secondCall.promise;
 
   t.is(stub.callCount, 3);
-
-  t.is(renderCount, 7);
-
+  
   t.deepEqual(stateLoadingChanges[1], [true, false]);
-  t.deepEqual(stateLoadingChanges[2], [true, false]);
-  t.deepEqual(stateLoadingChanges[3], [true, false]);
+  t.deepEqual(stateLoadingChanges[2], [false, true, false]);
+  t.deepEqual(stateLoadingChanges[3], [false, true, false]);
 
   t.is(wrapper.getDOMNode().innerHTML, 'nil says: hy');
 });
@@ -734,8 +728,8 @@ test('one cacheable request should wait if there is one with same signature in p
   t.is(stub.callCount, 1);
 
   t.deepEqual(stateLoadingChanges[1], [true, false]);
-  t.deepEqual(stateLoadingChanges[2], [true, false]);
-  t.deepEqual(stateLoadingChanges[3], [true, false]);
+  t.deepEqual(stateLoadingChanges[2], [false, true, false]);
+  t.deepEqual(stateLoadingChanges[3], [false]);
 
   t.is(wrapper.getDOMNode().innerHTML, 'nil says: hy');
 });
