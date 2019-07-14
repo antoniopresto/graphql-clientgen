@@ -67,7 +67,10 @@ export class GraphQLStore {
 
     const { schemaKey } = ctx.config;
 
-    const requestSignature = this.mountRequestSignature(schemaKey, ctx.variables);
+    const requestSignature = this.mountRequestSignature(
+      schemaKey,
+      ctx.variables
+    );
     const entry = this.getItem(requestSignature);
 
     if (isActionComplete) {
@@ -135,7 +138,11 @@ export class GraphQLStore {
     return this.store[requestSignature];
   };
 
-  setItem = (requestSignature: string, state: StoreState, schemaKey: string) => {
+  setItem = (
+    requestSignature: string,
+    state: StoreState,
+    schemaKey: string
+  ) => {
     if (!this.client.methods[schemaKey as keyof Methods]) {
       throw new Error(
         `schemaKey "${schemaKey}" is not present in client methods: ${Object.keys(
@@ -148,7 +155,11 @@ export class GraphQLStore {
     this.dispatch(requestSignature, state, schemaKey);
   };
 
-  dispatch = (requestSignature: string, state: StoreState, schemaKey?: string) => {
+  dispatch = (
+    requestSignature: string,
+    state: StoreState,
+    schemaKey?: string
+  ) => {
     if (!schemaKey || !this.client.methods[schemaKey as keyof Methods]) {
       throw new Error(
         `schemaKey "${schemaKey}" is not present in client methods: ${Object.keys(
@@ -201,15 +212,16 @@ export class GraphQLStore {
       );
     }
 
-    const variablesString = Object.keys(variables)
+    const keys = Object.keys(variables);
+
+    const variablesString = keys
       .map(key => key.replace(/_(\d)*$/, '')) // remove batch query suffix
-      .sort()
+      .sort() // sort to ignore order when mounting request signature
       .reduce((prev, key) => {
         const acc = prev ? prev + ',' : prev;
-        const value = JSON.stringify(variables[key]);
-        return `${acc}${key}:${value}`;
+        return `${acc}${key}:${JSON.stringify(variables[key])}`;
       }, '');
 
-    return `${schemaKey}(${variablesString})`.replace(/\n/mig, ' ').trim();
+    return `${schemaKey}(${variablesString})`;
   }
 }
