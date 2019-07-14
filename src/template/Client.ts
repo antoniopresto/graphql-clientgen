@@ -266,7 +266,7 @@ export class GraphQLClient {
     //[methods]//
   };
 
-  methodsInfo = {
+  methodsInfo: MethodsInfo = {
     //[methodsInfo]//
   };
   
@@ -406,4 +406,40 @@ type MethodsDict = { [key: string]: Method };
 
 export interface Methods extends MethodsDict {
   //[methodsType]//
+}
+
+export type MethodsInfo = {
+  [key: string]: MethodInfo
+}
+
+export interface MethodInfo {
+  type: string;
+  schemaKey: keyof Methods;
+  entityName: string;
+  isList: boolean;
+  argsTSName: string;
+  returnTSName: string;
+  isMutation: boolean;
+  isQuery: boolean;
+  isSubscription: boolean;
+  field: Field;
+  isNonNull: boolean;
+  kind: OpKind | string;
+}
+
+export interface Field {
+  description: string;
+  deprecationReason?: null;
+  type: string;
+  args?: (ArgsEntity)[] | null;
+  isDeprecated: boolean;
+  name: string;
+  [key: string]: any
+}
+
+export interface ArgsEntity {
+  name: string;
+  description?: string | null;
+  type: string;
+  [key: string]: any
 }

@@ -143,7 +143,8 @@ export const useClient: UseClient = (methodName, initialFetchConfig) => {
       variables: any = {},
       config: Partial<FetcherConfig<any, any>> = {}
     ) => {
-      const usingCache = config.cache !== false;
+      const methodInfo = store.client.methodsInfo[methodName];
+      const usingCache = config.cache !== false && methodInfo.isQuery;
 
       if (usingCache) {
         // using cache, we will subscribe to cache store in
@@ -190,7 +191,7 @@ const storeStateToHookState = (cached?: StoreState): HookState<any, any> => {
   return {
     ...cached,
     result: cached ? cached.context.result : undefined,
-    loading: cached ? cached.loading : true,
+    loading: cached ? cached.loading : false,
     resolved: cached ? cached.resolved : false
   };
 };
