@@ -26,12 +26,12 @@ export enum Actions {
   // called when fetch ends - called for a batch of queries, to handle
   // each query independently, you should listen to the 'complete' action
   completeFetch = 'completeFetch',
-  
+
   // 4 - never called if aborted
   // called when one query is completed (but not aborted) - with success or not
   // to handle when a query completes even if the result comes from the cache,
   // you should listen to 'abort' too
-  complete = 'complete',
+  complete = 'complete'
 }
 
 export type Context<V = any, R = any> = {
@@ -115,35 +115,52 @@ export class GraphQLClient {
     let finalVariables: Dict = {};
     let resolverMap: { [key: string]: QueueItem } = {};
 
-    queue.forEach((q, key) => {
-      const qiKey = `${kind}_${key}`;
-      let qiQuery = q.config.query;
-      const qiHeader = getHeader(qiQuery.trim().split('\n')[0]);
-      resolverMap[qiKey] = q;
+    queue.forEach((childQuery, childQueryIndex) => {
+      const qiKey = `${kind}_${childQueryIndex}`;
+      let qiQuery = childQuery.config.query;
 
-      if (q.config.middleware) {
-        const m = ensureArray(q.config.middleware);
+      resolverMap[qiKey] = childQuery;
+
+      if (childQuery.config.middleware) {
+        const m = ensureArray(childQuery.config.middleware);
         batchMiddleware = batchMiddleware.concat(m);
       }
 
-      if (q.config.middleware) {
-        headers = { ...headers, ...q.config.headers };
+      if (childQuery.config.middleware) {
+        headers = { ...headers, ...childQuery.config.headers };
       }
 
-      if (q.variables) {
-        Object.keys(q.variables).forEach(k => {
-          finalVariables[`${k}_${key}`] = q.variables[k];
+      if (childQuery.variables) {
+        Object.keys(childQuery.variables).forEach(k => {
+          finalVariables[`${k}_${childQueryIndex}`] = childQuery.variables[k];
         });
       }
 
-      qiHeader.forEach(pair => {
-        const nname = `${pair[0]}_${key}`;
-        finalQueryHeader += ` ${nname}: ${pair[1]} `;
+      // We will pass all batched queries in the body of one main query
+      // The variables of the child queries will give new names in the
+      // following format: "originalName" + "_" + childQueryIndex
+      const firstQueryLine = qiQuery.trim().split('\n')[0];
+      const variablesMatch = firstQueryLine.match(/\((.*)\)/);
+      if (variablesMatch) { // if this child batched query has variables
+        variablesMatch[1]
+          .split(',')
+          .map(pair =>
+            pair
+              .trim()
+              .split(':') // will generate '["$varName", "GQLType"]
+              .map(e => e.trim())
+          )
+          .forEach(pair => {
+            const nname = `${pair[0]}_${childQueryIndex}`;
+            finalQueryHeader += ` ${nname}: ${pair[1]} `;
 
-        const reg = new RegExp('\\' + pair[0], 'mg');
+            // regex to replace "$varName" with "$varName" + '_' + index
+            // resulting in a varName like: "$varName_0"
+            const reg = new RegExp('\\' + pair[0], 'mg');
 
-        qiQuery = qiQuery.replace(reg, nname);
-      });
+            qiQuery = qiQuery.replace(reg, nname);
+          });
+      }
 
       finalQueryBody +=
         `\n ${qiKey}: ` +
@@ -155,7 +172,12 @@ export class GraphQLClient {
         '\n';
     });
 
-    const query = `${kind} (${finalQueryHeader}) {
+    
+    if (finalQueryHeader) { // if this child query has variables
+      finalQueryHeader = `(${finalQueryHeader})`
+    }
+    
+    const query = `${kind} ${finalQueryHeader} {
       ${finalQueryBody}
     }`;
 
@@ -269,7 +291,7 @@ export class GraphQLClient {
   methodsInfo: MethodsInfo = {
     //[methodsInfo]//
   };
-  
+
   queryFetcher = async <Variables, Return>(
     variables: Variables,
     config: FetcherConfig<Variables, Return>
@@ -381,16 +403,6 @@ export function ensureArray(el: any) {
   return [el];
 }
 
-// => [['$varname', 'GqlInputType'], ...]
-function getHeader(str: string) {
-  return ((str.match(/\((.*)\)/) || [])[1] || '').split(',').map(pair =>
-    pair
-      .trim()
-      .split(':')
-      .map(e => e.trim())
-  );
-}
-
 export type Dict<T = any> = { [key: string]: T };
 
 export type Method<
@@ -409,8 +421,8 @@ export interface Methods extends MethodsDict {
 }
 
 export type MethodsInfo = {
-  [key: string]: MethodInfo
-}
+  [key: string]: MethodInfo;
+};
 
 export interface MethodInfo {
   type: string;
@@ -434,12 +446,12 @@ export interface Field {
   args?: (ArgsEntity)[] | null;
   isDeprecated: boolean;
   name: string;
-  [key: string]: any
+  [key: string]: any;
 }
 
 export interface ArgsEntity {
   name: string;
   description?: string | null;
   type: string;
-  [key: string]: any
+  [key: string]: any;
 }
