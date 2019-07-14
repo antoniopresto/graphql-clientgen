@@ -22,6 +22,8 @@ function mountClient(schema: GraphQLSchema, clientBase: string) {
   let methodsType = ``;
 
   let actionsBody = ``;
+  
+  let methodsInfo = ``
 
   storeItems.forEach(info => {
     let clientEntry = ``;
@@ -56,7 +58,11 @@ function mountClient(schema: GraphQLSchema, clientBase: string) {
     methodsType += `
       ${info.schemaKey} : Method<${info.argsTSName}, ${info.returnTSName}>;
     `;
-
+  
+    methodsInfo += `
+      ${info.schemaKey}: ${JSON.stringify(info)},
+    `;
+    
     clientEntry += `
       ${info.schemaKey}: (${variablesDeclaration}config) => {
         return this.exec(${hasArgs ? 'variables, ' : '{}, '} {
@@ -84,7 +90,8 @@ function mountClient(schema: GraphQLSchema, clientBase: string) {
     prependBody,
     clientBody: clientBase
       .replace('//[methods]//', actionsBody)
-      .replace('//[methodsType]//', methodsType),
+      .replace('//[methodsType]//', methodsType)
+      .replace('//[methodsInfo]//', methodsInfo),
     query: [...queryHelpers.values()].reduce(
       (prev, next) => `${prev}\n\n ${next.query}`,
       ''

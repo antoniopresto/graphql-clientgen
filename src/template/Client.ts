@@ -266,6 +266,10 @@ export class GraphQLClient {
     //[methods]//
   };
 
+  methodsInfo = {
+    //[methodsInfo]//
+  };
+  
   queryFetcher = async <Variables, Return>(
     variables: Variables,
     config: FetcherConfig<Variables, Return>
