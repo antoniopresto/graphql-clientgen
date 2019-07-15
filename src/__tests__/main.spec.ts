@@ -87,7 +87,7 @@ test('using generated file', async t => {
 
   // mutation
   t.is(
-    (await client.designManagementUpload()).errors[0].message,
+    (await client.designManagementUpload({})).errors[0],
     'Variable "$input_0" of required type "DesignManagementUploadInput!" was not provided.'
   );
 });
