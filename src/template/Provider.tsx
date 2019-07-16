@@ -120,7 +120,8 @@ export const useClient: UseClient = (methodName, initialFetchConfig) => {
           resolved: true,
           listeners: [],
           result: undefined,
-          error: undefined
+          error: undefined,
+          isOptimistic: false
         })
       );
       return ctx;
@@ -228,6 +229,6 @@ type HookState<T, V> = {
   loading: boolean;
   resolved: boolean;
   context?: StoreState<T, V>['context'];
-  result?: StoreState<T, V>['context']['result'];
+  result?: StoreState<T, V>['result'];
   error?: string | null;
 };

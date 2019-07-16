@@ -19,6 +19,7 @@ export type StoreState<Result = any, V = any> = {
   context: Context<V, Result>;
   result: undefined | Result;
   error: undefined | string;
+  isOptimistic: boolean;
 
   // when a query is started but not finished and other queries with the same
   // requestSignature is called, the queries started last will be added to listeners
@@ -157,7 +158,8 @@ export class GraphQLStore {
           context: ctx,
           listeners: [],
           error: info.error,
-          result: info.result
+          result: info.result,
+          isOptimistic: false
         },
         schemaKey
       );
@@ -189,7 +191,8 @@ export class GraphQLStore {
           loading: false,
           listeners: [],
           error: info.error,
-          result: info.result
+          result: info.result,
+          isOptimistic: false
         },
         schemaKey
       );
@@ -204,8 +207,8 @@ export class GraphQLStore {
     if (info.isActionWillQueue) {
       // will queue and already has a entry with same requestSignature
       // the entry can be resolved or in progress
-      if (entry && info.canCache && !entry.error) {
-        if (entry.resolved) {
+      if (entry && info.canCache && !entry.error && !entry.isOptimistic) {
+        if (entry.resolved && entry.context) {
           // dont need to dispatch action here, because  when the request
           // started, we should have checked if there was already
           // a cached response
@@ -233,7 +236,8 @@ export class GraphQLStore {
             context: ctx,
             listeners: [],
             error: info.error,
-            result: info.result
+            result: info.result,
+            isOptimistic: false
           },
           schemaKey
         );
@@ -347,4 +351,35 @@ export class GraphQLStore {
       ''
     );
   }
+
+  optimisticUpdate = (
+    methodName: string,
+    variables: Dict,
+    setter: (item?: StoreState) => any
+  ) => {
+    const signature = this.mountRequestSignature(methodName, variables);
+
+    const current = this.getItem(signature);
+    const newValue = setter(current);
+
+    this.setItem(
+      signature,
+      {
+        loading: false,
+        resolved: true,
+        context: {
+          requestConfig: {},
+          variables: variables,
+          config: {} as any,
+          action: Actions.complete,
+          result: newValue,
+        },
+        listeners: [],
+        error: undefined,
+        result: newValue,
+        isOptimistic: true
+      },
+      methodName
+    );
+  };
 }
