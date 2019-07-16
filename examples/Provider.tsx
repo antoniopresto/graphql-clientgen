@@ -1,18 +1,143 @@
-import React from 'react';
+import * as React from 'react';
 
 import { GraphQLStore, StoreState } from './Store';
 import {
   Context,
+  Dict,
   FetcherConfig,
   GraphQLClient,
   Method,
   Methods
 } from './Client';
-export const GraphQLStoreContext = React.createContext({} as GraphQLStore);
 
-type Props = {
-  client: GraphQLClient;
+export const useClient: UseClient = (methodName, initialFetchConfig) => {
+  const { store, method } = useGraphQLStore(methodName);
+
+  // as setState is async, we also save requestSignature in a ref
+  const requestSignatureRef = React.useRef('');
+
+  // to unsubscribe when unmount or when requestSignature changes
+  const unsubscribeRef = React.useRef(() => {});
+
+  // if there is a initialConfig, we generate a default requestSignature with
+  // this config - otherwise the requestSignature will be set on
+  // the first request and possible changed with setCacheKey if
+  // requestSignature changes between fetches or renders
+  const [requestSignature, updateReqSignatureState] = React.useState(() => {
+    if (!initialFetchConfig) {
+      return '';
+    }
+
+    const reqSign = store.mountRequestSignature(
+      methodName as string,
+      initialFetchConfig.variables
+    );
+
+    requestSignatureRef.current = reqSign;
+    return reqSign;
+  });
+
+  const [state, setState] = React.useState<HookState<any, any>>(() => {
+    const isLoading = !!initialFetchConfig;
+
+    // if there is a initial fetch config and cache !== false we have
+    // a requestSignature at the first render
+    if (requestSignature) {
+      const cached = store.getItem(requestSignature);
+      return storeStateToHookState(cached, isLoading);
+    }
+
+    return storeStateToHookState(undefined, isLoading);
+  });
+
+  // update requestSignature and state
+  function updateSignature(
+    { methodName, variables }: { methodName: string; variables: Dict },
+    cb?: (newReqSeg: string) => any
+  ) {
+    const newSignature = store.mountRequestSignature(methodName, variables);
+    if (newSignature === requestSignatureRef.current) return;
+
+    updateReqSignatureState(newSignature);
+    requestSignatureRef.current = newSignature;
+
+    if (cb) cb(newSignature);
+  }
+
+  // subscription
+  React.useEffect(() => {
+    unsubscribeRef.current();
+
+    unsubscribeRef.current = store.subscribe((value, _requestSignature) => {
+      if (requestSignatureRef.current !== _requestSignature) {
+        return;
+      }
+
+      if (
+        value.context.action !== 'complete' &&
+        value.context.action !== 'abort'
+      ) {
+        return;
+      }
+
+      setState(storeStateToHookState(value));
+    });
+
+    return unsubscribeRef.current;
+  }, []);
+
+  const fetcher = (
+    variables: any = {},
+    config: Partial<FetcherConfig<any, any>> = {}
+  ) => {
+    const methodInfo = store.client.methodsInfo[methodName];
+
+    if (methodInfo.isQuery) {
+      // we set loading here because we dont set loading from the above
+      // subscription - because  setting from the subscription will set loading
+      // for items that not called the current request
+      if(config.cache === false && !state.loading || state.error) {
+        setState({ ...state, loading: true });
+      }
+      
+      updateSignature({ methodName: methodName as string, variables }, sign => {
+        const cached = store.getItem(sign);
+        setState({ ...storeStateToHookState(cached), loading: true });
+      });
+      
+      return method(variables, config);
+    }
+
+    if (!state.loading) {
+      setState({ ...state, loading: true });
+    }
+
+    return method(variables, config).then(ctx => {
+      setState(
+        storeStateToHookState({
+          context: ctx,
+          loading: false,
+          resolved: true,
+          listeners: [],
+          result: undefined,
+          error: undefined
+        })
+      );
+      return ctx;
+    });
+  };
+
+  // if there is a default fetch config, fetch it on first render
+  const wasStartedTheDefaultFetch = React.useRef(false);
+  if (!wasStartedTheDefaultFetch.current && initialFetchConfig) {
+    wasStartedTheDefaultFetch.current = true;
+    fetcher(initialFetchConfig.variables, initialFetchConfig.config);
+  }
+
+  return [state, fetcher, store];
 };
+
+export const GraphQLStoreContext = React.createContext({} as GraphQLStore);
 
 export class GraphQLProvider extends React.Component<Props> {
   store: GraphQLStore;
@@ -24,116 +149,54 @@ export class GraphQLProvider extends React.Component<Props> {
   }
 
   render() {
-    return (
-      <GraphQLStoreContext.Provider value={this.store}>
-        {this.props.children}
-      </GraphQLStoreContext.Provider>
-    );
+    return React.createElement(GraphQLStoreContext.Provider, {
+      children: this.props.children,
+      value: this.store
+    });
   }
 }
 
-export const useClient: UseClient = (methodName, initialFetchConfig) => {
-  const unsubscribeRef = React.useRef(() => {});
-  const mounted = React.useRef(false);
+function useGraphQLStore(methodName: keyof Methods) {
   const store = React.useContext(GraphQLStoreContext);
+
+  if (!store) {
+    throw new Error('store is not present in React Context');
+  }
+
+  if (!store.client) {
+    throw new Error('client is not present in GraphQLStore');
+  }
+
+  // the corresponding graphql method fetcher
   const method: Method = store.client.methods[methodName];
-  const requestSignatureRef = React.useRef('');
 
-  const [requestSignature, _setCacheKey] = React.useState(() => {
-    if (!initialFetchConfig) {
-      return '';
-    }
-
-    if (
-      initialFetchConfig.config &&
-      initialFetchConfig.config.cache === false
-    ) {
-      return '';
-    }
-
-    const signature = store.mountRequestSignature(
-      methodName as string,
-      initialFetchConfig.variables
+  if (typeof method !== 'function') {
+    throw new Error(
+      `expected method with name "${methodName}" to be a function. found "${typeof method}"`
     );
-    requestSignatureRef.current = signature;
-    return signature;
-  });
-
-  const [state, setState] = React.useState<HookState<any, any>>(() => {
-    const cached = store.getItem(requestSignature);
-    if (!cached) return { loading: false };
-    return { ...cached, result: cached.context.result };
-  });
-
-  function setCacheKey(nck: string) {
-    if (nck === requestSignatureRef.current) return;
-    _setCacheKey(nck);
-    unsubscribeRef.current();
-    requestSignatureRef.current = nck;
   }
 
-  // subscription
-  React.useEffect(() => {
-    // there is no requestSignature because config.cache is false
-    // or fetcher is not called yet.
-    // if config.cache is false the state is set via middleware in fetcher below
-    if (!requestSignature) return;
-    setState(store.getItem(requestSignature) || { loading: true });
+  return { store, method };
+}
 
-    unsubscribeRef.current = store.subscribe((value, _requestSignature, _schemaKey) => {
-      if (requestSignatureRef.current !== _requestSignature) {
-        return;
-      }
-
-      if (methodName !== _schemaKey) {
-        throw new Error(
-          `expected subscription schemaKey to be "${methodName}" but received ${_schemaKey}`
-        );
-      }
-
-      setState({ ...value, ...value.context });
-    });
-  }, [requestSignature]);
-
-  const fetcher = React.useMemo(() => {
-    return (
-      variables: any = {},
-      config: Partial<FetcherConfig<any, any>> = {}
-    ) => {
-      const usingCache = config.cache !== false;
-
-      if (usingCache) {
-        // using cache, we will subscribe to cache store in
-        // the React.useEffect above
-        const nck = store.mountRequestSignature(methodName as string, variables);
-        setCacheKey(nck);
-        return method(variables, config);
-      } else {
-        // not using cache, set state from a
-        // independently fetch call
-        setState({ ...state, loading: true });
-        return method(variables, config).then(ctx => {
-          setState({
-            ...state,
-            ...ctx
-          });
-
-          return ctx;
-        });
-      }
-    };
-  }, []);
-
-  if (!mounted.current && initialFetchConfig) {
-    mounted.current = true;
-    fetcher(initialFetchConfig.variables, initialFetchConfig.config);
-  }
-
-  return [state, fetcher, store];
+const storeStateToHookState = (
+  state?: StoreState,
+  isLoadingIfNotCached?: boolean
+): HookState<any, any> => {
+  return {
+    result: state ? state.context.result : undefined,
+    loading: state ? state.loading : !!isLoadingIfNotCached,
+    resolved: state ? state.resolved : false,
+    error:
+      state && state.context && state.context.errors
+        ? state.context.errors.join('\n')
+        : null
+  };
 };
 
-// type ArgumentTypes<T> = T extends (...args: infer U) => infer _ ? U : never;
-// type ReplaceReturnType<T, TNewReturn> = (...a: ArgumentTypes<T>) => TNewReturn;
+type Props = {
+  client: GraphQLClient;
+};
 
 // extract the type from a generic: ex. T from Promise<T>
 type Unpacked<T> = T extends (infer U)[]
@@ -149,7 +212,6 @@ type UseClient = <
   K extends keyof Methods = any, // method key (name)
   M extends (...args: any) => any = Methods[K], // method
   R = Unpacked<ReturnType<M>>['result'] // return type without promise
-  // C extends Context<A['variables'], R> = any
 >(
   methodName: K,
   initialFetchConfig?: {
@@ -162,5 +224,10 @@ type UseClient = <
   GraphQLStore
 ];
 
-type HookState<T, V> = Partial<StoreState<T, V>> &
-  Partial<StoreState<T, V>['context']>;
+type HookState<T, V> = {
+  loading: boolean;
+  resolved: boolean;
+  context?: StoreState<T, V>['context'];
+  result?: StoreState<T, V>['context']['result'];
+  error?: string | null;
+};

@@ -441,19 +441,9 @@ export interface MethodInfo {
   isMutation: boolean;
   isQuery: boolean;
   isSubscription: boolean;
-  field: Field;
+  field: any;
   isNonNull: boolean;
   kind: OpKind | string;
-}
-
-export interface Field {
-  description: string;
-  deprecationReason?: null;
-  type: string;
-  args?: (ArgsEntity)[] | null;
-  isDeprecated: boolean;
-  name: string;
-  [key: string]: any;
 }
 
 export interface ArgsEntity {
