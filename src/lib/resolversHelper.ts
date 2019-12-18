@@ -90,7 +90,7 @@ export function getResolversHelper(schema: GraphQLSchema) {
       : '{}';
 
     let returnTSName = `${argsPrefix}['${schemaKey}']`;
-    returnTSName = isNonNull ? returnTSName : `Maybe<${returnTSName}>`;
+    // returnTSName = isNonNull ? returnTSName : `Maybe<${returnTSName}>`; // TODO
 
     const item = {
       type,
