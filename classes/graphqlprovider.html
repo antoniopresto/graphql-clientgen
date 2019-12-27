@@ -150,7 +150,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides Component.__constructor</p>
 								<ul>
-									<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/baf3375/src/template/Provider.tsx#L144">template/Provider.tsx:144</a></li>
+									<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/1fdc614/src/template/Provider.tsx#L144">template/Provider.tsx:144</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -176,22 +176,23 @@
 					<aside class="tsd-sources">
 						<p>Inherited from Component.context</p>
 						<ul>
-							<li>Defined in /Volumes/ossx/dev-user/dev/graphql-compose-clientgen/node_modules/@types/react/index.d.ts:433</li>
+							<li>Defined in /Users/apple/dev/graphql-clientgen/node_modules/@types/react/index.d.ts:447</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
 							<p>If using the new style context, re-declare this in your class to be the
-							<code>React.ContextType</code> of your <code>static contextType</code>.</p>
+								<code>React.ContextType</code> of your <code>static contextType</code>.
+							Should be used with type annotation or static contextType.</p>
 						</div>
 						<pre><code class="language-ts"><span class="hljs-keyword">static</span> contextType = MyContext
-context!: React.ContextType&lt;<span class="hljs-keyword">typeof</span> MyContext&gt;</code></pre>
+<span class="hljs-comment">// For TS pre-3.7:</span>
+context!: React.ContextType&lt;<span class="hljs-keyword">typeof</span> MyContext&gt;
+<span class="hljs-comment">// For TS 3.7 and above:</span>
+<span class="hljs-keyword">declare</span> context: React.ContextType&lt;<span class="hljs-keyword">typeof</span> MyContext&gt;</code></pre>
 						<dl class="tsd-comment-tags">
-							<dt>deprecated</dt>
-							<dd><p>if used without a type annotation, or without static contextType</p>
-							</dd>
 							<dt>see</dt>
-							<dd><p><a href="https://reactjs.org/docs/legacy-context.html">https://reactjs.org/docs/legacy-context.html</a></p>
+							<dd><p><a href="https://reactjs.org/docs/context.html">https://reactjs.org/docs/context.html</a></p>
 							</dd>
 						</dl>
 					</div>
@@ -203,7 +204,7 @@ context!: React.ContextType&lt;<span class="hljs-keyword">typeof</span> MyContex
 					<aside class="tsd-sources">
 						<p>Inherited from Component.props</p>
 						<ul>
-							<li>Defined in /Volumes/ossx/dev-user/dev/graphql-compose-clientgen/node_modules/@types/react/index.d.ts:458</li>
+							<li>Defined in /Users/apple/dev/graphql-clientgen/node_modules/@types/react/index.d.ts:472</li>
 						</ul>
 					</aside>
 				</section>
@@ -214,7 +215,7 @@ context!: React.ContextType&lt;<span class="hljs-keyword">typeof</span> MyContex
 					<aside class="tsd-sources">
 						<p>Inherited from Component.refs</p>
 						<ul>
-							<li>Defined in /Volumes/ossx/dev-user/dev/graphql-compose-clientgen/node_modules/@types/react/index.d.ts:464</li>
+							<li>Defined in /Users/apple/dev/graphql-clientgen/node_modules/@types/react/index.d.ts:478</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -240,7 +241,7 @@ context!: React.ContextType&lt;<span class="hljs-keyword">typeof</span> MyContex
 					<aside class="tsd-sources">
 						<p>Inherited from Component.state</p>
 						<ul>
-							<li>Defined in /Volumes/ossx/dev-user/dev/graphql-compose-clientgen/node_modules/@types/react/index.d.ts:459</li>
+							<li>Defined in /Users/apple/dev/graphql-clientgen/node_modules/@types/react/index.d.ts:473</li>
 						</ul>
 					</aside>
 				</section>
@@ -250,7 +251,7 @@ context!: React.ContextType&lt;<span class="hljs-keyword">typeof</span> MyContex
 					<div class="tsd-signature tsd-kind-icon">store<span class="tsd-signature-symbol">:</span> <a href="graphqlstore.html" class="tsd-signature-type">GraphQLStore</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/baf3375/src/template/Provider.tsx#L144">template/Provider.tsx:144</a></li>
+							<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/1fdc614/src/template/Provider.tsx#L144">template/Provider.tsx:144</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -261,7 +262,7 @@ context!: React.ContextType&lt;<span class="hljs-keyword">typeof</span> MyContex
 					<aside class="tsd-sources">
 						<p>Inherited from Component.contextType</p>
 						<ul>
-							<li>Defined in /Volumes/ossx/dev-user/dev/graphql-compose-clientgen/node_modules/@types/react/index.d.ts:418</li>
+							<li>Defined in /Users/apple/dev/graphql-clientgen/node_modules/@types/react/index.d.ts:429</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -300,7 +301,7 @@ class Foo extends React.Component {
 							<aside class="tsd-sources">
 								<p>Inherited from DeprecatedLifecycle.UNSAFE_componentWillMount</p>
 								<ul>
-									<li>Defined in /Volumes/ossx/dev-user/dev/graphql-compose-clientgen/node_modules/@types/react/index.d.ts:646</li>
+									<li>Defined in /Users/apple/dev/graphql-clientgen/node_modules/@types/react/index.d.ts:660</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -338,7 +339,7 @@ class Foo extends React.Component {
 							<aside class="tsd-sources">
 								<p>Inherited from DeprecatedLifecycle.UNSAFE_componentWillReceiveProps</p>
 								<ul>
-									<li>Defined in /Volumes/ossx/dev-user/dev/graphql-compose-clientgen/node_modules/@types/react/index.d.ts:678</li>
+									<li>Defined in /Users/apple/dev/graphql-clientgen/node_modules/@types/react/index.d.ts:692</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -387,7 +388,7 @@ class Foo extends React.Component {
 							<aside class="tsd-sources">
 								<p>Inherited from DeprecatedLifecycle.UNSAFE_componentWillUpdate</p>
 								<ul>
-									<li>Defined in /Volumes/ossx/dev-user/dev/graphql-compose-clientgen/node_modules/@types/react/index.d.ts:706</li>
+									<li>Defined in /Users/apple/dev/graphql-clientgen/node_modules/@types/react/index.d.ts:720</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -437,7 +438,7 @@ class Foo extends React.Component {
 							<aside class="tsd-sources">
 								<p>Inherited from ComponentLifecycle.componentDidCatch</p>
 								<ul>
-									<li>Defined in /Volumes/ossx/dev-user/dev/graphql-compose-clientgen/node_modules/@types/react/index.d.ts:575</li>
+									<li>Defined in /Users/apple/dev/graphql-clientgen/node_modules/@types/react/index.d.ts:589</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -470,7 +471,7 @@ class Foo extends React.Component {
 							<aside class="tsd-sources">
 								<p>Inherited from ComponentLifecycle.componentDidMount</p>
 								<ul>
-									<li>Defined in /Volumes/ossx/dev-user/dev/graphql-compose-clientgen/node_modules/@types/react/index.d.ts:554</li>
+									<li>Defined in /Users/apple/dev/graphql-clientgen/node_modules/@types/react/index.d.ts:568</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -493,7 +494,7 @@ class Foo extends React.Component {
 							<aside class="tsd-sources">
 								<p>Inherited from NewLifecycle.componentDidUpdate</p>
 								<ul>
-									<li>Defined in /Volumes/ossx/dev-user/dev/graphql-compose-clientgen/node_modules/@types/react/index.d.ts:617</li>
+									<li>Defined in /Users/apple/dev/graphql-clientgen/node_modules/@types/react/index.d.ts:631</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -529,7 +530,7 @@ class Foo extends React.Component {
 							<aside class="tsd-sources">
 								<p>Inherited from DeprecatedLifecycle.componentWillMount</p>
 								<ul>
-									<li>Defined in /Volumes/ossx/dev-user/dev/graphql-compose-clientgen/node_modules/@types/react/index.d.ts:632</li>
+									<li>Defined in /Users/apple/dev/graphql-clientgen/node_modules/@types/react/index.d.ts:646</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -566,7 +567,7 @@ class Foo extends React.Component {
 							<aside class="tsd-sources">
 								<p>Inherited from DeprecatedLifecycle.componentWillReceiveProps</p>
 								<ul>
-									<li>Defined in /Volumes/ossx/dev-user/dev/graphql-compose-clientgen/node_modules/@types/react/index.d.ts:661</li>
+									<li>Defined in /Users/apple/dev/graphql-clientgen/node_modules/@types/react/index.d.ts:675</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -614,7 +615,7 @@ class Foo extends React.Component {
 							<aside class="tsd-sources">
 								<p>Inherited from ComponentLifecycle.componentWillUnmount</p>
 								<ul>
-									<li>Defined in /Volumes/ossx/dev-user/dev/graphql-compose-clientgen/node_modules/@types/react/index.d.ts:570</li>
+									<li>Defined in /Users/apple/dev/graphql-clientgen/node_modules/@types/react/index.d.ts:584</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -638,7 +639,7 @@ class Foo extends React.Component {
 							<aside class="tsd-sources">
 								<p>Inherited from DeprecatedLifecycle.componentWillUpdate</p>
 								<ul>
-									<li>Defined in /Volumes/ossx/dev-user/dev/graphql-compose-clientgen/node_modules/@types/react/index.d.ts:691</li>
+									<li>Defined in /Users/apple/dev/graphql-clientgen/node_modules/@types/react/index.d.ts:705</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -680,20 +681,20 @@ class Foo extends React.Component {
 					<a name="forceupdate" class="tsd-anchor"></a>
 					<h3>force<wbr>Update</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
-						<li class="tsd-signature tsd-kind-icon">force<wbr>Update<span class="tsd-signature-symbol">(</span>callBack<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">function</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">force<wbr>Update<span class="tsd-signature-symbol">(</span>callback<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">function</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Inherited from Component.forceUpdate</p>
 								<ul>
-									<li>Defined in /Volumes/ossx/dev-user/dev/graphql-compose-clientgen/node_modules/@types/react/index.d.ts:450</li>
+									<li>Defined in /Users/apple/dev/graphql-clientgen/node_modules/@types/react/index.d.ts:464</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> callBack: <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">function</span></h5>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> callback: <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">function</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -711,7 +712,7 @@ class Foo extends React.Component {
 							<aside class="tsd-sources">
 								<p>Inherited from NewLifecycle.getSnapshotBeforeUpdate</p>
 								<ul>
-									<li>Defined in /Volumes/ossx/dev-user/dev/graphql-compose-clientgen/node_modules/@types/react/index.d.ts:611</li>
+									<li>Defined in /Users/apple/dev/graphql-clientgen/node_modules/@types/react/index.d.ts:625</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -750,7 +751,7 @@ class Foo extends React.Component {
 							<aside class="tsd-sources">
 								<p>Overrides Component.render</p>
 								<ul>
-									<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/baf3375/src/template/Provider.tsx#L152">template/Provider.tsx:152</a></li>
+									<li>Defined in <a href="https://github.com/antoniopresto/graphql-clientgen/blob/1fdc614/src/template/Provider.tsx#L152">template/Provider.tsx:152</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">FunctionComponentElement</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -768,7 +769,7 @@ class Foo extends React.Component {
 							<aside class="tsd-sources">
 								<p>Inherited from Component.setState</p>
 								<ul>
-									<li>Defined in /Volumes/ossx/dev-user/dev/graphql-compose-clientgen/node_modules/@types/react/index.d.ts:445</li>
+									<li>Defined in /Users/apple/dev/graphql-clientgen/node_modules/@types/react/index.d.ts:459</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -801,7 +802,7 @@ class Foo extends React.Component {
 							<aside class="tsd-sources">
 								<p>Inherited from ComponentLifecycle.shouldComponentUpdate</p>
 								<ul>
-									<li>Defined in /Volumes/ossx/dev-user/dev/graphql-compose-clientgen/node_modules/@types/react/index.d.ts:565</li>
+									<li>Defined in /Users/apple/dev/graphql-clientgen/node_modules/@types/react/index.d.ts:579</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
