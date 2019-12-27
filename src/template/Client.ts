@@ -56,7 +56,7 @@ export type FetcherConfig<V, R> = {
   schemaKey?: string;
   middleware?: Middleware<V, R>[] | Middleware<V, R>;
   fragment?: string;
-  appendFragment?: string;
+  appendToFragment?: string;
   querySuffix?: string;
   cache?: boolean;
   kind: OpKind;
@@ -408,8 +408,8 @@ export function parseFragmentConfig(
       resultingFragment += `\n ${config.fragment}`;
     }
 
-    if (config.appendFragment) {
-      resultingFragment += `\n ${config.appendFragment}`;
+    if (config.appendToFragment) {
+      resultingFragment += `\n ${config.appendToFragment}`;
     }
   }
 
