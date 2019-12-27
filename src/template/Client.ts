@@ -56,6 +56,7 @@ export type FetcherConfig<V, R> = {
   schemaKey?: string;
   middleware?: Middleware<V, R>[] | Middleware<V, R>;
   fragment?: string;
+  appendFragment?: string;
   querySuffix?: string;
   cache?: boolean;
   kind: OpKind;
@@ -394,6 +395,25 @@ function compose(funcs: Middleware<any>[]) {
     return await a(await b(context));
     // return await a(await b(cloneDeep(context)));
   });
+}
+
+export function parseFragmentConfig(
+  fragment: string,
+  config?: any
+): string {
+  let resultingFragment = fragment || '';
+
+  if (config) {
+    if (config.fragment) {
+      resultingFragment += `\n ${config.fragment}`;
+    }
+
+    if (config.appendFragment) {
+      resultingFragment += `\n ${config.appendFragment}`;
+    }
+  }
+
+  return resultingFragment;
 }
 
 export const applyMiddleware = <V = any>(

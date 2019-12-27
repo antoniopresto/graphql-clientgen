@@ -39,14 +39,14 @@ function mountClient(schema: GraphQLSchema, clientBase: string) {
       queryHelper.queryParts
         .map((el, k) => {
           if (k !== 1) return el;
-          return addTabs(`\${fragment || \`\n${el}\n\`}`, 8);
+          return addTabs(`\${parseFragmentConfig(\`${(el || '').trim()}\`, config)}`, 8);
         })
         .join('\n'),
       8
     );
 
     queriesStr += `
-        "${info.schemaKey}": (fragment = '') => \`\n${query}\`,
+        "${info.schemaKey}": (config?: any) => \`\n${query}\`,
       `;
 
     const hasArgs = !!info.field.args.length;
@@ -69,7 +69,7 @@ function mountClient(schema: GraphQLSchema, clientBase: string) {
         url: this.url,
         entityName: '${info.entityName}',
         schemaKey: '${info.schemaKey}',
-        query: query.${info.schemaKey}(config ? config.fragment : undefined),
+        query: query.${info.schemaKey}(config),
         kind: OpKind.${info.kind},
         ...config
         });
