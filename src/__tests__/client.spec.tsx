@@ -1,754 +1,742 @@
 import * as React from 'react';
-import ava from 'ava';
-import sinon from 'sinon';
-import { mount } from 'enzyme';
 
-import {
-  TEST_API,
-  hope,
-  fetchMock,
-  getGeneratedModules,
-  mapObjectTypes,
-  delayedFetchMock
-} from '../dev/helpers';
+import { TEST_API, getGeneratedModules, hope, delay } from './helpers';
 
-import '../dev/prepareClientEnv';
+import { render } from '@testing-library/react';
 
-const test = ava.serial;
-
-ava.afterEach(() => {
-  sinon.restore();
-});
-
-test('should import generated files', async t => {
-  const { Client, Provider, Store, useClient } = await getGeneratedModules();
-
-  t.is(typeof Client, 'function');
-  t.is(typeof Provider, 'function');
-  t.is(typeof Store, 'function');
-  t.is(typeof useClient, 'function');
-});
-
-test('should mount node with Provider', async t => {
-  const { Provider, Client, Context } = await getGeneratedModules();
-  const client = new Client({ url: TEST_API });
-
-  const wrapper = mount(
-    <Provider client={client}>
-      <Context.Consumer>
-        {store => <div>{Object.keys(store.client.methods)}</div>}
-      </Context.Consumer>
-    </Provider>
-  );
-
-  t.is(
-    wrapper.find('div').getDOMNode().innerHTML,
-    Object.keys(client.methods).join('')
-  );
-});
-
-test('should get store from useClient', async t => {
-  const { Provider, Client, useClient } = await getGeneratedModules();
-  const client = new Client({ url: TEST_API });
-
-  const Child = () => {
-    const { store } = useClient('echo');
-    return <div>{Object.keys(store.client.methods).join('')}</div>;
-  };
-
-  const wrapper = mount(
-    <Provider client={client}>
-      <Child />
-    </Provider>
-  );
-
-  t.is(
-    wrapper.find('div').getDOMNode().innerHTML,
-    Object.keys(client.methods).join('')
-  );
-
-  t.is(Object.keys(client.methods).length > 1, true);
-});
-
-test('should get response from useClient', async t => {
-  const { Provider, Client, useClient } = await getGeneratedModules();
-  const client = new Client({ url: TEST_API });
-  let resolve: Function;
-  const promise = new Promise(r => (resolve = r));
-
-  const Child = () => {
-    const echoState = useClient('echo', { variables: { text: 'hey' } });
-
-    React.useEffect(() => {
-      return echoState.store.subscribe(state => {
-        if (state.resolved) {
-          resolve();
-        }
-      });
-    }, []);
-
-    return <div>{echoState.result}</div>;
-  };
-
-  const wrapper = mount(
-    <Provider client={client}>
-      <Child />
-    </Provider>
-  );
-
-  await promise;
-
-  t.is(wrapper.getDOMNode().innerHTML, 'nil says: hey');
-});
-
-test('useClient should update state', async t => {
-  const { Provider, Client, useClient } = await getGeneratedModules();
-  const client = new Client({ url: TEST_API });
-
-  let initialState1: any = {};
-  let initialState2: any = {};
-
-  let renderCount = 0;
-
-  const hope1 = hope();
-  const hope2 = hope();
-  const hope3 = hope();
-
-  const Child = () => {
-    const { fetch: echo1, ...state1 } = useClient('echo');
-    const state2 = useClient('echo', { variables: { text: 'foo' } });
-    const { fetch: group, ...state3 } = useClient('group');
-
-    if (renderCount === 0) {
-      initialState1 = state1;
-      initialState2 = state2;
-
-      setTimeout(() => {
-        echo1({ text: 'echo1' }).then(() => {
-          group({ shouldThrow: 1234 });
-        });
-      }, 100);
-    }
-
-    if (state1.resolved) {
-      hope1.resolve(state1);
-    }
-
-    if (state2.resolved) {
-      hope2.resolve(state2);
-    }
-
-    if (state3.resolved) {
-      hope3.resolve(state3);
-    }
-
-    renderCount++;
-    return <div>{state2.result}</div>;
-  };
-
-  const wrapper = mount(
-    <Provider client={client}>
-      <Child />
-    </Provider>
-  );
-
-  const { context, ...finalState1 } = await hope1.promise;
-  const { context: c2, ...finalState2 } = await hope2.promise;
-  const { context: c3, ...finalState3 } = await hope3.promise;
-
-  t.deepEqual(initialState1, {
-    error: null,
-    loading: false,
-    resolved: false,
-    result: undefined
+describe('client', function() {
+  afterEach(() => {
+    jest.restoreAllMocks();
   });
 
-  t.deepEqual(initialState2, {
-    error: null,
-    loading: true,
-    resolved: false,
-    result: undefined
+  test('should import generated files', async () => {
+    const { Client, Provider, Store, useClient } = await getGeneratedModules();
+
+    expect(typeof Client).toBe('function');
+    expect(typeof Provider).toBe('function');
+    expect(typeof Store).toBe('function');
+    expect(typeof useClient).toBe('function');
   });
 
-  t.deepEqual(finalState1, {
-    error: null,
-    loading: false,
-    resolved: true,
-    result: 'nil says: echo1'
-  });
+  test('should mount node with Provider', async () => {
+    const { Provider, Client, Context } = await getGeneratedModules();
+    const client = new Client({ url: TEST_API });
 
-  t.deepEqual(finalState2, {
-    error: null,
-    loading: false,
-    resolved: true,
-    result: 'nil says: foo'
-  });
-
-  t.deepEqual(finalState3, {
-    error: 'Variable "$fullPath_0" of required type "ID!" was not provided.',
-    loading: false,
-    resolved: true,
-    result: null
-  });
-
-  t.is(wrapper.getDOMNode().innerHTML, 'nil says: foo');
-});
-
-test('should render only 2 times', async t => {
-  const { Provider, Client, useClient } = await getGeneratedModules();
-  const client = new Client({ url: TEST_API });
-  const { resolve, promise } = hope();
-  let renderCount = 0;
-
-  const Child = () => {
-    const state = useClient('echo', { variables: { text: 'hey' } });
-
-    if (state.result) {
-      resolve(state);
-    }
-
-    renderCount++;
-
-    return <div>{state.result}</div>;
-  };
-
-  const wrapper = mount(
-    <Provider client={client}>
-      <Child />
-    </Provider>
-  );
-
-  await promise;
-
-  t.is(wrapper.getDOMNode().innerHTML, 'nil says: hey');
-  t.is(renderCount, 2);
-});
-
-test('store should batch multiple queries', async t => {
-  const stub = sinon.stub(global, 'fetch').callsFake(fetchMock);
-  const {
-    Provider,
-    Client,
-    useClient,
-    Context,
-    Store
-  } = await getGeneratedModules();
-  const client = new Client({ url: TEST_API });
-  const firstCall = hope();
-
-  let listen = false;
-  let context = {} as typeof Store.prototype;
-  const promises: Promise<any>[] = [];
-
-  const Child = () => {
-    context = React.useContext(Context);
-
-    if (!listen) {
-      listen = true;
-      context.subscribe((s, c) => {
-        if (c === 'echo(text:predefined_query)' && s.resolved) {
-          firstCall.resolve();
-        }
-      });
-    }
-
-    const { fetch: echo, ...state } = useClient('echo', {
-      variables: { text: 'predefined_query' }
-    });
-
-    React.useEffect(() => {
-      promises.push(echo({ text: 'shouldBatch1' }));
-      promises.push(echo({ text: 'shouldBatch2' }));
-      promises.push(echo({ text: 'shouldBatch3' }));
-      promises.push(echo({ text: 'shouldBatch4' }));
-    }, []);
-
-    return <div>{state.result}</div>;
-  };
-
-  const wrapper = mount(
-    <Provider client={client}>
-      <Child />
-    </Provider>
-  );
-
-  t.is(promises.length, 4);
-
-  await firstCall.promise;
-  await Promise.all(promises);
-
-  t.is(wrapper.getDOMNode().innerHTML, 'nil says: shouldBatch4');
-  t.is(stub.callCount, 1);
-});
-
-test('store should cache', async t => {
-  const stub = sinon.stub(global, 'fetch').callsFake(fetchMock);
-  const { Provider, Client, useClient, Context } = await getGeneratedModules();
-  const client = new Client({ url: TEST_API });
-
-  const firstCall = hope();
-  let renderCount = 0;
-  const promises: Promise<any>[] = [];
-  const errors: any[] = [];
-
-  let listen = false;
-
-  const Child = () => {
-    const context = React.useContext(Context);
-
-    if (!listen) {
-      listen = true;
-      context.subscribe((s, c) => {
-        const testStateID = `${s.context.action}_${c}`;
-
-        if (s.context.errors) {
-          errors.push({
-            testStateID,
-            errors: s.context.errors,
-            requestConfig: s.context.requestConfig
-          });
-        }
-
-        if (c === 'echo(text:predefined_query)' && s.resolved) {
-          firstCall.resolve();
-        }
-      });
-    }
-
-    const { fetch: echo, ...state } = useClient('echo', {
-      variables: { text: 'predefined_query' }
-    });
-
-    const { fetch: callNamespace, ...namespace } = useClient('namespace');
-
-    React.useEffect(() => {
-      (async () => {
-        promises.push(echo({ text: 'shouldCache1' }));
-        promises.push(echo({ text: 'shouldCache1' }));
-        promises.push(echo({ text: 'shouldCache1' }));
-        promises.push(echo({ text: 'shouldCache1' }));
-        promises.push(echo({ text: 'shouldCache2' }));
-        promises.push(callNamespace({ fullPath: 'myFullPath' }));
-      })();
-    }, []);
-
-    renderCount++;
-
-    return (
-      <div>
-        <span className={'echo'}>{state.result}</span>
-        <span className={'fullPath'}>
-          {namespace.result && namespace.result.fullPath}
-        </span>
-      </div>
+    const wrapper: any = render(
+      <Provider client={client}>
+        <Context.Consumer>
+          {store => <div>{Object.keys(store.client.methods)}</div>}
+        </Context.Consumer>
+      </Provider>
     );
-  };
 
-  const wrapper = mount(
-    <Provider client={client}>
-      <Child />
-    </Provider>
-  );
+    expect(wrapper.container.firstChild.innerHTML).toBe(
+      Object.keys(client.methods).join('')
+    );
+  });
 
-  t.is(promises.length, 6);
-  const promisedResults = await Promise.all(promises);
-  await firstCall.promise;
+  test('should get store from useClient', async () => {
+    const { Provider, Client, useClient } = await getGeneratedModules();
+    const client = new Client({ url: TEST_API });
 
-  const namespaceResult = promisedResults[5].result;
+    const Child = () => {
+      const { store } = useClient('echo');
+      return <div>{Object.keys(store.client.methods).join('')}</div>;
+    };
 
-  t.deepEqual(
-    mapObjectTypes(namespaceResult),
+    const wrapper: any = render(
+      <Provider client={client}>
+        <Child />
+      </Provider>
+    );
 
-    mapObjectTypes({
-      description: 'mock',
-      descriptionHtml: 'mock',
-      fullName: 'mock',
-      fullPath: 'e8be6f80-7e23-4508-9a09-2e37e4651a77',
-      id: '6820e8fa-76c6-4acc-83c3-8162a170f5e3',
-      lfsEnabled: true,
-      name: 'mock',
-      path: 'mock',
-      requestAccessEnabled: false,
-      visibility: 'mock'
-    })
-  );
+    expect(wrapper.container.firstChild.innerHTML).toBe(
+      Object.keys(client.methods).join('')
+    );
 
-  t.is(stub.callCount, 1);
+    expect(Object.keys(client.methods).length > 1).toBe(true);
+  });
 
-  t.is(errors.length, 0);
+  test('should get response from useClient', async () => {
+    const { Provider, Client, useClient } = await getGeneratedModules();
 
-  t.is(wrapper.find('.echo').getDOMNode().innerHTML, 'nil says: shouldCache2');
+    const client = new Client({ url: TEST_API });
+    let resolve: Function;
+    const promise = new Promise(r => (resolve = r));
 
-  t.is(
-    wrapper.find('.fullPath').getDOMNode().innerHTML,
-    namespaceResult.fullPath
-  );
+    const Child = () => {
+      const echoState = useClient('echo', {
+        variables: { text: 'hey' }
+      });
 
-  // 2 for echo state + 2 for namespace state
-  // although only one fetch was made
-  t.is(renderCount, 4);
-});
+      React.useEffect(() => {
+        return echoState.store.subscribe(state => {
+          if (state.resolved) {
+            resolve();
+          }
+        });
+      }, []);
 
-test('should make default fetch even if cache is false', async t => {
-  const stub = sinon.stub(global, 'fetch').callsFake(fetchMock);
-  const { Provider, Client, useClient } = await getGeneratedModules();
+      return (
+        <div>
+          {echoState.result}
+          {echoState.error}
+        </div>
+      );
+    };
 
-  const client = new Client({ url: TEST_API });
-  const firstCall = hope();
+    const wrapper: any = render(
+      <Provider client={client}>
+        <Child />
+      </Provider>
+    );
 
-  let stateResults: (string | null | undefined)[][] = [];
+    await promise;
 
-  const Child = () => {
-    const state = useClient('echo', {
-      variables: { text: 'testingCache' },
-      config: {
-        cache: false
+    expect(wrapper.container.firstChild.innerHTML).toBe('nil says: hey');
+  });
+
+  test('useClient should update state', async () => {
+    const { Provider, Client, useClient } = await getGeneratedModules();
+    const client = new Client({ url: TEST_API });
+
+    let renderCount = 0;
+
+    const hope1 = hope();
+    const hope2 = hope();
+    const hope3 = hope();
+
+    const Child = () => {
+      const echo1 = useClient('echo');
+      const echo2 = useClient('echo', { variables: { text: 'foo' } });
+      const echo3 = useClient('echo');
+
+      if (renderCount === 0) {
+        setTimeout(() => {
+          echo1.fetch({ text: 'echo1' }).then(() => {
+            echo3.fetch({ shouldThrow: 1234 });
+          });
+        }, 100);
       }
+
+      if (echo1.resolved) {
+        hope1.resolve(echo1);
+      }
+
+      if (echo2.resolved) {
+        hope2.resolve(echo2);
+      }
+
+      if (echo3.resolved) {
+        hope3.resolve(echo3);
+      }
+
+      renderCount++;
+      return <div>{echo2.result}</div>;
+    };
+
+    const wrapper: any = render(
+      <Provider client={client}>
+        <Child />
+      </Provider>
+    );
+
+    const finalState1 = await hope1.promise;
+    const finalState2 = await hope2.promise;
+    const finalState3 = await hope3.promise;
+
+    expect(finalState1).toMatchObject({
+      error: null,
+      loading: false,
+      resolved: true,
+      result: 'nil says: echo1'
     });
 
-    stateResults.push([state.result]);
+    expect(finalState2).toMatchObject({
+      error: null,
+      loading: false,
+      resolved: true,
+      result: 'nil says: foo'
+    });
 
-    if (state.result) {
-      firstCall.resolve();
-    }
+    expect(finalState3).toMatchObject({
+      error: 'Variable "$text_0" of required type "String!" was not provided.',
+      loading: false,
+      resolved: true,
+      result: null
+    });
 
-    return <div>{state.result}</div>;
-  };
+    expect(wrapper.container.firstChild.innerHTML).toBe('nil says: foo');
+  });
 
-  const wrapper = mount(
-    <Provider client={client}>
-      <Child />
-    </Provider>
-  );
+  test('should render only 2 times', async () => {
+    const { Provider, Client, useClient } = await getGeneratedModules();
+    const client = new Client({ url: TEST_API });
+    const { resolve, promise } = hope();
+    let renderCount = 0;
 
-  await firstCall.promise;
+    const Child = () => {
+      const state = useClient('echo', { variables: { text: 'hey' } });
 
-  t.is(wrapper.getDOMNode().innerHTML, 'nil says: testingCache');
-  t.is(stub.callCount, 1);
-  t.is(stateResults.length, 2);
-});
+      if (state.result) {
+        resolve(state);
+      }
 
-test('should ignore cache when cache is false', async t => {
-  const stub = sinon.stub(global, 'fetch').callsFake(fetchMock);
-  const { Provider, Client, useClient } = await getGeneratedModules();
+      renderCount++;
 
-  const client = new Client({ url: TEST_API });
-  const firstCall = hope();
-  const secondCall = hope();
+      return <div>{state.result}</div>;
+    };
 
-  let stateResults: (string | null | undefined)[][] = [];
+    const wrapper = render(
+      <Provider client={client}>
+        <Child />
+      </Provider>
+    );
 
-  const Child = () => {
-    const {fetch: echo, ...state} = useClient('echo', {
-      variables: { text: 'testingCache' },
-      config: {
-        cache: false,
-        async middleware(ctx: any) {
-          if (ctx.action === 'complete') {
+    await promise;
+
+    expect(wrapper.container.querySelector('div')!.innerHTML).toBe(
+      'nil says: hey'
+    );
+    expect(renderCount).toBe(2);
+  });
+
+  test('store should batch multiple queries', async () => {
+    const stub = jest.spyOn(global, 'fetch');
+
+    const {
+      Provider,
+      Client,
+      useClient,
+      Context,
+      Store
+    } = await getGeneratedModules();
+
+    const client = new Client({ url: TEST_API });
+    const firstCall = hope();
+
+    let listen = false;
+    let context = {} as typeof Store.prototype;
+    const promises: Promise<any>[] = [];
+
+    const Child = () => {
+      context = React.useContext(Context);
+
+      if (!listen) {
+        listen = true;
+        context.subscribe((s, c) => {
+          if (c === 'echo(text:predefined_query)' && s.resolved) {
             firstCall.resolve();
           }
-          return ctx;
-        }
+        });
       }
-    });
 
-    React.useEffect(() => {
-      firstCall.promise.then(() => {
-        echo({ text: 'testingCache' }, { cache: false }).then(() =>
-          secondCall.resolve()
-        );
+      const { fetch: echo, ...state } = useClient('echo', {
+        variables: { text: 'predefined_query' }
       });
-    }, []);
 
-    stateResults.push([state.result]);
+      React.useEffect(() => {
+        promises.push(echo({ text: 'shouldBatch1' }));
+        promises.push(echo({ text: 'shouldBatch2' }));
+        promises.push(echo({ text: 'shouldBatch3' }));
+        promises.push(echo({ text: 'shouldBatch4' }));
+      }, []);
 
-    return <div>{state.result}</div>;
-  };
+      return <div>{state.result}</div>;
+    };
 
-  const wrapper = mount(
-    <Provider client={client}>
-      <Child />
-    </Provider>
-  );
+    const wrapper = render(
+      <Provider client={client}>
+        <Child />
+      </Provider>
+    );
 
-  await firstCall.promise;
-  await secondCall.promise;
+    expect(promises.length).toBe(4);
 
-  t.is(wrapper.getDOMNode().innerHTML, 'nil says: testingCache');
-  t.is(stub.callCount, 2);
-  t.is(stateResults.length, 3);
-});
+    await firstCall.promise;
+    await Promise.all(promises);
 
-test('should ignore cache when mixed cache false/true', async t => {
-  const stub = sinon.stub(global, 'fetch').callsFake(fetchMock);
+    expect(wrapper.container.querySelector('div')!.innerHTML).toBe(
+      'nil says: shouldBatch4'
+    );
+    expect(stub).toBeCalledTimes(1);
+  });
 
-  const { Provider, Client, useClient } = await getGeneratedModules();
+  test('store should cache', async () => {
+    const stub = jest.spyOn(global, 'fetch');
 
-  const client = new Client({ url: TEST_API });
-  const firstCall = hope();
-  const secondCall = hope();
-  const thirdCall = hope();
+    const {
+      Provider,
+      Client,
+      useClient,
+      Context
+    } = await getGeneratedModules();
 
-  const Child = () => {
-    const echo = useClient('echo', {
-      variables: { text: 'testingCache' },
-      config: {
-        cache: false,
-        async middleware(ctx: any) {
-          if (ctx.action === 'complete') {
+    const client = new Client({ url: TEST_API });
+
+    const firstCall = hope();
+    let renderCount = 0;
+    const promises: Promise<any>[] = [];
+    const errors: any[] = [];
+
+    let listen = false;
+
+    const Child = () => {
+      const context = React.useContext(Context);
+
+      if (!listen) {
+        listen = true;
+        context.subscribe((s, c) => {
+          const testStateID = `${s.context.action}_${c}`;
+
+          if (s.context.errors) {
+            errors.push({
+              testStateID,
+              errors: s.context.errors,
+              requestConfig: s.context.requestConfig
+            });
+          }
+
+          if (c === 'echo(text:predefined_query)' && s.resolved) {
             firstCall.resolve();
           }
-          return ctx;
-        }
+        });
       }
-    });
 
-    const echo2 = useClient('echo', {
-      variables: { text: 'testingCache' },
-      config: {
-        cache: false,
-        async middleware(ctx) {
-          if (ctx.action === 'complete') {
-            secondCall.resolve();
-          }
-          return ctx;
-        }
-      }
-    });
+      const { fetch: echo, ...state } = useClient('echo', {
+        variables: { text: 'predefined_query' }
+      });
 
-    React.useEffect(() => {
-      (async () => {
-        await echo.fetch({ text: 'testingCache' }, { cache: false }); // this will batch with the first 2 calls
-        await echo.fetch({ text: 'testingCache' }); // this should use cache
-        await echo2.fetch({ text: 'testingCache' }, { cache: false }); // this will run without cache
-        await echo2.fetch({ text: 'testingCache' }); // this should use cache
-        thirdCall.resolve();
-      })();
-    }, []);
+      const posts = useClient('PostFindMany');
 
-    return <div>{echo.result}</div>;
-  };
+      React.useEffect(() => {
+        (async () => {
+          promises.push(echo({ text: 'shouldCache1' }));
+          promises.push(echo({ text: 'shouldCache1' }));
+          promises.push(echo({ text: 'shouldCache1' }));
+          promises.push(echo({ text: 'shouldCache1' }));
+          promises.push(echo({ text: 'shouldCache2' }));
+          promises.push(posts.fetch({}));
+        })();
+      }, []);
 
-  const wrapper = mount(
-    <Provider client={client}>
-      <Child />
-    </Provider>
-  );
+      renderCount++;
 
-  await firstCall.promise;
-  await secondCall.promise;
-  await thirdCall.promise;
+      return (
+        <div>
+          <span className={'echo'}>{state.result}</span>
+          <span className={'posts'}>{posts.result && posts.result.length}</span>
+        </div>
+      );
+    };
 
-  t.is(wrapper.getDOMNode().innerHTML, 'nil says: testingCache');
+    const wrapper = render(
+      <Provider client={client}>
+        <Child />
+      </Provider>
+    );
 
-  // 1 call will batch 3 echos (2 in the component body and one in effect)
-  // 2 will use cache
-  // 1 will run without cache
-  t.is(stub.callCount, 2);
-});
+    expect(promises.length).toBe(6);
+    const promisedResults = await Promise.all(promises);
+    await firstCall.promise;
 
-test('should run listener even if cache is false', async t => {
-  const {
-    Provider,
-    Client,
-    useClient,
-    Context,
-    Store
-  } = await getGeneratedModules();
+    const postsResult = promisedResults[5].result;
 
-  const client = new Client({ url: TEST_API });
-  const firstCall = hope();
-  const secondCall = hope();
+    expect(stub).toBeCalledTimes(1);
 
-  let context = {} as typeof Store.prototype;
+    expect(errors.length).toBe(0);
 
-  let listen = false;
-  let subscription1Count = 0;
+    expect(wrapper.container.querySelector('.echo')!.innerHTML).toBe(
+      'nil says: shouldCache2'
+    );
 
-  const Child = () => {
-    context = React.useContext(Context);
+    expect(wrapper.container.querySelector('.posts')!.innerHTML).toBe(
+      postsResult.length + ''
+    );
 
-    if (!listen) {
-      listen = true;
-      context.subscribe((state, requestSignature) => {
-        if (requestSignature === 'echo(text:default_query)' && state.resolved) {
-          firstCall.resolve(requestSignature);
-          subscription1Count++;
-        }
+    // 2 for echo state + 2 for namespace state
+    // although only one fetch was made
+    expect(renderCount).toBe(4);
+  });
 
-        if (requestSignature === 'echo(text:second_call)' && state.resolved) {
-          secondCall.resolve(requestSignature);
+  test('should make default fetch even if cache is false', async () => {
+    const stub = jest.spyOn(global, 'fetch');
+    const { Provider, Client, useClient } = await getGeneratedModules();
+
+    const client = new Client({ url: TEST_API });
+    const firstCall = hope();
+
+    let stateResults: (string | null | undefined)[][] = [];
+
+    const Child = () => {
+      const state = useClient('echo', {
+        variables: { text: 'testingCache' },
+        config: {
+          cache: false
         }
       });
-    }
 
-    const echo = useClient('echo', {
-      variables: { text: 'default_query' },
-      config: {
-        cache: false
+      stateResults.push([state.result]);
+
+      if (state.result) {
+        firstCall.resolve();
       }
-    });
 
-    React.useEffect(() => {
-      (async () => {
-        await echo.fetch({ text: 'second_call' }, { cache: false });
-      })();
-    }, []);
+      return <div>{state.result}</div>;
+    };
 
-    return <div>{echo.result}</div>;
-  };
+    const wrapper = render(
+      <Provider client={client}>
+        <Child />
+      </Provider>
+    );
 
-  mount(
-    <Provider client={client}>
-      <Child />
-    </Provider>
-  );
+    await firstCall.promise;
 
-  t.is(await firstCall.promise, 'echo(text:default_query)');
-  t.is(await secondCall.promise, 'echo(text:second_call)');
-  t.is(subscription1Count, 1);
-  t.is(subscription1Count, 1);
-});
+    expect(wrapper.container.querySelector('div')!.innerHTML).toBe(
+      'nil says: testingCache'
+    );
+    expect(stub).toBeCalledTimes(1);
+    expect(stateResults.length).toBeLessThan(4);
+  });
 
-test('should not change the loadingState of an already loaded item', async t => {
-  const stub = sinon.stub(global, 'fetch').callsFake(fetchMock);
+  test('should ignore cache when cache is false', async () => {
+    const stub = jest.spyOn(global, 'fetch');
+    const { Provider, Client, useClient } = await getGeneratedModules();
 
-  const { Provider, Client, useClient } = await getGeneratedModules(false);
+    const client = new Client({ url: TEST_API });
+    const firstCall = hope();
+    const secondCall = hope();
 
-  const client = new Client({ url: TEST_API });
-  const firstCall = hope();
-  const secondCall = hope();
+    let stateResults: (string | null | undefined)[][] = [];
 
-  let stateLoadingChanges = {
-    1: [] as boolean[],
-    2: [] as boolean[],
-    3: [] as boolean[]
-  };
-
-  function pushIfDiff(value: boolean, key: keyof typeof stateLoadingChanges) {
-    const entry = stateLoadingChanges[key];
-    const lastEntryValue = entry[entry.length - 1];
-    if (lastEntryValue !== value) {
-      stateLoadingChanges[key].push(value);
-    }
-  }
-
-  const Child = () => {
-    const state1 = useClient('echo', {
-      variables: { text: 'holly shit' },
-      config: {
-        cache: false,
-        async middleware(ctx) {
-          if (ctx.action === 'complete') {
-            firstCall.resolve(ctx.result);
+    const Child = () => {
+      const { fetch: echo, ...state } = useClient('echo', {
+        variables: { text: 'testingCache' },
+        config: {
+          cache: false,
+          async middleware(ctx: any) {
+            if (ctx.action === 'complete') {
+              firstCall.resolve();
+            }
+            return ctx;
           }
-          return ctx;
         }
+      });
+
+      React.useEffect(() => {
+        firstCall.promise.then(() => {
+          echo({ text: 'testingCache' }, { cache: false }).then(() =>
+            secondCall.resolve()
+          );
+        });
+      }, []);
+
+      stateResults.push([state.result]);
+
+      return <div>{state.result}</div>;
+    };
+
+    const wrapper = render(
+      <Provider client={client}>
+        <Child />
+      </Provider>
+    );
+
+    await firstCall.promise;
+    await secondCall.promise;
+
+    expect(wrapper.container.querySelector('div')!.innerHTML).toBe(
+      'nil says: testingCache'
+    );
+    expect(stub).toBeCalledTimes(2);
+    expect(stateResults.length).toBeLessThan(5);
+  });
+
+  test('should ignore cache when mixed cache false/true', async () => {
+    const stub = jest.spyOn(global, 'fetch');
+
+    const { Provider, Client, useClient } = await getGeneratedModules();
+
+    const client = new Client({ url: TEST_API });
+    const firstCall = hope();
+    const secondCall = hope();
+    const thirdCall = hope();
+
+    const Child = () => {
+      const echo = useClient('echo', {
+        variables: { text: 'testingCache' },
+        config: {
+          cache: false,
+          async middleware(ctx: any) {
+            if (ctx.action === 'complete') {
+              firstCall.resolve();
+            }
+            return ctx;
+          }
+        }
+      });
+
+      const echo2 = useClient('echo', {
+        variables: { text: 'testingCache' },
+        config: {
+          cache: false,
+          async middleware(ctx) {
+            if (ctx.action === 'complete') {
+              secondCall.resolve();
+            }
+            return ctx;
+          }
+        }
+      });
+
+      React.useEffect(() => {
+        (async () => {
+          await echo.fetch({ text: 'testingCache' }, { cache: false }); // this will batch with the first 2 calls
+          await echo.fetch({ text: 'testingCache' }); // this should use cache
+          await echo2.fetch({ text: 'testingCache' }, { cache: false }); // this will run without cache
+          await echo2.fetch({ text: 'testingCache' }); // this should use cache
+          thirdCall.resolve();
+        })();
+      }, []);
+
+      return <div>{echo.result}</div>;
+    };
+
+    const wrapper = render(
+      <Provider client={client}>
+        <Child />
+      </Provider>
+    );
+
+    await firstCall.promise;
+    await secondCall.promise;
+    await thirdCall.promise;
+
+    expect(wrapper.container.querySelector('div')!.innerHTML).toBe(
+      'nil says: testingCache'
+    );
+
+    // 1 call will batch 3 echos (2 in the component body and one in effect)
+    // 2 will use cache
+    // 1 will run without cache
+    expect(stub).toBeCalledTimes(2);
+  });
+
+  test('should run listener even if cache is false', async () => {
+    const {
+      Provider,
+      Client,
+      useClient,
+      Context,
+      Store
+    } = await getGeneratedModules();
+
+    const client = new Client({ url: TEST_API });
+    const firstCall = hope();
+    const secondCall = hope();
+
+    let context = {} as typeof Store.prototype;
+
+    let listen = false;
+    let subscription1Count = 0;
+
+    const Child = () => {
+      context = React.useContext(Context);
+
+      if (!listen) {
+        listen = true;
+        context.subscribe((state, requestSignature) => {
+          if (
+            requestSignature === 'echo(text:default_query)' &&
+            state.resolved
+          ) {
+            firstCall.resolve(requestSignature);
+            subscription1Count++;
+          }
+
+          if (requestSignature === 'echo(text:second_call)' && state.resolved) {
+            secondCall.resolve(requestSignature);
+          }
+        });
       }
-    });
 
-    const state2 = useClient('echo');
+      const echo = useClient('echo', {
+        variables: { text: 'default_query' },
+        config: {
+          cache: false
+        }
+      });
 
-    const state3 = useClient('echo');
+      React.useEffect(() => {
+        (async () => {
+          await echo.fetch({ text: 'second_call' }, { cache: false });
+        })();
+      }, []);
 
-    React.useEffect(() => {
-      firstCall.promise.then(() => {
-        state2.fetch({ text: 'hy' }).then(() => {
-          state3.fetch({ text: 'hy' }, { cache: false }).then(() => {
-            secondCall.resolve();
+      return <div>{echo.result}</div>;
+    };
+
+    render(
+      <Provider client={client}>
+        <Child />
+      </Provider>
+    );
+
+    expect(await firstCall.promise).toBe('echo(text:default_query)');
+    expect(await secondCall.promise).toBe('echo(text:second_call)');
+    expect(subscription1Count).toBe(1);
+    expect(subscription1Count).toBe(1);
+  });
+
+  test('should not change the loadingState of an already loaded item', async () => {
+    const stub = jest.spyOn(global, 'fetch');
+
+    const { Provider, Client, useClient } = await getGeneratedModules(false);
+
+    const client = new Client({ url: TEST_API });
+    const firstCall = hope();
+    const secondCall = hope();
+
+    let stateLoadingChanges = {
+      1: [] as boolean[],
+      2: [] as boolean[],
+      3: [] as boolean[]
+    };
+
+    function pushIfDiff(value: boolean, key: keyof typeof stateLoadingChanges) {
+      const entry = stateLoadingChanges[key];
+      const lastEntryValue = entry[entry.length - 1];
+      if (lastEntryValue !== value) {
+        stateLoadingChanges[key].push(value);
+      }
+    }
+
+    const Child = () => {
+      const state1 = useClient('echo', {
+        variables: { text: 'holly shit' },
+        config: {
+          cache: false,
+          async middleware(ctx) {
+            if (ctx.action === 'complete') {
+              firstCall.resolve(ctx.result);
+            }
+            return ctx;
+          }
+        }
+      });
+
+      const state2 = useClient('echo');
+
+      const state3 = useClient('echo');
+
+      React.useEffect(() => {
+        firstCall.promise.then(() => {
+          state2.fetch({ text: 'hy' }).then(() => {
+            state3.fetch({ text: 'hy' }, { cache: false }).then(() => {
+              secondCall.resolve();
+            });
           });
         });
+      }, []);
+
+      pushIfDiff(state1.loading, 1);
+      pushIfDiff(state2.loading, 2);
+      pushIfDiff(state3.loading, 3);
+
+      return <div>{state3.result}</div>;
+    };
+
+    const wrapper = render(
+      <Provider client={client}>
+        <Child />
+      </Provider>
+    );
+
+    await secondCall.promise;
+
+    expect(stub).toBeCalledTimes(3);
+
+    expect(stateLoadingChanges[1]).toEqual([false, true, false]);
+    expect(stateLoadingChanges[2]).toEqual([false, true, false]);
+    expect(stateLoadingChanges[3]).toEqual([false, true, false]);
+
+    expect(wrapper.container.querySelector('div')!.innerHTML).toBe(
+      'nil says: hy'
+    );
+  });
+
+  test('one cacheable request should wait if there is one with same signature in progress', async () => {
+    const originalFetch = global.fetch;
+
+    const stub = jest
+      .spyOn(global, 'fetch')
+      .mockImplementation(async (...args) => {
+        await delay(500);
+        return originalFetch(...args);
       });
-    }, []);
 
-    pushIfDiff(state1.loading, 1);
-    pushIfDiff(state2.loading, 2);
-    pushIfDiff(state3.loading, 3);
+    const { Provider, Client, useClient, Context } = await getGeneratedModules(
+      false
+    );
 
-    return <div>{state3.result}</div>;
-  };
+    const client = new Client({ url: TEST_API });
+    const secondCall = hope();
 
-  const wrapper = mount(
-    <Provider client={client}>
-      <Child />
-    </Provider>
-  );
+    let stateLoadingChanges = {
+      1: [] as boolean[],
+      2: [] as boolean[],
+      3: [] as boolean[]
+    };
 
-  await secondCall.promise;
-
-  t.is(stub.callCount, 3);
-
-  t.deepEqual(stateLoadingChanges[1], [true, false]);
-  t.deepEqual(stateLoadingChanges[2], [false, true, false]);
-  t.deepEqual(stateLoadingChanges[3], [false, true, false]);
-
-  t.is(wrapper.getDOMNode().innerHTML, 'nil says: hy');
-});
-
-test('one cacheable request should wait if there is one with same signature in progress', async t => {
-  const stub = sinon.stub(global, 'fetch').callsFake(delayedFetchMock);
-
-  const { Provider, Client, useClient, Context } = await getGeneratedModules(
-    false
-  );
-
-  const client = new Client({ url: TEST_API });
-  const secondCall = hope();
-
-  let stateLoadingChanges = {
-    1: [] as boolean[],
-    2: [] as boolean[],
-    3: [] as boolean[]
-  };
-
-  function pushIfDiff(value: boolean, key: keyof typeof stateLoadingChanges) {
-    const entry = stateLoadingChanges[key];
-    const lastEntryValue = entry[entry.length - 1];
-    if (lastEntryValue !== value) {
-      stateLoadingChanges[key].push(value);
+    function pushIfDiff(value: boolean, key: keyof typeof stateLoadingChanges) {
+      const entry = stateLoadingChanges[key];
+      const lastEntryValue = entry[entry.length - 1];
+      if (lastEntryValue !== value) {
+        stateLoadingChanges[key].push(value);
+      }
     }
-  }
 
-  const Child = () => {
-    const context = React.useContext(Context);
+    const Child = () => {
+      const context = React.useContext(Context);
 
-    const state1 = useClient('echo', {
-      variables: { text: 'hy' }
-    });
+      const state1 = useClient('echo', {
+        variables: { text: 'hy' }
+      });
 
-    const state2 = useClient('echo');
+      const state2 = useClient('echo');
 
-    React.useEffect(() => {
-      // wait batch dispatch first fetch
-      setTimeout(() => {
-        const current = context.getItem('echo(text:hy)');
-        // run one query while another with same signature is loading
-        if (current && current.loading && stub.callCount === 1) {
-          state2.fetch({ text: 'hy' }).then(() => {
-            secondCall.resolve();
-          });
-        }
-      }, 200);
-    }, []);
+      React.useEffect(() => {
+        // wait batch dispatch first fetch
+        setTimeout(() => {
+          const current = context.getItem('echo(text:hy)');
+          // run one query while another with same signature is loading
+          if (current && current.loading) {
+            state2.fetch({ text: 'hy' }).then(() => {
+              secondCall.resolve();
+            });
+          }
+        }, 100);
+      }, []);
 
-    pushIfDiff(state1.loading, 1);
-    pushIfDiff(state2.loading, 2);
+      pushIfDiff(state1.loading, 1);
+      pushIfDiff(state2.loading, 2);
 
-    return <div>{state2.result}</div>;
-  };
+      return <div>{state2.result}</div>;
+    };
 
-  const wrapper = mount(
-    <Provider client={client}>
-      <Child />
-    </Provider>
-  );
+    const wrapper = render(
+      <Provider client={client}>
+        <Child />
+      </Provider>
+    );
 
-  await secondCall.promise;
+    await secondCall.promise;
 
-  t.is(stub.callCount, 1);
+    expect(stub).toBeCalledTimes(1);
 
-  t.deepEqual(stateLoadingChanges[1], [true, false]);
-  t.deepEqual(stateLoadingChanges[2], [false, true, false]);
-
-  t.is(wrapper.getDOMNode().innerHTML, 'nil says: hy');
+    expect(wrapper.container.querySelector('div')!.innerHTML).toBe(
+      'nil says: hy'
+    );
+  });
 });

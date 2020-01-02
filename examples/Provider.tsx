@@ -38,16 +38,14 @@ export const useClient: UseClient = (methodName, initialFetchConfig) => {
   });
 
   const [state, setState] = React.useState<HookState<any, any>>(() => {
-    const isLoading = !!initialFetchConfig;
-
     // if there is a initial fetch config and cache !== false we have
     // a requestSignature at the first render
     if (requestSignature) {
       const cached = store.getItem(requestSignature);
-      return storeStateToHookState(cached, isLoading);
+      return storeStateToHookState(cached);
     }
 
-    return storeStateToHookState(undefined, isLoading);
+    return storeStateToHookState(undefined);
   });
 
   // update requestSignature and state
@@ -130,11 +128,7 @@ export const useClient: UseClient = (methodName, initialFetchConfig) => {
 
   // if there is a default fetch config, fetch it on first render
   const wasStartedTheDefaultFetch = React.useRef(false);
-  if (
-    !wasStartedTheDefaultFetch.current &&
-    initialFetchConfig &&
-    initialFetchConfig.fetchOnMount
-  ) {
+  if (!wasStartedTheDefaultFetch.current && initialFetchConfig) {
     if (!state.loading && !state.resolved && !state.error) {
       wasStartedTheDefaultFetch.current = true;
       fetcher(initialFetchConfig.variables, initialFetchConfig.config);
@@ -143,7 +137,7 @@ export const useClient: UseClient = (methodName, initialFetchConfig) => {
 
   return {
     ...(state as any),
-    fetch,
+    fetch: fetcher,
     store,
     signature: requestSignature
   };
@@ -227,14 +221,13 @@ type UseClient = <
 >(
   methodName: K,
   initialFetchConfig?: {
-    fetchOnMount?: boolean;
     variables?: A['variables'];
     config?: A['config'];
   }
 ) => HookState<R, A['variables']> & {
-  fetch: (variables: A['variables'], config?: A['config']) => Promise<Context>,
-  store: GraphQLStore,
-  signature: string
+  fetch: (variables: A['variables'], config?: A['config']) => Promise<Context>;
+  store: GraphQLStore;
+  signature: string;
 };
 
 type HookState<T, V> = {

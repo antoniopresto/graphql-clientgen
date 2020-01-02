@@ -3,14 +3,16 @@ import { useClient } from '../examples/Provider';
 import { storiesOf } from '@storybook/react';
 
 const List = () => {
-  const posts = useClient('PostFindMany', { fetchOnMount: true });
-  
+  const posts = useClient('PostFindMany', {  });
+
   return (
-    <ul>
-      {(posts.result || []).map(p => (
-        <li key={p!._id!}>{p?.title}</li>
-      ))}
-    </ul>
+    <div>
+      <ul>
+        {(posts.result || []).map(p => (
+          <li key={p!._id!}>{p?.title}</li>
+        ))}
+      </ul>
+    </div>
   );
 };
 

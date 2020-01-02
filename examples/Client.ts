@@ -12,6 +12,11 @@ export const query = {
             }
         }`,
 
+  echo: (config?: any) => `
+        query echo($text: String!){
+                ${parseFragmentConfig(`echo(text: $text)`, config)}
+        }`,
+
   PostCreateOne: (config?: any) => `
         mutation PostCreateOne($title: String!){
             PostCreateOne(title: $title){
@@ -62,10 +67,15 @@ export type PostCreateOnePayload = {
 export type Query = {
   __typename?: 'Query';
   PostFindMany?: Maybe<Array<Maybe<Post>>>;
+  echo?: Maybe<Scalars['String']>;
 };
 
 export type QueryPostFindManyArgs = {
   filter?: Maybe<Filter>;
+};
+
+export type QueryEchoArgs = {
+  text: Scalars['String'];
 };
 
 export enum OpKind {
@@ -368,6 +378,17 @@ export class GraphQLClient {
       });
     },
 
+    echo: (variables, config) => {
+      return this.exec(variables, {
+        url: this.url,
+        entityName: 'String',
+        schemaKey: 'echo',
+        query: query.echo(config),
+        kind: OpKind.query,
+        ...config
+      });
+    },
+
     PostCreateOne: (variables, config) => {
       return this.exec(variables, {
         url: this.url,
@@ -397,6 +418,28 @@ export class GraphQLClient {
         type: '[Post]',
         args: [{ name: 'filter', description: null, type: 'Filter' }],
         name: 'PostFindMany',
+        isDeprecated: false
+      },
+      isNonNull: false,
+      kind: 'query'
+    },
+
+    echo: {
+      type: 'String',
+      schemaKey: 'echo',
+      entityName: 'String',
+      isList: false,
+      argsTSName: 'QueryEchoArgs',
+      returnTSName: "Query['echo']",
+      isMutation: false,
+      isQuery: true,
+      isSubscription: false,
+      field: {
+        description: null,
+        deprecationReason: null,
+        type: 'String',
+        args: [{ name: 'text', description: null, type: 'String!' }],
+        name: 'echo',
         isDeprecated: false
       },
       isNonNull: false,
@@ -574,6 +617,8 @@ type MethodsDict = { [key: string]: Method };
 
 export interface Methods extends MethodsDict {
   PostFindMany: Method<QueryPostFindManyArgs, Query['PostFindMany']>;
+
+  echo: Method<QueryEchoArgs, Query['echo']>;
 
   PostCreateOne: Method<MutationPostCreateOneArgs, Mutation['PostCreateOne']>;
 }

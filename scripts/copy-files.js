@@ -26,5 +26,5 @@ Usage:
 main().catch(console.error);
 
 async function main() {
-  await fs.copy(CWD + '/src/template', CWD + '/build/template');
+  await fs.copy(CWD + '/src/template', CWD + '/build/src/template');
 }

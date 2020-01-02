@@ -1,9 +1,7 @@
-import memo from 'lodash/memoize';
 import fs from 'fs-extra';
 import path from 'path';
 import ts from 'typescript';
-import { printFromEndpoint } from '..';
-import { mockServer as apolloMockServer } from 'graphql-tools';
+import { printFromEndpoint } from '../index';
 import { GraphQLClient } from '../template/Client';
 import {
   GraphQLProvider,
@@ -11,84 +9,9 @@ import {
   useClient
 } from '../template/Provider';
 import { GraphQLStore } from '../template/Store';
-const Response = require('node-fetch').Response;
-
-const mocksPath = path.resolve(__dirname, '../../../mock');
-
-const gitLabTypeDefs = () => {
-  return fs.readFile(mocksPath + '/schema.graphql', 'utf8');
-};
-
-const gitLabIntrospection = () => {
-  return fs.readFile(mocksPath + '/introspection.json', 'utf8');
-};
-
-// make got "package" to always return the introspection mock
-(function monkeyPatchGot() {
-  const got = require('got');
-  const original = got.post;
-  got.post = async () => ({ body: await gitLabIntrospection() });
-
-  return () => {
-    require('got').post = original;
-  };
-})();
-
-const mockServer = memo(async () => {
-  return apolloMockServer(await gitLabTypeDefs(), {
-    String: (...args: any) => {
-      try {
-        // mock gitlab 'echo' graphql query
-        const { fieldNodes, variableValues } = args[3];
-        const suffix = fieldNodes[0].alias.value.match(/(_\d*)/gm);
-        const varName = suffix ? `text${suffix[0]}` : '';
-        const textValue = variableValues[varName];
-        return textValue !== undefined ? `nil says: ${textValue}` : 'mock';
-      } catch (e) {
-        return 'mock';
-      }
-    }
-  });
-});
-
-export const fetchMock = async function(url: any, init?: RequestInit) {
-  if (typeof url !== 'string')
-    throw new Error('fetch url argument is not a string');
-
-  const body = JSON.parse(
-    init && typeof init.body === 'string' ? init.body || '' : ''
-  );
-
-  const server = await mockServer();
-
-  return server.query(body.query, body.variables).then(
-    res =>
-      new Response(JSON.stringify(res), {
-        status: 200,
-        headers: { 'Content-type': 'application/json' }
-      })
-  );
-};
-
-export const delayedFetchMock = (
-  url: any,
-  init?: RequestInit & { __delay?: number }
-) => {
-  const delay = (init && init.__delay) || 500;
-
-  return new Promise<Response>((resolve, reject) => {
-    setTimeout(() => {
-      fetchMock(url, init)
-        .then(resolve)
-        .catch(reject);
-    }, delay);
-  });
-};
-
-global.fetch = fetchMock;
 
 const CWD = process.cwd();
-export const TEST_API = 'https://gitlab.com/api/graphql';
+export const TEST_API = 'http://localhost:3000/graphql';
 
 function loadConfig(mainPath = CWD) {
   const fileName = ts.findConfigFile(mainPath, ts.sys.fileExists);
@@ -167,7 +90,7 @@ let imported: {
 export async function getGeneratedModules(
   useCache = true
 ): Promise<typeof imported> {
-  const generatedFilesDest = path.resolve(__dirname, '../generated');
+  const generatedFilesDest = path.resolve(CWD, `build/generated/${Date.now()}`);
 
   const filePaths = {
     client: generatedFilesDest + '/Client.js',
@@ -176,6 +99,7 @@ export async function getGeneratedModules(
   };
 
   const response = await printFromEndpoint(TEST_API);
+
   if (response.status !== 'ok') {
     throw new Error('invalid printFromEndpoint response');
   }
@@ -221,4 +145,12 @@ export function mapObjectTypes(object: any) {
   return Object.keys(object)
     .sort()
     .map(key => `${key}__${typeof object[key]}`);
+}
+
+export async function delay(t = 100) {
+  return new Promise(resolve => {
+    setTimeout(() => {
+      resolve();
+    }, t);
+  });
 }
