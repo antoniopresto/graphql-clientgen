@@ -1,6 +1,6 @@
 const sh = require('shelljs');
 const path = require('path');
-const demoServer = require('./demo-server');
+const demoServer = require('./dev-server');
 
 const bin = path.resolve(__dirname, '../build/main/lib/bin.js');
 const dest =  path.resolve(__dirname, '../examples');
