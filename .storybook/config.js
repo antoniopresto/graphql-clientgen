@@ -14,6 +14,8 @@ const CenterDecorator = storyFn => {
     return new GraphQLClient({ url: 'http://localhost:3000/graphql' });
   }, []);
 
+  window.__GraphQLClient__ = client;
+
   return (
     <GraphQLProvider client={client}>
       <div style={{ padding: 10 }}>{storyFn()}</div>

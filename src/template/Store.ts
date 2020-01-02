@@ -125,6 +125,9 @@ export class GraphQLStore {
   private store: Store = {};
   private _listeners: StoreListener[] = [];
 
+  // hooks not unmounted using the query
+  // private queryCount: { [key: string]: number } = {};
+
   constructor(config: Config) {
     this.client = config.client;
     this.client.middleware = [...this.client.middleware, this.middleware];
@@ -308,12 +311,14 @@ export class GraphQLStore {
     const self = this;
     let isSubscribed = true;
     this._listeners.push(listener);
+    // this.queryCount[signature] += 1;
 
     return function unsubscribe() {
       if (!isSubscribed) {
         return;
       }
-
+  
+      // self.queryCount[signature] -= 1;
       isSubscribed = false;
 
       const index = self._listeners.indexOf(listener);
@@ -372,7 +377,7 @@ export class GraphQLStore {
           variables: variables,
           config: {} as any,
           action: Actions.complete,
-          result: newValue,
+          result: newValue
         },
         listeners: [],
         error: undefined,

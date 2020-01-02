@@ -52,7 +52,7 @@ test('should get store from useClient', async t => {
   const client = new Client({ url: TEST_API });
 
   const Child = () => {
-    const [, , store] = useClient('echo');
+    const { store } = useClient('echo');
     return <div>{Object.keys(store.client.methods).join('')}</div>;
   };
 
@@ -77,17 +77,17 @@ test('should get response from useClient', async t => {
   const promise = new Promise(r => (resolve = r));
 
   const Child = () => {
-    const [state, , store] = useClient('echo', { variables: { text: 'hey' } });
+    const echoState = useClient('echo', { variables: { text: 'hey' } });
 
     React.useEffect(() => {
-      return store.subscribe(state => {
+      return echoState.store.subscribe(state => {
         if (state.resolved) {
           resolve();
         }
       });
     }, []);
 
-    return <div>{state.result}</div>;
+    return <div>{echoState.result}</div>;
   };
 
   const wrapper = mount(
@@ -115,9 +115,9 @@ test('useClient should update state', async t => {
   const hope3 = hope();
 
   const Child = () => {
-    const [state1, echo1] = useClient('echo');
-    const [state2] = useClient('echo', { variables: { text: 'foo' } });
-    const [state3, group] = useClient('group');
+    const { fetch: echo1, ...state1 } = useClient('echo');
+    const state2 = useClient('echo', { variables: { text: 'foo' } });
+    const { fetch: group, ...state3 } = useClient('group');
 
     if (renderCount === 0) {
       initialState1 = state1;
@@ -201,7 +201,7 @@ test('should render only 2 times', async t => {
   let renderCount = 0;
 
   const Child = () => {
-    const [state] = useClient('echo', { variables: { text: 'hey' } });
+    const state = useClient('echo', { variables: { text: 'hey' } });
 
     if (state.result) {
       resolve(state);
@@ -237,7 +237,7 @@ test('store should batch multiple queries', async t => {
   const firstCall = hope();
 
   let listen = false;
-  let context = {} as (typeof Store.prototype);
+  let context = {} as typeof Store.prototype;
   const promises: Promise<any>[] = [];
 
   const Child = () => {
@@ -252,7 +252,7 @@ test('store should batch multiple queries', async t => {
       });
     }
 
-    const [state, echo] = useClient('echo', {
+    const { fetch: echo, ...state } = useClient('echo', {
       variables: { text: 'predefined_query' }
     });
 
@@ -315,11 +315,11 @@ test('store should cache', async t => {
       });
     }
 
-    const [state, echo] = useClient('echo', {
+    const { fetch: echo, ...state } = useClient('echo', {
       variables: { text: 'predefined_query' }
     });
 
-    const [namespace, callNamespace] = useClient('namespace');
+    const { fetch: callNamespace, ...namespace } = useClient('namespace');
 
     React.useEffect(() => {
       (async () => {
@@ -396,10 +396,10 @@ test('should make default fetch even if cache is false', async t => {
   const client = new Client({ url: TEST_API });
   const firstCall = hope();
 
-  let stateResults: ((string | null | undefined)[])[] = [];
+  let stateResults: (string | null | undefined)[][] = [];
 
   const Child = () => {
-    const [state] = useClient('echo', {
+    const state = useClient('echo', {
       variables: { text: 'testingCache' },
       config: {
         cache: false
@@ -436,10 +436,10 @@ test('should ignore cache when cache is false', async t => {
   const firstCall = hope();
   const secondCall = hope();
 
-  let stateResults: ((string | null | undefined)[])[] = [];
+  let stateResults: (string | null | undefined)[][] = [];
 
   const Child = () => {
-    const [state, echo] = useClient('echo', {
+    const {fetch: echo, ...state} = useClient('echo', {
       variables: { text: 'testingCache' },
       config: {
         cache: false,
@@ -490,7 +490,7 @@ test('should ignore cache when mixed cache false/true', async t => {
   const thirdCall = hope();
 
   const Child = () => {
-    const [state, echo] = useClient('echo', {
+    const echo = useClient('echo', {
       variables: { text: 'testingCache' },
       config: {
         cache: false,
@@ -503,7 +503,7 @@ test('should ignore cache when mixed cache false/true', async t => {
       }
     });
 
-    const [, echo2] = useClient('echo', {
+    const echo2 = useClient('echo', {
       variables: { text: 'testingCache' },
       config: {
         cache: false,
@@ -518,15 +518,15 @@ test('should ignore cache when mixed cache false/true', async t => {
 
     React.useEffect(() => {
       (async () => {
-        await echo({ text: 'testingCache' }, { cache: false }); // this will batch with the first 2 calls
-        await echo({ text: 'testingCache' }); // this should use cache
-        await echo2({ text: 'testingCache' }, { cache: false }); // this will run without cache
-        await echo2({ text: 'testingCache' }); // this should use cache
+        await echo.fetch({ text: 'testingCache' }, { cache: false }); // this will batch with the first 2 calls
+        await echo.fetch({ text: 'testingCache' }); // this should use cache
+        await echo2.fetch({ text: 'testingCache' }, { cache: false }); // this will run without cache
+        await echo2.fetch({ text: 'testingCache' }); // this should use cache
         thirdCall.resolve();
       })();
     }, []);
 
-    return <div>{state.result}</div>;
+    return <div>{echo.result}</div>;
   };
 
   const wrapper = mount(
@@ -560,7 +560,7 @@ test('should run listener even if cache is false', async t => {
   const firstCall = hope();
   const secondCall = hope();
 
-  let context = {} as (typeof Store.prototype);
+  let context = {} as typeof Store.prototype;
 
   let listen = false;
   let subscription1Count = 0;
@@ -582,7 +582,7 @@ test('should run listener even if cache is false', async t => {
       });
     }
 
-    const [state, echo] = useClient('echo', {
+    const echo = useClient('echo', {
       variables: { text: 'default_query' },
       config: {
         cache: false
@@ -591,11 +591,11 @@ test('should run listener even if cache is false', async t => {
 
     React.useEffect(() => {
       (async () => {
-        await echo({ text: 'second_call' }, { cache: false });
+        await echo.fetch({ text: 'second_call' }, { cache: false });
       })();
     }, []);
 
-    return <div>{state.result}</div>;
+    return <div>{echo.result}</div>;
   };
 
   mount(
@@ -634,7 +634,7 @@ test('should not change the loadingState of an already loaded item', async t => 
   }
 
   const Child = () => {
-    const [state1] = useClient('echo', {
+    const state1 = useClient('echo', {
       variables: { text: 'holly shit' },
       config: {
         cache: false,
@@ -647,14 +647,14 @@ test('should not change the loadingState of an already loaded item', async t => 
       }
     });
 
-    const [state2, echo2] = useClient('echo');
+    const state2 = useClient('echo');
 
-    const [state3, echo3] = useClient('echo');
+    const state3 = useClient('echo');
 
     React.useEffect(() => {
       firstCall.promise.then(() => {
-        echo2({ text: 'hy' }).then(() => {
-          echo3({ text: 'hy' }, { cache: false }).then(() => {
+        state2.fetch({ text: 'hy' }).then(() => {
+          state3.fetch({ text: 'hy' }, { cache: false }).then(() => {
             secondCall.resolve();
           });
         });
@@ -688,7 +688,9 @@ test('should not change the loadingState of an already loaded item', async t => 
 test('one cacheable request should wait if there is one with same signature in progress', async t => {
   const stub = sinon.stub(global, 'fetch').callsFake(delayedFetchMock);
 
-  const { Provider, Client, useClient, Context } = await getGeneratedModules(false);
+  const { Provider, Client, useClient, Context } = await getGeneratedModules(
+    false
+  );
 
   const client = new Client({ url: TEST_API });
   const secondCall = hope();
@@ -709,20 +711,20 @@ test('one cacheable request should wait if there is one with same signature in p
 
   const Child = () => {
     const context = React.useContext(Context);
-    
-    const [state1] = useClient('echo', {
+
+    const state1 = useClient('echo', {
       variables: { text: 'hy' }
     });
 
-    const [state2, echo2] = useClient('echo');
-    
+    const state2 = useClient('echo');
+
     React.useEffect(() => {
       // wait batch dispatch first fetch
       setTimeout(() => {
         const current = context.getItem('echo(text:hy)');
         // run one query while another with same signature is loading
         if (current && current.loading && stub.callCount === 1) {
-          echo2({ text: 'hy' }).then(() => {
+          state2.fetch({ text: 'hy' }).then(() => {
             secondCall.resolve();
           });
         }

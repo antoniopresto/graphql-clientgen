@@ -135,13 +135,18 @@ export const useClient: UseClient = (methodName, initialFetchConfig) => {
     initialFetchConfig &&
     initialFetchConfig.fetchOnMount
   ) {
-    if(!state.loading && !state.resolved && !state.error) {
+    if (!state.loading && !state.resolved && !state.error) {
       wasStartedTheDefaultFetch.current = true;
       fetcher(initialFetchConfig.variables, initialFetchConfig.config);
     }
   }
 
-  return [state, fetcher, store];
+  return {
+    ...(state as any),
+    fetch,
+    store,
+    signature: requestSignature
+  };
 };
 
 export const GraphQLStoreContext = React.createContext({} as GraphQLStore);
@@ -226,11 +231,11 @@ type UseClient = <
     variables?: A['variables'];
     config?: A['config'];
   }
-) => [
-  HookState<R, A['variables']>,
-  (variables: A['variables'], config?: A['config']) => Promise<Context>,
-  GraphQLStore
-];
+) => HookState<R, A['variables']> & {
+  fetch: (variables: A['variables'], config?: A['config']) => Promise<Context>,
+  store: GraphQLStore,
+  signature: string
+};
 
 type HookState<T, V> = {
   loading: boolean;
