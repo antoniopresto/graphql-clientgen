@@ -22,8 +22,8 @@ function mountClient(schema: GraphQLSchema, clientBase: string) {
   let methodsType = ``;
 
   let actionsBody = ``;
-  
-  let methodsInfo = ``
+
+  let methodsInfo = ``;
 
   storeItems.forEach(info => {
     let clientEntry = ``;
@@ -39,7 +39,10 @@ function mountClient(schema: GraphQLSchema, clientBase: string) {
       queryHelper.queryParts
         .map((el, k) => {
           if (k !== 1) return el;
-          return addTabs(`\${parseFragmentConfig(\`${(el || '').trim()}\`, config)}`, 8);
+          return addTabs(
+            `\${parseFragmentConfig(\`${(el || '').trim()}\`, config)}`,
+            8
+          );
         })
         .join('\n'),
       8
@@ -58,11 +61,11 @@ function mountClient(schema: GraphQLSchema, clientBase: string) {
     methodsType += `
       ${info.schemaKey} : Method<${info.argsTSName}, ${info.returnTSName}>;
     `;
-  
+
     methodsInfo += `
       ${info.schemaKey}: ${JSON.stringify(info)},
     `;
-    
+
     clientEntry += `
       ${info.schemaKey}: (${variablesDeclaration}config) => {
         return this.exec(${hasArgs ? 'variables, ' : '{}, '} {
@@ -139,7 +142,8 @@ function addTabs(str = '', n = 8) {
     .join('\n');
 }
 
-const basePath = path.resolve(__dirname, '../../template');
+// FIXME on prod dont remove `src` from path
+const basePath = path.resolve(__dirname, '../../src/template');
 
 const getClientBase = async () => {
   const client = fs.readFileSync(basePath + '/Client.ts', 'utf8');

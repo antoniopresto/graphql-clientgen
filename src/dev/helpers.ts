@@ -19,21 +19,6 @@ const gitLabTypeDefs = () => {
   return fs.readFile(mocksPath + '/schema.graphql', 'utf8');
 };
 
-const gitLabIntrospection = () => {
-  return fs.readFile(mocksPath + '/introspection.json', 'utf8');
-};
-
-// make got "package" to always return the introspection mock
-(function monkeyPatchGot() {
-  const got = require('got');
-  const original = got.post;
-  got.post = async () => ({ body: await gitLabIntrospection() });
-
-  return () => {
-    require('got').post = original;
-  };
-})();
-
 const mockServer = memo(async () => {
   return apolloMockServer(await gitLabTypeDefs(), {
     String: (...args: any) => {
@@ -88,7 +73,7 @@ export const delayedFetchMock = (
 global.fetch = fetchMock;
 
 const CWD = process.cwd();
-export const TEST_API = 'https://gitlab.com/api/graphql';
+export const TEST_API = 'http://localhost:3000/graphql';
 
 function loadConfig(mainPath = CWD) {
   const fileName = ts.findConfigFile(mainPath, ts.sys.fileExists);
@@ -176,6 +161,7 @@ export async function getGeneratedModules(
   };
 
   const response = await printFromEndpoint(TEST_API);
+  
   if (response.status !== 'ok') {
     throw new Error('invalid printFromEndpoint response');
   }
