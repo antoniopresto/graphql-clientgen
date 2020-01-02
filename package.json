@@ -36,7 +36,7 @@
     "all": "run-s reset test doc:html",
     "prepare-release": "run-s all version doc:publish",
     "beta": "npm run build && standard-version --prerelease beta && npm publish --tag beta",
-    "dev": "nodemon --watch ./src -e ts,tsx --exec \"npm run build:main && npm run copy-files && node ./scripts/run-dev.js\"",
+    "dev": "nodemon --watch -e ts,tsx,js --exec \"npm run build:main && npm run copy-files && node ./scripts/run-dev.js\"",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook"
   },

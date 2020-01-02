@@ -96,15 +96,15 @@ export const useClient: UseClient = (methodName, initialFetchConfig) => {
       // we set loading here because we dont set loading from the above
       // subscription - because  setting from the subscription will set loading
       // for items that not called the current request
-      if(config.cache === false && !state.loading || state.error) {
+      if ((config.cache === false && !state.loading) || state.error) {
         setState({ ...state, loading: true });
       }
-      
+
       updateSignature({ methodName: methodName as string, variables }, sign => {
         const cached = store.getItem(sign);
         setState({ ...storeStateToHookState(cached), loading: true });
       });
-      
+
       return method(variables, config);
     }
 

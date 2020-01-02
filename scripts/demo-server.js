@@ -44,6 +44,9 @@ composer.Mutation.addFields({
 composer.Query.addFields({
   PostFindMany: {
     name: 'PostFindMany',
+    args: {
+      filter: `input Filter { title: String }`
+    },
     type: `[Post]`,
     resolve: () => posts
   }
