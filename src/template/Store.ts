@@ -126,7 +126,7 @@ export class GraphQLStore {
   private _listeners: StoreListener[] = [];
 
   // hooks not unmounted using the query
-  // private queryCount: { [key: string]: number } = {};
+  activeQueries = new ActiveQueriesRegister();
 
   constructor(config: Config) {
     this.client = config.client;
@@ -317,7 +317,7 @@ export class GraphQLStore {
       if (!isSubscribed) {
         return;
       }
-  
+
       // self.queryCount[signature] -= 1;
       isSubscribed = false;
 
@@ -387,4 +387,20 @@ export class GraphQLStore {
       methodName
     );
   };
+}
+
+class ActiveQueriesRegister {
+  private _register: { [key: string]: number } = {};
+
+  add = (signature: string) => {
+    return (this._register[signature] = (this._register[signature] || 0) + 1);
+  };
+
+  remove = (signature: string) => {
+    let count = this._register[signature] - 1;
+    if (count < 0) count = 1;
+    return (this._register[signature] = count);
+  };
+
+  count = (signature: string) => this._register[signature] || 0;
 }

@@ -55,7 +55,9 @@ export const useClient: UseClient = (methodName, initialFetchConfig) => {
   ) {
     const newSignature = store.mountRequestSignature(methodName, variables);
     if (newSignature === requestSignatureRef.current) return;
-
+    
+    store.activeQueries.remove(requestSignatureRef.current);
+    
     updateReqSignatureState(newSignature);
     requestSignatureRef.current = newSignature;
 
@@ -81,7 +83,10 @@ export const useClient: UseClient = (methodName, initialFetchConfig) => {
       setState(storeStateToHookState(value));
     });
 
-    return unsubscribeRef.current;
+    return () => {
+      store.activeQueries.remove(requestSignatureRef.current);
+      unsubscribeRef.current();
+    }
   }, []);
 
   const fetcher = (
@@ -103,6 +108,8 @@ export const useClient: UseClient = (methodName, initialFetchConfig) => {
         setState({ ...storeStateToHookState(cached), loading: true });
       });
 
+      store.activeQueries.add(requestSignatureRef.current);
+      
       return method(variables, config);
     }
 
