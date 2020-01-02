@@ -2,6 +2,12 @@ const app = require('express')();
 const graphqlHTTP = require('express-graphql');
 const composer = require('graphql-compose').schemaComposer;
 const faker = require('faker');
+const cors = require('cors');
+
+app.use(cors({
+  origin: true,
+  credentials: true
+}));
 
 const PORT = 3000;
 

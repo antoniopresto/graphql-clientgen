@@ -30,7 +30,7 @@ export const useClient: UseClient = (methodName, initialFetchConfig) => {
 
     const reqSign = store.mountRequestSignature(
       methodName as string,
-      initialFetchConfig.variables
+      initialFetchConfig.variables || {}
     );
 
     requestSignatureRef.current = reqSign;
@@ -130,7 +130,11 @@ export const useClient: UseClient = (methodName, initialFetchConfig) => {
 
   // if there is a default fetch config, fetch it on first render
   const wasStartedTheDefaultFetch = React.useRef(false);
-  if (!wasStartedTheDefaultFetch.current && initialFetchConfig) {
+  if (
+    !wasStartedTheDefaultFetch.current &&
+    initialFetchConfig &&
+    initialFetchConfig.fetchOnMount
+  ) {
     wasStartedTheDefaultFetch.current = true;
     fetcher(initialFetchConfig.variables, initialFetchConfig.config);
   }
@@ -216,7 +220,8 @@ type UseClient = <
 >(
   methodName: K,
   initialFetchConfig?: {
-    variables: A['variables'];
+    fetchOnMount?: boolean;
+    variables?: A['variables'];
     config?: A['config'];
   }
 ) => [
