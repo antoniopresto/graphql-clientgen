@@ -29,7 +29,7 @@
     "version": "standard-version",
     "reset": "git clean -dfx && git reset --hard && yarn install",
     "clean": "trash build test",
-    "all": "run-s reset",
+    "all": "run-s reset build",
     "prepare-release": "run-s all version",
     "beta": "npm run build && standard-version --prerelease beta && npm publish --tag beta",
     "dev": "nodemon --watch -e ts,tsx,js --exec \"npm run build:main && npm run copy-files && node ./scripts/tests-server.js\"",
