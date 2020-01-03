@@ -16,7 +16,7 @@ describe('redoQuery', function() {
     const args = { text: 'opt' };
 
     const Child = () => {
-      const echo = useClient('echo', { variables: args });
+      const echo = useClient('echo', { variables: args, fetchOnMount: true });
       store = echo.store;
       return <div>{echo.result}</div>;
     };
@@ -44,7 +44,7 @@ describe('redoQuery', function() {
     const args = { text: 'opt' };
 
     const Child = () => {
-      const echo = useClient('echo', { variables: args });
+      const echo = useClient('echo', { variables: args, fetchOnMount: true });
       store = echo.store;
       return <div>{echo.result}</div>;
     };
@@ -83,7 +83,8 @@ describe('redoQuery', function() {
 
     const Child = () => {
       let echo = useClient('echo', {
-        variables: args
+        variables: args,
+        fetchOnMount: true
       });
 
       store = echo.store;
@@ -133,7 +134,7 @@ describe('redoQuery', function() {
     expect(redoCount).toBe(2);
   });
 
-  test('useClient should handle redoQuery via middleware', async () => {
+  test('useClient should handle redoQuery', async () => {
     const originalFetch = global.fetch;
     const stub = jest.spyOn(global, 'fetch').mockImplementation((...args) => {
       console.log(...args);
@@ -147,22 +148,32 @@ describe('redoQuery', function() {
 
     let store = {} as GraphQLStore;
 
-    let started = false;
+    let startedMutation = false;
 
     const Child = () => {
       let PostCreateOne = useClient('PostCreateOne', {
         afterMutate: /Post/,
-        fetchOnMount: true
-      });
-
-      useClient('PostFindMany', {
-        fetchOnMount: true
+        config: {
+          cache: true
+        }
       });
 
       store = PostCreateOne.store;
 
-      if (PostCreateOne.resolved) {
+      const PostFindMany = useClient('PostFindMany', {
+        fetchOnMount: true
+      });
+
+      if (PostFindMany.resolved) {
         createOneHope.resolve(PostCreateOne.result);
+
+        if (!startedMutation) {
+          startedMutation = true;
+
+          PostCreateOne.fetch({
+            title: 'My Post'
+          });
+        }
       }
 
       return <div>_</div>;

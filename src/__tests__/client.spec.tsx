@@ -66,7 +66,8 @@ describe('client', function() {
 
     const Child = () => {
       const echoState = useClient('echo', {
-        variables: { text: 'hey' }
+        variables: { text: 'hey' },
+        fetchOnMount: true
       });
 
       React.useEffect(() => {
@@ -95,6 +96,65 @@ describe('client', function() {
 
     expect(wrapper.container.firstChild.innerHTML).toBe('nil says: hey');
   });
+  
+  test('should handle fetchOnMount on queries', async () => {
+    const { Provider, Client, useClient } = await getGeneratedModules();
+
+    const client = new Client({ url: TEST_API });
+    
+    const Child = () => {
+      const echoState = useClient('echo', {
+        variables: { text: 'hey' },
+        fetchOnMount: true
+      });
+      
+      return (
+        <div>
+          {echoState.result}
+          {echoState.error}
+        </div>
+      );
+    };
+
+    const wrapper: any = render(
+      <Provider client={client}>
+        <Child />
+      </Provider>
+    );
+
+    await delay(300);
+
+    expect(wrapper.container.firstChild.innerHTML).toBe('nil says: hey');
+  });
+  
+  test('should handle fetchOnMount on mutations', async () => {
+    const { Provider, Client, useClient } = await getGeneratedModules();
+
+    const client = new Client({ url: TEST_API });
+    
+    const Child = () => {
+      const echoState = useClient('PostCreateOne', {
+        variables: { title: 'hey' },
+        fetchOnMount: true
+      });
+      
+      return (
+        <div>
+          {typeof (echoState.result && echoState.result.recordId)}
+        </div>
+      );
+    };
+
+    const wrapper: any = render(
+      <Provider client={client}>
+        <Child />
+      </Provider>
+    );
+
+    await delay(300);
+
+    expect(wrapper.container.firstChild.innerHTML).toBe('string');
+  });
 
   test('useClient should update state', async () => {
     const { Provider, Client, useClient } = await getGeneratedModules();
@@ -108,7 +168,10 @@ describe('client', function() {
 
     const Child = () => {
       const echo1 = useClient('echo');
-      const echo2 = useClient('echo', { variables: { text: 'foo' } });
+      const echo2 = useClient('echo', {
+        variables: { text: 'foo' },
+        fetchOnMount: true
+      });
       const echo3 = useClient('echo');
 
       if (renderCount === 0) {
@@ -176,7 +239,10 @@ describe('client', function() {
     let renderCount = 0;
 
     const Child = () => {
-      const state = useClient('echo', { variables: { text: 'hey' } });
+      const state = useClient('echo', {
+        variables: { text: 'hey' },
+        fetchOnMount: true
+      });
 
       if (state.result) {
         resolve(state);
@@ -232,7 +298,8 @@ describe('client', function() {
       }
 
       const { fetch: echo, ...state } = useClient('echo', {
-        variables: { text: 'predefined_query' }
+        variables: { text: 'predefined_query' },
+        fetchOnMount: true
       });
 
       React.useEffect(() => {
@@ -304,7 +371,8 @@ describe('client', function() {
       }
 
       const { fetch: echo, ...state } = useClient('echo', {
-        variables: { text: 'predefined_query' }
+        variables: { text: 'predefined_query' },
+        fetchOnMount: true
       });
 
       const posts = useClient('PostFindMany');
@@ -373,7 +441,8 @@ describe('client', function() {
         variables: { text: 'testingCache' },
         config: {
           cache: false
-        }
+        },
+        fetchOnMount: true
       });
 
       stateResults.push([state.result]);
@@ -421,7 +490,8 @@ describe('client', function() {
             }
             return ctx;
           }
-        }
+        },
+        fetchOnMount: true
       });
 
       React.useEffect(() => {
@@ -474,7 +544,8 @@ describe('client', function() {
             }
             return ctx;
           }
-        }
+        },
+        fetchOnMount: true
       });
 
       const echo2 = useClient('echo', {
@@ -487,7 +558,8 @@ describe('client', function() {
             }
             return ctx;
           }
-        }
+        },
+        fetchOnMount: true
       });
 
       React.useEffect(() => {
@@ -565,7 +637,8 @@ describe('client', function() {
         variables: { text: 'default_query' },
         config: {
           cache: false
-        }
+        },
+        fetchOnMount: true
       });
 
       React.useEffect(() => {
@@ -623,7 +696,8 @@ describe('client', function() {
             }
             return ctx;
           }
-        }
+        },
+        fetchOnMount: true
       });
 
       const state2 = useClient('echo');
@@ -701,7 +775,8 @@ describe('client', function() {
       const context = React.useContext(Context);
 
       const state1 = useClient('echo', {
-        variables: { text: 'hy' }
+        variables: { text: 'hy' },
+        fetchOnMount: true
       });
 
       const state2 = useClient('echo');

@@ -116,10 +116,11 @@ export const useClient: UseClient = (methodName, initialFetchConfig) => {
     if (!state.loading) {
       setState({ ...state, loading: true });
     }
-
+    
     return method(variables, config).then(ctx => {
       if (!ctx.errors && initialFetchConfig && initialFetchConfig.afterMutate) {
         if (initialFetchConfig.afterMutate instanceof RegExp) {
+          
           store.redoQuery(initialFetchConfig.afterMutate);
         } else {
           initialFetchConfig.afterMutate(ctx.result, store);
