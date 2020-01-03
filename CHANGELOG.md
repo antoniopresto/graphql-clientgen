@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="2.1.2"></a>
+## [2.1.2](https://github.com/antoniopresto/graphql-clientgen/compare/v2.0.9-beta.8...v2.1.2) (2020-01-03)
+
+
+
 <a name="2.1.1"></a>
 ## [2.1.1](https://github.com/antoniopresto/graphql-clientgen/compare/v2.0.9-beta.8...v2.1.1) (2020-01-03)
 
