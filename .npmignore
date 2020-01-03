@@ -1,4 +1,4 @@
-src
+/src
 test
 tsconfig.json
 tsconfig.module.json
@@ -7,6 +7,7 @@ tslint.json
 .github
 .prettierignore
 .vscode
+.idea
 build/docs
 **/*.spec.*
 coverage
