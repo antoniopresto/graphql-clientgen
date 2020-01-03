@@ -23,8 +23,7 @@ Usage:
   }
 );
 
-main().catch(console.error);
+const dest = CWD + '/build/src/template';
 
-async function main() {
-  await fs.copy(CWD + '/src/template', CWD + '/build/src/template');
-}
+fs.ensureDirSync(dest);
+fs.copySync(CWD + '/src/template', dest);
