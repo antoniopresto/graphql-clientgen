@@ -58,6 +58,10 @@ function parseContextAction(
   ctx: Context
 ): { isStateAction: boolean; isComplete: boolean } {
   switch (ctx.action) {
+    case Actions.clearQuery: {
+      return { isStateAction: true, isComplete: false };
+    }
+
     case Actions.abort: {
       return { isStateAction: true, isComplete: true };
     }
@@ -91,10 +95,11 @@ function parseContextAction(
 function parseContextInfo(ctx: Context) {
   const isMutation = ctx.config.kind === OpKind.mutation;
   const isQuery = ctx.config.kind === OpKind.query;
-  const shouldCacheByConfig = ctx.config.cache !== false;
+  const shouldCacheByConfig = ctx.config.cache === true;
   const isActionComplete = ctx.action === Actions.complete;
   const isActionWillQueue = ctx.action === Actions.willQueue;
   const isActionAbort = ctx.action === Actions.abort;
+  const isActionClearQuery = ctx.action === Actions.clearQuery;
   const error = ctx.errors ? ctx.errors.join('\n') : undefined;
 
   const { isStateAction, isComplete } = parseContextAction(ctx);
@@ -106,6 +111,7 @@ function parseContextInfo(ctx: Context) {
     isActionWillQueue,
     isActionAbort,
     isActionComplete,
+    isActionClearQuery,
 
     // true if the action is a state action
     // and not a fetch action for example
@@ -140,6 +146,8 @@ export class GraphQLStore {
 
     // there is no schemaKey in fetch actions (initFetch, fetchComplete)
     if (!info.isStateAction) return ctx;
+
+    if (info.isActionClearQuery) return ctx;
 
     if (!ctx.config.schemaKey) {
       throw new Error('ctx.config.schemaKey is undefined');
@@ -211,7 +219,11 @@ export class GraphQLStore {
       // will queue and already has a entry with same requestSignature
       // the entry can be resolved or in progress
       if (entry && info.canCache && !entry.error && !entry.isOptimistic) {
-        if (entry.resolved && entry.context) {
+        if (
+          entry.resolved &&
+          entry.context &&
+          !entry.context.config.ignoreCached
+        ) {
           // dont need to dispatch action here, because  when the request
           // started, we should have checked if there was already
           // a cached response
@@ -280,6 +292,26 @@ export class GraphQLStore {
 
     if (shouldDispatch) {
       this.dispatch(requestSignature, state, schemaKey);
+    }
+  };
+
+  removeItem = (requestSignature: string, shouldDispatch = true) => {
+    const currentItem = this.getItem(requestSignature);
+    if (!currentItem) return;
+
+    const schemaKey = currentItem.context.config.schemaKey;
+
+    delete this.store[requestSignature];
+
+    delete currentItem.resolved;
+    delete currentItem.result;
+    delete currentItem.loading;
+
+    currentItem.isOptimistic = true;
+    currentItem.context.action = Actions.clearQuery;
+
+    if (shouldDispatch) {
+      this.dispatch(requestSignature, currentItem, schemaKey);
     }
   };
 
@@ -357,35 +389,35 @@ export class GraphQLStore {
     );
   }
 
-  optimisticUpdate = (
-    methodName: string,
-    variables: Dict,
-    setter: (item?: StoreState) => any
-  ) => {
-    const signature = this.mountRequestSignature(methodName, variables);
+  redoQueries = (regex: RegExp) => {
+    Object.keys(this.store).forEach(k => {
+      if (!regex.exec(k)) return;
 
-    const current = this.getItem(signature);
-    const newValue = setter(current);
+      const active = this.activeQueries.count(k);
+      const item = this.store[k]!;
+      const info = parseContextInfo(item.context);
 
-    this.setItem(
-      signature,
-      {
-        loading: false,
-        resolved: true,
-        context: {
-          requestConfig: {},
-          variables: variables,
-          config: {} as any,
-          action: Actions.complete,
-          result: newValue
-        },
-        listeners: [],
-        error: undefined,
-        result: newValue,
-        isOptimistic: true
-      },
-      methodName
-    );
+      if (!info.isQuery) return;
+
+      if (!active) {
+        this.removeItem(k);
+        this.activeQueries.remove(k);
+        return;
+      }
+
+      const methodName = item.context.config.schemaKey;
+      const variables = item.context.variables;
+      const fetcherConfig = item.context.config;
+
+      fetcherConfig.ignoreCached = true;
+
+      fetcherConfig.redoQueriesNumber =
+        (fetcherConfig.redoQueriesNumber || 0) + 1;
+
+      const method = this.client.methods[methodName as any];
+
+      method(variables, fetcherConfig);
+    });
   };
 }
 

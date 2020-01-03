@@ -31,7 +31,10 @@ export enum Actions {
   // called when one query is completed (but not aborted) - with success or not
   // to handle when a query completes even if the result comes from the cache,
   // you should listen to 'abort' too
-  complete = 'complete'
+  complete = 'complete',
+  
+  // 5 - called when a query is removed from cache
+  clearQuery = 'clearQuery'
 }
 
 export type Context<V = any, R = any> = {
@@ -59,6 +62,8 @@ export type FetcherConfig<V, R> = {
   appendToFragment?: string;
   querySuffix?: string;
   cache?: boolean;
+  ignoreCached?: boolean;
+  redoQueriesNumber?: number;
   kind: OpKind;
 };
 

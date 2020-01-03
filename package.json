@@ -20,7 +20,7 @@
     "fix": "run-s fix:*",
     "fix:prettier": "prettier \"src/**/*.ts\" --write",
     "test": "jest",
-    "test:server": "ONLY_SERVER=1 nodemon ./scripts/tests-server.js",
+    "test:server": "ONLY_SERVER=1 node ./scripts/tests-server.js",
     "watch": "run-s clean build:main && run-p \"build:main -- -w\" \"copy-files\" \"test:integration -- --watch\"",
     "doc": "run-s doc:html && opn build/docs/index.html",
     "doc:html": "typedoc src/ --exclude \"**/+(__tests__|dev)/*\" --target ES6 --mode file --out build/docs",
