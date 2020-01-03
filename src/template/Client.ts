@@ -1,5 +1,3 @@
-import { parseContextInfo, ParsedContextInfo } from './Store';
-
 export enum OpKind {
   mutation = 'mutation',
   query = 'query'
