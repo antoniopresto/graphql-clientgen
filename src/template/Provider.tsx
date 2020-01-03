@@ -55,9 +55,9 @@ export const useClient: UseClient = (methodName, initialFetchConfig) => {
   ) {
     const newSignature = store.mountRequestSignature(methodName, variables);
     if (newSignature === requestSignatureRef.current) return;
-    
+
     store.activeQueries.remove(requestSignatureRef.current);
-    
+
     updateReqSignatureState(newSignature);
     requestSignatureRef.current = newSignature;
 
@@ -86,7 +86,7 @@ export const useClient: UseClient = (methodName, initialFetchConfig) => {
     return () => {
       store.activeQueries.remove(requestSignatureRef.current);
       unsubscribeRef.current();
-    }
+    };
   }, []);
 
   const fetcher = (
@@ -109,7 +109,7 @@ export const useClient: UseClient = (methodName, initialFetchConfig) => {
       });
 
       store.activeQueries.add(requestSignatureRef.current);
-      
+
       return method(variables, config);
     }
 
@@ -118,6 +118,14 @@ export const useClient: UseClient = (methodName, initialFetchConfig) => {
     }
 
     return method(variables, config).then(ctx => {
+      if (!ctx.errors && initialFetchConfig && initialFetchConfig.afterMutate) {
+        if (initialFetchConfig.afterMutate instanceof RegExp) {
+          store.redoQuery(initialFetchConfig.afterMutate);
+        } else {
+          initialFetchConfig.afterMutate(ctx.result, store);
+        }
+      }
+
       setState(
         storeStateToHookState({
           context: ctx,
@@ -135,7 +143,11 @@ export const useClient: UseClient = (methodName, initialFetchConfig) => {
 
   // if there is a default fetch config, fetch it on first render
   const wasStartedTheDefaultFetch = React.useRef(false);
-  if (!wasStartedTheDefaultFetch.current && initialFetchConfig) {
+  if (
+    !wasStartedTheDefaultFetch.current &&
+    initialFetchConfig &&
+    initialFetchConfig.fetchOnMount
+  ) {
     if (!state.loading && !state.resolved && !state.error) {
       wasStartedTheDefaultFetch.current = true;
       fetcher(initialFetchConfig.variables, initialFetchConfig.config);
@@ -230,6 +242,8 @@ type UseClient = <
   initialFetchConfig?: {
     variables?: A['variables'];
     config?: A['config'];
+    fetchOnMount?: boolean;
+    afterMutate?: ((r: R, s: GraphQLStore) => any) | RegExp; // redo query if regex or run a callback
   }
 ) => HookState<R, A['variables']> & {
   fetch: (variables: A['variables'], config?: A['config']) => Promise<Context>;

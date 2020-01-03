@@ -101,8 +101,10 @@ export async function getGeneratedModules(
   const response = await printFromEndpoint(TEST_API);
 
   if (response.status !== 'ok') {
+    console.error(response, TEST_API);
     throw new Error('invalid printFromEndpoint response');
   }
+  
   const { client, store, provider } = response;
 
   const clientJS = transpileTSSource(client);

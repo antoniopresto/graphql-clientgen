@@ -3,7 +3,7 @@ import { render } from '@testing-library/react';
 import * as React from 'react';
 import { GraphQLStore } from '../template/Store';
 
-describe('redoQueries', function() {
+describe('redoQuery', function() {
   afterEach(() => {
     jest.restoreAllMocks();
   });
@@ -61,7 +61,7 @@ describe('redoQueries', function() {
 
     expect(store.getItem(key)).toBeTruthy();
 
-    store.redoQueries(/echo/);
+    store.redoQuery(/echo/);
 
     expect(store.getItem(key)).toBeFalsy();
   });
@@ -95,7 +95,7 @@ describe('redoQueries', function() {
       if (!listen) {
         listen = true;
         echo.store.subscribe(s => {
-          redoCount = s.context.config.redoQueriesNumber || 0;
+          redoCount = s.context.fetcherConfig.redoQueriesNumber || 0;
           if (redoCount > 0 && s.resolved) {
             coming2.resolve(redoCount);
           }
@@ -118,7 +118,7 @@ describe('redoQueries', function() {
     expect(store.getItem(key)).toHaveProperty('result', 'nil says: opt');
     expect(stub).toBeCalledTimes(1);
 
-    store.redoQueries(/echo/);
+    store.redoQuery(/echo/);
 
     await coming2.promise;
 
@@ -126,10 +126,65 @@ describe('redoQueries', function() {
     expect(stub).toBeCalledTimes(2);
     expect(redoCount).toBe(1);
 
-    store.redoQueries(/echo/);
+    store.redoQuery(/echo/);
     await delay(100);
 
     expect(stub).toBeCalledTimes(3);
     expect(redoCount).toBe(2);
+  });
+
+  test('useClient should handle redoQuery via middleware', async () => {
+    const originalFetch = global.fetch;
+    const stub = jest.spyOn(global, 'fetch').mockImplementation((...args) => {
+      console.log(...args);
+      return originalFetch(...args);
+    });
+
+    const { Provider, Client, useClient } = await getGeneratedModules();
+    const client = new Client({ url: TEST_API });
+
+    const createOneHope = hope();
+
+    let store = {} as GraphQLStore;
+
+    let started = false;
+
+    const Child = () => {
+      let PostCreateOne = useClient('PostCreateOne', {
+        afterMutate: /Post/,
+        fetchOnMount: true
+      });
+
+      useClient('PostFindMany', {
+        fetchOnMount: true
+      });
+
+      store = PostCreateOne.store;
+
+      if (PostCreateOne.resolved) {
+        createOneHope.resolve(PostCreateOne.result);
+      }
+
+      return <div>_</div>;
+    };
+
+    render(
+      <Provider client={client}>
+        <Child />
+      </Provider>
+    );
+
+    await createOneHope.promise;
+
+    const key = store.mountRequestSignature('PostFindMany', {});
+
+    await delay(500);
+
+    const postsEntry = store.getItem(key)!;
+
+    expect(postsEntry.context.fetcherConfig.redoQueriesNumber).toEqual(1);
+
+    // 1 mutation, 1 query, 1 refetch
+    expect(stub).toBeCalledTimes(3);
   });
 });

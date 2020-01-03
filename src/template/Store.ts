@@ -92,10 +92,12 @@ function parseContextAction(
  * Parse info from Middleware context
  * @param ctx
  */
-function parseContextInfo(ctx: Context) {
-  const isMutation = ctx.config.kind === OpKind.mutation;
-  const isQuery = ctx.config.kind === OpKind.query;
-  const shouldCacheByConfig = ctx.config.cache === true;
+export function parseContextInfo<C extends Context>(
+  ctx: C
+): ParsedContextInfo<C> {
+  const isMutation = ctx.fetcherConfig.kind === OpKind.mutation;
+  const isQuery = ctx.fetcherConfig.kind === OpKind.query;
+  const shouldCacheByConfig = ctx.fetcherConfig.cache === true;
   const isActionComplete = ctx.action === Actions.complete;
   const isActionWillQueue = ctx.action === Actions.willQueue;
   const isActionAbort = ctx.action === Actions.abort;
@@ -126,6 +128,27 @@ function parseContextInfo(ctx: Context) {
   };
 }
 
+export type ParsedContextInfo<C extends Context> = {
+  isMutation: boolean;
+  isQuery: boolean;
+  canCache: boolean;
+  isActionWillQueue: boolean;
+  isActionAbort: boolean;
+  isActionComplete: boolean;
+  isActionClearQuery: boolean;
+
+  // true if the action is a state action
+  // and not a fetch action for example
+  // there is no schemaKey in fetch actions, because they are generics to
+  // a group of queries in a batch - and each one can have one schemaKey
+  isStateAction: boolean;
+
+  isComplete: boolean;
+
+  error: string | undefined;
+  result: C['result'];
+};
+
 export class GraphQLStore {
   client: GraphQLClient;
   private store: Store = {};
@@ -149,11 +172,11 @@ export class GraphQLStore {
 
     if (info.isActionClearQuery) return ctx;
 
-    if (!ctx.config.schemaKey) {
+    if (!ctx.fetcherConfig.schemaKey) {
       throw new Error('ctx.config.schemaKey is undefined');
     }
 
-    const { schemaKey } = ctx.config;
+    const { schemaKey } = ctx.fetcherConfig;
 
     const requestSignature = this.mountRequestSignature(
       schemaKey,
@@ -222,7 +245,7 @@ export class GraphQLStore {
         if (
           entry.resolved &&
           entry.context &&
-          !entry.context.config.ignoreCached
+          !entry.context.fetcherConfig.ignoreCached
         ) {
           // dont need to dispatch action here, because  when the request
           // started, we should have checked if there was already
@@ -299,7 +322,7 @@ export class GraphQLStore {
     const currentItem = this.getItem(requestSignature);
     if (!currentItem) return;
 
-    const schemaKey = currentItem.context.config.schemaKey;
+    const schemaKey = currentItem.context.fetcherConfig.schemaKey;
 
     delete this.store[requestSignature];
 
@@ -389,7 +412,7 @@ export class GraphQLStore {
     );
   }
 
-  redoQueries = (regex: RegExp) => {
+  redoQuery = (regex: RegExp) => {
     Object.keys(this.store).forEach(k => {
       if (!regex.exec(k)) return;
 
@@ -405,9 +428,9 @@ export class GraphQLStore {
         return;
       }
 
-      const methodName = item.context.config.schemaKey;
+      const methodName = item.context.fetcherConfig.schemaKey;
       const variables = item.context.variables;
-      const fetcherConfig = item.context.config;
+      const fetcherConfig = item.context.fetcherConfig;
 
       fetcherConfig.ignoreCached = true;
 

@@ -1,3 +1,5 @@
+import { parseContextInfo, ParsedContextInfo } from './Store';
+
 export enum OpKind {
   mutation = 'mutation',
   query = 'query'
@@ -32,7 +34,7 @@ export enum Actions {
   // to handle when a query completes even if the result comes from the cache,
   // you should listen to 'abort' too
   complete = 'complete',
-  
+
   // 5 - called when a query is removed from cache
   clearQuery = 'clearQuery'
 }
@@ -40,7 +42,7 @@ export enum Actions {
 export type Context<V = any, R = any> = {
   requestConfig: RequestInit;
   variables: V;
-  config: FetcherConfig<V, R>;
+  fetcherConfig: FetcherConfig<V, R>;
   action: Actions;
   errors?: string[];
   result?: R | null;
@@ -205,7 +207,7 @@ export class GraphQLClient {
             result: ctx.result ? ctx.result[key] : null,
             action: Actions.complete,
             variables,
-            config: config,
+            fetcherConfig: config,
             querySuffix: key
           })
         );
@@ -223,16 +225,16 @@ export class GraphQLClient {
       throw new Error(`invalid kind of operation: ${kind}`);
     }
 
-    const config = {
+    const fetcherConfig = {
       ..._config,
       url: this.url,
       middleware: [...this.middleware, ...ensureArray(_config.middleware)]
     };
 
-    const context = await applyMiddleware(config.middleware as [])({
+    const context = await applyMiddleware(fetcherConfig.middleware as [])({
       requestConfig: {},
       variables: _variables,
-      config,
+      fetcherConfig,
       action: Actions.willQueue
       // errors?: string[];
       // result?: R | null;
@@ -242,11 +244,11 @@ export class GraphQLClient {
     if (context.action === Actions.abort) {
       // applying middleware because listeners should be able
       // to listen to 'abort' action
-      return applyMiddleware(config.middleware as [])(context);
+      return applyMiddleware(fetcherConfig.middleware as [])(context);
     }
 
     let queueItem: QueueItem = {
-      config: context.config,
+      config: context.fetcherConfig,
       resolver: null,
       variables: _variables,
       kind
@@ -301,7 +303,7 @@ export class GraphQLClient {
 
   queryFetcher = async <Variables, Return>(
     variables: Variables,
-    config: FetcherConfig<Variables, Return>
+    fetcherConfig: FetcherConfig<Variables, Return>
   ): Promise<Context<Variables, Return>> => {
     let requestConfig: RequestInit = {
       method: 'POST',
@@ -309,21 +311,21 @@ export class GraphQLClient {
       headers: {
         'Content-Type': 'application/json',
         Accept: 'application/json',
-        ...config.headers
+        ...fetcherConfig.headers
       }
     };
 
     const middleware: Middleware<Variables, Return> =
-      typeof config.middleware === 'function'
-        ? config.middleware
-        : applyMiddleware(ensureArray(config.middleware));
+      typeof fetcherConfig.middleware === 'function'
+        ? fetcherConfig.middleware
+        : applyMiddleware(ensureArray(fetcherConfig.middleware));
 
     const context = await middleware({
       requestConfig,
       variables,
-      config,
+      fetcherConfig,
       action: Actions.initFetch,
-      querySuffix: config.querySuffix
+      querySuffix: fetcherConfig.querySuffix
     });
 
     if (context.action === Actions.abort) {
@@ -331,11 +333,11 @@ export class GraphQLClient {
     }
 
     context.requestConfig.body = JSON.stringify({
-      query: context.config.query,
+      query: context.fetcherConfig.query,
       variables: context.variables
     });
 
-    return fetch(context.config.url, context.requestConfig)
+    return fetch(context.fetcherConfig.url, context.requestConfig)
       .then(async response => {
         const contentType = response.headers.get('Content-Type');
         const isJSON =
@@ -369,8 +371,8 @@ export class GraphQLClient {
           errors,
           action: Actions.completeFetch,
           result: data
-            ? config.schemaKey
-              ? data[config.schemaKey]
+            ? fetcherConfig.schemaKey
+              ? data[fetcherConfig.schemaKey]
               : data
             : null
         });
@@ -402,10 +404,7 @@ function compose(funcs: Middleware<any>[]) {
   });
 }
 
-export function parseFragmentConfig(
-  fragment: string,
-  config?: any
-): string {
+export function parseFragmentConfig(fragment: string, config?: any): string {
   let resultingFragment = fragment || '';
 
   if (config) {

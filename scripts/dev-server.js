@@ -3,7 +3,6 @@ const graphqlHTTP = require('express-graphql');
 const composer = require('graphql-compose').schemaComposer;
 const faker = require('faker');
 const cors = require('cors');
-const getPort = require('get-port');
 
 composer.createTC(`
   type Post {
@@ -23,9 +22,8 @@ function fakePost() {
   };
 }
 
-module.exports = async function start(cb, port) {
+module.exports = async function start(cb, port = 3000) {
   const app = express();
-  port = port || (await getPort({ port: 3000 }));
 
   app.use(function(req, res, next) {
     setTimeout(() => {
@@ -49,7 +47,7 @@ module.exports = async function start(cb, port) {
       args: {
         title: 'String!'
       },
-      resolve: ({ args }) => {
+      resolve: (_, args) => {
         const post = fakePost();
         post.title = args.title;
         posts.push(post);
