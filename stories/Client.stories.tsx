@@ -4,13 +4,13 @@ import { storiesOf } from '@storybook/react';
 
 const List = () => {
   const posts = useClient('PostFindMany', {
-    fetchOnMount: true
+    fetchOnMount: true,
   });
 
   const addNew = useClient('PostCreateOne', {
     afterMutate: /Post/
   });
-  
+
   return (
     <div>
       {posts.loading || addNew.loading ? 'loading...' : ''}

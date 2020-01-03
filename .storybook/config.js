@@ -11,7 +11,7 @@ function loadStories() {
 
 const CenterDecorator = storyFn => {
   const client = React.useMemo(() => {
-    return new GraphQLClient({ url: 'http://localhost:3000/graphql' });
+    return new GraphQLClient({ url: 'http://localhost:3379/graphql' });
   }, []);
 
   window.__GraphQLClient__ = client;

@@ -1,6 +1,7 @@
 import * as React from 'react';
 
 import { GraphQLStore, StoreState } from './Store';
+
 import {
   Context,
   Dict,
@@ -13,7 +14,7 @@ import {
 export const useClient: UseClient = (methodName, hookConfig) => {
   const { store, method } = useGraphQLStore(methodName);
 
-  const defaulter = (override: UseClientConfig<any, any> = {}) => {
+  const defaulter = (override: typeof hookConfig = {}) => {
     const initial: any = hookConfig || {};
 
     return {
@@ -244,27 +245,28 @@ type Unpacked<T> = T extends (infer U)[]
   ? U
   : T;
 
-type UseClientConfig<
-  V,
-  R,
-  _MethodConfig = Partial<MethodConfig<V, R>>
-> = _MethodConfig & {
-  variables?: V;
-  fetchOnMount?: boolean;
-  afterMutate?: ((r: R, s: GraphQLStore) => any) | RegExp; // redo query if regex or run a callback
-};
+type AfterMutate<R> = ((r: R, s: GraphQLStore) => any) | RegExp; // redo query if regex or run a callback
 
 type UseClient = <
   A extends { variables: Parameters<M>[0]; config?: Parameters<M>[1] }, // argsArray
   K extends keyof Methods = any, // method key (name)
   M extends (...args: any) => any = Methods[K], // method
-  R = Unpacked<ReturnType<M>>['result'], // return type without promise
-  C = UseClientConfig<A['variables'], R>
+  R = Unpacked<ReturnType<M>>['result'] // return type without promise
 >(
   methodName: K,
-  config?: C
+  config?: Partial<MethodConfig<A['variables'], R>> & {
+    variables?: A['variables'];
+    fetchOnMount?: boolean;
+    afterMutate?: AfterMutate<R>;
+  }
 ) => HookState<R, A['variables']> & {
-  fetch: (config?: UseClientConfig<A['variables'], R>) => Promise<Context>;
+  fetch: (
+    config?: Partial<MethodConfig<A['variables'], R>> & {
+      variables?: A['variables'];
+      fetchOnMount?: boolean;
+      afterMutate?: AfterMutate<R>;
+    }
+  ) => Promise<Context>;
   store: GraphQLStore;
   signature: string;
 };

@@ -22,7 +22,7 @@ function fakePost() {
   };
 }
 
-module.exports = async function start(cb, port = 3000) {
+module.exports = async function start(cb, port = 3379) {
   const app = express();
 
   app.use(function(req, res, next) {
