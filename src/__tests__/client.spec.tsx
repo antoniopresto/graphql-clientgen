@@ -96,18 +96,71 @@ describe('client', function() {
 
     expect(wrapper.container.firstChild.innerHTML).toBe('nil says: hey');
   });
-  
+
+  test('should merge initial and fetch variables', async () => {
+    const originalFetch = global.fetch;
+
+    let body: any[] = [];
+
+    jest.spyOn(global, 'fetch').mockImplementation((url, config) => {
+      body.push(JSON.parse(config!.body as string).variables);
+      return originalFetch(url, config);
+    });
+
+    const { Provider, Client, useClient } = await getGeneratedModules();
+
+    const client = new Client({ url: TEST_API });
+
+    const Child = () => {
+      useClient('echo', {
+        variables: { text: 'hey' },
+        fetchOnMount: true
+      });
+
+      const echo2 = useClient('echo');
+
+      React.useEffect(() => {
+        echo2.fetch({ variables: { text: 'how' } });
+
+        setTimeout(() => {
+          echo2.fetch({ variables: { text: 'lets go', foo: 'bar' } });
+        }, 100);
+      }, []);
+
+      return null;
+    };
+
+    render(
+      <Provider client={client}>
+        <Child />
+      </Provider>
+    );
+
+    await delay(500);
+
+    expect(body).toEqual([
+      {
+        text_0: 'hey',
+        text_1: 'how'
+      },
+      {
+        foo_0: 'bar',
+        text_0: 'lets go'
+      }
+    ]);
+  });
+
   test('should handle fetchOnMount on queries', async () => {
     const { Provider, Client, useClient } = await getGeneratedModules();
 
     const client = new Client({ url: TEST_API });
-    
+
     const Child = () => {
       const echoState = useClient('echo', {
         variables: { text: 'hey' },
         fetchOnMount: true
       });
-      
+
       return (
         <div>
           {echoState.result}
@@ -126,22 +179,20 @@ describe('client', function() {
 
     expect(wrapper.container.firstChild.innerHTML).toBe('nil says: hey');
   });
-  
+
   test('should handle fetchOnMount on mutations', async () => {
     const { Provider, Client, useClient } = await getGeneratedModules();
 
     const client = new Client({ url: TEST_API });
-    
+
     const Child = () => {
       const echoState = useClient('PostCreateOne', {
         variables: { title: 'hey' },
         fetchOnMount: true
       });
-      
+
       return (
-        <div>
-          {typeof (echoState.result && echoState.result.recordId)}
-        </div>
+        <div>{typeof (echoState.result && echoState.result.recordId)}</div>
       );
     };
 
@@ -168,16 +219,18 @@ describe('client', function() {
 
     const Child = () => {
       const echo1 = useClient('echo');
+
       const echo2 = useClient('echo', {
         variables: { text: 'foo' },
         fetchOnMount: true
       });
+
       const echo3 = useClient('echo');
 
       if (renderCount === 0) {
         setTimeout(() => {
-          echo1.fetch({ text: 'echo1' }).then(() => {
-            echo3.fetch({ shouldThrow: 1234 });
+          echo1.fetch({ variables: { text: 'echo1' } }).then(() => {
+            echo3.fetch({ variables: { shouldThrow: 1234 } });
           });
         }, 100);
       }
@@ -264,7 +317,7 @@ describe('client', function() {
     expect(wrapper.container.querySelector('div')!.innerHTML).toBe(
       'nil says: hey'
     );
-    expect(renderCount).toBe(2);
+    expect(renderCount).toBe(3);
   });
 
   test('store should batch multiple queries', async () => {
@@ -303,10 +356,10 @@ describe('client', function() {
       });
 
       React.useEffect(() => {
-        promises.push(echo({ text: 'shouldBatch1' }));
-        promises.push(echo({ text: 'shouldBatch2' }));
-        promises.push(echo({ text: 'shouldBatch3' }));
-        promises.push(echo({ text: 'shouldBatch4' }));
+        promises.push(echo({ variables: { text: 'shouldBatch1' } }));
+        promises.push(echo({ variables: { text: 'shouldBatch2' } }));
+        promises.push(echo({ variables: { text: 'shouldBatch3' } }));
+        promises.push(echo({ variables: { text: 'shouldBatch4' } }));
       }, []);
 
       return <div>{state.result}</div>;
@@ -379,11 +432,11 @@ describe('client', function() {
 
       React.useEffect(() => {
         (async () => {
-          promises.push(echo({ text: 'shouldCache1' }));
-          promises.push(echo({ text: 'shouldCache1' }));
-          promises.push(echo({ text: 'shouldCache1' }));
-          promises.push(echo({ text: 'shouldCache1' }));
-          promises.push(echo({ text: 'shouldCache2' }));
+          promises.push(echo({ variables: { text: 'shouldCache1' } }));
+          promises.push(echo({ variables: { text: 'shouldCache1' } }));
+          promises.push(echo({ variables: { text: 'shouldCache1' } }));
+          promises.push(echo({ variables: { text: 'shouldCache1' } }));
+          promises.push(echo({ variables: { text: 'shouldCache2' } }));
           promises.push(posts.fetch({}));
         })();
       }, []);
@@ -422,9 +475,9 @@ describe('client', function() {
       postsResult.length + ''
     );
 
-    // 2 for echo state + 2 for namespace state
+    // 1 initial + 2 for echo state + 2 for namespace state
     // although only one fetch was made
-    expect(renderCount).toBe(4);
+    expect(renderCount).toBe(5);
   });
 
   test('should make default fetch even if cache is false', async () => {
@@ -481,20 +534,18 @@ describe('client', function() {
       const { fetch: echo, ...state } = useClient('echo', {
         variables: { text: 'testingCache' },
         cache: false,
-        methodConfig: {
-          async middleware(ctx: any) {
-            if (ctx.action === 'complete') {
-              firstCall.resolve();
-            }
-            return ctx;
+        async middleware(ctx: any) {
+          if (ctx.action === 'complete') {
+            firstCall.resolve();
           }
+          return ctx;
         },
         fetchOnMount: true
       });
 
       React.useEffect(() => {
         firstCall.promise.then(() => {
-          echo({ text: 'testingCache' }, { cache: false }).then(() =>
+          echo({ variables: { text: 'testingCache' }, cache: false }).then(() =>
             secondCall.resolve()
           );
         });
@@ -535,37 +586,45 @@ describe('client', function() {
       const echo = useClient('echo', {
         variables: { text: 'testingCache' },
         cache: false,
-        methodConfig: {
-          async middleware(ctx: any) {
-            if (ctx.action === 'complete') {
-              firstCall.resolve();
-            }
-            return ctx;
+        async middleware(ctx: any) {
+          if (ctx.action === 'complete') {
+            firstCall.resolve();
           }
+          return ctx;
         },
         fetchOnMount: true
       });
 
       const echo2 = useClient('echo', {
         variables: { text: 'testingCache' },
-        methodConfig: {
-          cache: false,
-          async middleware(ctx) {
-            if (ctx.action === 'complete') {
-              secondCall.resolve();
-            }
-            return ctx;
+        cache: false,
+        async middleware(ctx) {
+          if (ctx.action === 'complete') {
+            secondCall.resolve();
           }
+          return ctx;
         },
         fetchOnMount: true
       });
 
       React.useEffect(() => {
         (async () => {
-          await echo.fetch({ text: 'testingCache' }, { cache: false }); // this will batch with the first 2 calls
-          await echo.fetch({ text: 'testingCache' }); // this should use cache
-          await echo2.fetch({ text: 'testingCache' }, { cache: false }); // this will run without cache
-          await echo2.fetch({ text: 'testingCache' }); // this should use cache
+          await echo.fetch({
+            variables: { text: 'testingCache' },
+            cache: false
+          }); // this will batch with the first 2 calls
+          await echo.fetch({
+            variables: { text: 'testingCache' },
+            cache: true
+          }); // this should use cache
+          await echo2.fetch({
+            variables: { text: 'testingCache' },
+            cache: false
+          }); // this will run without cache
+          await echo2.fetch({
+            variables: { text: 'testingCache' },
+            cache: true
+          }); // this should use cache
           thirdCall.resolve();
         })();
       }, []);
@@ -633,15 +692,16 @@ describe('client', function() {
 
       const echo = useClient('echo', {
         variables: { text: 'default_query' },
-        methodConfig: {
-          cache: false
-        },
+        cache: false,
         fetchOnMount: true
       });
 
       React.useEffect(() => {
         (async () => {
-          await echo.fetch({ text: 'second_call' }, { cache: false });
+          await echo.fetch({
+            variables: { text: 'second_call' },
+            cache: false
+          });
         })();
       }, []);
 
@@ -663,7 +723,7 @@ describe('client', function() {
   test('should not change the loadingState of an already loaded item', async () => {
     const stub = jest.spyOn(global, 'fetch');
 
-    const { Provider, Client, useClient } = await getGeneratedModules(false);
+    const { Provider, Client, useClient } = await getGeneratedModules();
 
     const client = new Client({ url: TEST_API });
     const firstCall = hope();
@@ -687,13 +747,11 @@ describe('client', function() {
       const state1 = useClient('echo', {
         variables: { text: 'holly shit' },
         cache: false,
-        methodConfig: {
-          async middleware(ctx) {
-            if (ctx.action === 'complete') {
-              firstCall.resolve(ctx.result);
-            }
-            return ctx;
+        async middleware(ctx) {
+          if (ctx.action === 'complete') {
+            firstCall.resolve(ctx.result);
           }
+          return ctx;
         },
         fetchOnMount: true
       });
@@ -704,10 +762,12 @@ describe('client', function() {
 
       React.useEffect(() => {
         firstCall.promise.then(() => {
-          state2.fetch({ text: 'hy' }).then(() => {
-            state3.fetch({ text: 'hy' }, { cache: false }).then(() => {
-              secondCall.resolve();
-            });
+          state2.fetch({ variables: { text: 'hy' } }).then(() => {
+            state3
+              .fetch({ variables: { text: 'hy' }, cache: false })
+              .then(() => {
+                secondCall.resolve();
+              });
           });
         });
       }, []);
@@ -748,9 +808,12 @@ describe('client', function() {
         return originalFetch(...args);
       });
 
-    const { Provider, Client, useClient, Context } = await getGeneratedModules(
-      false
-    );
+    const {
+      Provider,
+      Client,
+      useClient,
+      Context
+    } = await getGeneratedModules();
 
     const client = new Client({ url: TEST_API });
     const secondCall = hope();
@@ -785,9 +848,11 @@ describe('client', function() {
           const current = context.getItem('echo(text:hy)');
           // run one query while another with same signature is loading
           if (current && current.loading) {
-            state2.fetch({ text: 'hy' }).then(() => {
-              secondCall.resolve();
-            });
+            state2
+              .fetch({ variables: { text: 'hy' }, cache: true })
+              .then(() => {
+                secondCall.resolve();
+              });
           }
         }, 100);
       }, []);

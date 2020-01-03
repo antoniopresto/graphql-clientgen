@@ -3,11 +3,14 @@ import { useClient } from '../examples/Provider';
 import { storiesOf } from '@storybook/react';
 
 const List = () => {
-  const posts = useClient('PostFindMany', { fetchOnMount: true });
+  const posts = useClient('PostFindMany', {
+    fetchOnMount: true
+  });
+
   const addNew = useClient('PostCreateOne', {
     afterMutate: /Post/
   });
-
+  
   return (
     <div>
       {posts.loading || addNew.loading ? 'loading...' : ''}
@@ -20,7 +23,9 @@ const List = () => {
 
       <button
         onClick={() => {
-          addNew.fetch({ title: `new ${new Date().toISOString()}` });
+          addNew.fetch({
+            variables: { title: `new ${new Date().toISOString()}` }
+          });
         }}
       >
         add New

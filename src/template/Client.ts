@@ -40,7 +40,7 @@ export enum Actions {
 export type Context<V = any, R = any> = {
   requestConfig: RequestInit;
   variables: V;
-  fetcherConfig: FetcherConfig<V, R>;
+  methodConfig: MethodConfig<V, R>;
   action: Actions;
   errors?: string[];
   result?: R | null;
@@ -51,7 +51,7 @@ export type Middleware<V = any, R = any> = (
   config: Context<V, R>
 ) => Promise<Context<V, R>>;
 
-export type FetcherConfig<V, R> = {
+export type MethodConfig<V, R> = {
   url: string;
   headers?: { [key: string]: string };
   query: string;
@@ -73,7 +73,7 @@ type QueueItem = {
   resolver: Resolver | null;
   variables: Dict;
   kind: 'mutation' | 'query';
-  config: FetcherConfig<any, any>;
+  config: MethodConfig<any, any>;
 };
 
 export type GraphQLClientConfig = {
@@ -205,7 +205,7 @@ export class GraphQLClient {
             result: ctx.result ? ctx.result[key] : null,
             action: Actions.complete,
             variables,
-            fetcherConfig: config,
+            methodConfig: config,
             querySuffix: key
           })
         );
@@ -215,7 +215,7 @@ export class GraphQLClient {
 
   exec = async <V, R>(
     _variables: V,
-    _config: FetcherConfig<V, R>
+    _config: MethodConfig<V, R>
   ): Promise<Context<V, R>> => {
     const { kind } = _config;
 
@@ -223,16 +223,16 @@ export class GraphQLClient {
       throw new Error(`invalid kind of operation: ${kind}`);
     }
 
-    const fetcherConfig = {
+    const methodConfig = {
       ..._config,
       url: this.url,
       middleware: [...this.middleware, ...ensureArray(_config.middleware)]
     };
 
-    const context = await applyMiddleware(fetcherConfig.middleware as [])({
+    const context = await applyMiddleware(methodConfig.middleware as [])({
       requestConfig: {},
       variables: _variables,
-      fetcherConfig,
+      methodConfig,
       action: Actions.willQueue
       // errors?: string[];
       // result?: R | null;
@@ -242,11 +242,11 @@ export class GraphQLClient {
     if (context.action === Actions.abort) {
       // applying middleware because listeners should be able
       // to listen to 'abort' action
-      return applyMiddleware(fetcherConfig.middleware as [])(context);
+      return applyMiddleware(methodConfig.middleware as [])(context);
     }
 
     let queueItem: QueueItem = {
-      config: context.fetcherConfig,
+      config: context.methodConfig,
       resolver: null,
       variables: _variables,
       kind
@@ -301,7 +301,7 @@ export class GraphQLClient {
 
   queryFetcher = async <Variables, Return>(
     variables: Variables,
-    fetcherConfig: FetcherConfig<Variables, Return>
+    methodConfig: MethodConfig<Variables, Return>
   ): Promise<Context<Variables, Return>> => {
     let requestConfig: RequestInit = {
       method: 'POST',
@@ -309,21 +309,21 @@ export class GraphQLClient {
       headers: {
         'Content-Type': 'application/json',
         Accept: 'application/json',
-        ...fetcherConfig.headers
+        ...methodConfig.headers
       }
     };
 
     const middleware: Middleware<Variables, Return> =
-      typeof fetcherConfig.middleware === 'function'
-        ? fetcherConfig.middleware
-        : applyMiddleware(ensureArray(fetcherConfig.middleware));
+      typeof methodConfig.middleware === 'function'
+        ? methodConfig.middleware
+        : applyMiddleware(ensureArray(methodConfig.middleware));
 
     const context = await middleware({
       requestConfig,
       variables,
-      fetcherConfig,
+      methodConfig,
       action: Actions.initFetch,
-      querySuffix: fetcherConfig.querySuffix
+      querySuffix: methodConfig.querySuffix
     });
 
     if (context.action === Actions.abort) {
@@ -331,11 +331,11 @@ export class GraphQLClient {
     }
 
     context.requestConfig.body = JSON.stringify({
-      query: context.fetcherConfig.query,
+      query: context.methodConfig.query,
       variables: context.variables
     });
 
-    return fetch(context.fetcherConfig.url, context.requestConfig)
+    return fetch(context.methodConfig.url, context.requestConfig)
       .then(async response => {
         const contentType = response.headers.get('Content-Type');
         const isJSON =
@@ -369,8 +369,8 @@ export class GraphQLClient {
           errors,
           action: Actions.completeFetch,
           result: data
-            ? fetcherConfig.schemaKey
-              ? data[fetcherConfig.schemaKey]
+            ? methodConfig.schemaKey
+              ? data[methodConfig.schemaKey]
               : data
             : null
         });
@@ -437,7 +437,7 @@ export type Dict<T = any> = { [key: string]: T };
 export type Method<
   Variables = any,
   ReturnType = any,
-  Config = Partial<FetcherConfig<Variables, ReturnType | undefined | null>>
+  Config = Partial<MethodConfig<Variables, ReturnType | undefined | null>>
 > = (
   variables: Variables,
   config?: Config

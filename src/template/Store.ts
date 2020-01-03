@@ -95,9 +95,9 @@ function parseContextAction(
 export function parseContextInfo<C extends Context>(
   ctx: C
 ): ParsedContextInfo<C> {
-  const isMutation = ctx.fetcherConfig.kind === OpKind.mutation;
-  const isQuery = ctx.fetcherConfig.kind === OpKind.query;
-  const shouldCacheByConfig = ctx.fetcherConfig.cache === true;
+  const isMutation = ctx.methodConfig.kind === OpKind.mutation;
+  const isQuery = ctx.methodConfig.kind === OpKind.query;
+  const shouldCacheByConfig = ctx.methodConfig.cache === true;
   const isActionComplete = ctx.action === Actions.complete;
   const isActionWillQueue = ctx.action === Actions.willQueue;
   const isActionAbort = ctx.action === Actions.abort;
@@ -172,11 +172,11 @@ export class GraphQLStore {
 
     if (info.isActionClearQuery) return ctx;
 
-    if (!ctx.fetcherConfig.schemaKey) {
+    if (!ctx.methodConfig.schemaKey) {
       throw new Error('ctx.config.schemaKey is undefined');
     }
 
-    const { schemaKey } = ctx.fetcherConfig;
+    const { schemaKey } = ctx.methodConfig;
 
     const requestSignature = this.mountRequestSignature(
       schemaKey,
@@ -245,7 +245,7 @@ export class GraphQLStore {
         if (
           entry.resolved &&
           entry.context &&
-          !entry.context.fetcherConfig.ignoreCached
+          !entry.context.methodConfig.ignoreCached
         ) {
           // dont need to dispatch action here, because  when the request
           // started, we should have checked if there was already
@@ -322,9 +322,10 @@ export class GraphQLStore {
     const currentItem = this.getItem(requestSignature);
     if (!currentItem) return;
 
-    const schemaKey = currentItem.context.fetcherConfig.schemaKey;
+    const schemaKey = currentItem.context.methodConfig.schemaKey;
 
-    delete this.store[requestSignature];
+    // can't delete - another request with the same signature cold be made
+    // delete this.store[requestSignature];
 
     delete currentItem.resolved;
     delete currentItem.result;
@@ -423,23 +424,23 @@ export class GraphQLStore {
       if (!info.isQuery) return;
 
       if (!active) {
-        this.removeItem(k);
         this.activeQueries.remove(k);
+        this.removeItem(k);
         return;
       }
 
-      const methodName = item.context.fetcherConfig.schemaKey;
+      const methodName = item.context.methodConfig.schemaKey;
       const variables = item.context.variables;
-      const fetcherConfig = item.context.fetcherConfig;
+      const methodConfig = item.context.methodConfig;
 
-      fetcherConfig.ignoreCached = true;
+      methodConfig.ignoreCached = true;
 
-      fetcherConfig.redoQueriesNumber =
-        (fetcherConfig.redoQueriesNumber || 0) + 1;
+      methodConfig.redoQueriesNumber =
+        (methodConfig.redoQueriesNumber || 0) + 1;
 
       const method = this.client.methods[methodName as any];
 
-      method(variables, fetcherConfig);
+      method(variables, methodConfig);
     });
   };
 }

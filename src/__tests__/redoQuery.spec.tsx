@@ -63,7 +63,9 @@ describe('redoQuery', function() {
 
     store.redoQuery(/echo/);
 
-    expect(store.getItem(key)).toBeFalsy();
+    expect(store.getItem(key)!.result).toBeFalsy();
+    expect(store.getItem(key)!.resolved).toBeFalsy();
+    expect(store.getItem(key)!.loading).toBeFalsy();
   });
 
   test('should redo active queries', async () => {
@@ -96,7 +98,7 @@ describe('redoQuery', function() {
       if (!listen) {
         listen = true;
         echo.store.subscribe(s => {
-          redoCount = s.context.fetcherConfig.redoQueriesNumber || 0;
+          redoCount = s.context.methodConfig.redoQueriesNumber || 0;
           if (redoCount > 0 && s.resolved) {
             coming2.resolve(redoCount);
           }
@@ -128,7 +130,7 @@ describe('redoQuery', function() {
     expect(redoCount).toBe(1);
 
     store.redoQuery(/echo/);
-    await delay(100);
+    await delay(500);
 
     expect(stub).toBeCalledTimes(3);
     expect(redoCount).toBe(2);
@@ -149,9 +151,7 @@ describe('redoQuery', function() {
     const Child = () => {
       let PostCreateOne = useClient('PostCreateOne', {
         afterMutate: /Post/,
-        methodConfig: {
-          cache: true
-        }
+        cache: true
       });
 
       store = PostCreateOne.store;
@@ -167,7 +167,7 @@ describe('redoQuery', function() {
           startedMutation = true;
 
           PostCreateOne.fetch({
-            title: 'My Post'
+            variables: { title: 'My Post' }
           });
         }
       }
@@ -189,7 +189,7 @@ describe('redoQuery', function() {
 
     const postsEntry = store.getItem(key)!;
 
-    expect(postsEntry.context.fetcherConfig.redoQueriesNumber).toEqual(1);
+    expect(postsEntry.context.methodConfig.redoQueriesNumber).toEqual(1);
 
     // 1 mutation, 1 query, 1 refetch
     expect(stub).toBeCalledTimes(3);

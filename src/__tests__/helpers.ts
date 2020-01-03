@@ -75,22 +75,18 @@ export function hope<T = any>(timeout = 0, rejectOnTimeout = false) {
   return { promise, resolve, reject };
 }
 
-// cache imported modules
-let imported: {
+/**
+ * Generate and import modules to test importing the generated code
+ */
+export async function getGeneratedModules(): Promise<{
   Client: typeof GraphQLClient;
   Provider: typeof GraphQLProvider;
   Store: typeof GraphQLStore;
   Context: typeof GraphQLStoreContext;
   useClient: typeof useClient;
-};
-
-/**
- * Generate and import modules to test importing the generated code
- */
-export async function getGeneratedModules(
-  useCache = false
-): Promise<typeof imported> {
-  const generatedFilesDest = path.resolve(CWD, `build/generated/${Date.now()}`);
+}> {
+  const random = Math.floor(Math.random() * 99999999);
+  const generatedFilesDest = path.resolve(CWD, `build/generated/${Date.now()}_${random}`);
 
   const filePaths = {
     client: generatedFilesDest + '/Client.js',
@@ -104,7 +100,7 @@ export async function getGeneratedModules(
     console.error(response, TEST_API);
     throw new Error('invalid printFromEndpoint response');
   }
-  
+
   const { client, store, provider } = response;
 
   const clientJS = transpileTSSource(client);
@@ -129,13 +125,6 @@ export async function getGeneratedModules(
       Context: provider.GraphQLStoreContext
     };
   };
-
-  if (useCache !== false) {
-    if (!imported) {
-      imported = await importing();
-    }
-    return imported;
-  }
 
   return importing();
 }

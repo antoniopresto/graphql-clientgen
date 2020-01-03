@@ -4,17 +4,26 @@ import { GraphQLStore, StoreState } from './Store';
 import {
   Context,
   Dict,
-  FetcherConfig,
   GraphQLClient,
   Method,
+  MethodConfig,
   Methods
 } from './Client';
 
 export const useClient: UseClient = (methodName, hookConfig) => {
   const { store, method } = useGraphQLStore(methodName);
 
-  const configRef = React.useRef(hookConfig);
-  const _configFn = () => configRef.current || {};
+  const defaulter = (override: UseClientConfig<any, any> = {}) => {
+    const initial: any = hookConfig || {};
+
+    return {
+      ...initial,
+      ...override,
+      variables: override.variables
+        ? override.variables
+        : initial.variables || {}
+    };
+  };
 
   // as setState is async, we also save requestSignature in a ref
   const requestSignatureRef = React.useRef('');
@@ -27,13 +36,14 @@ export const useClient: UseClient = (methodName, hookConfig) => {
   // the first request and possible changed with setCacheKey if
   // requestSignature changes between fetches or renders
   const [requestSignature, updateReqSignatureState] = React.useState(() => {
-    if (!configRef.current) {
+    // no initial variables
+    if (!hookConfig) {
       return '';
     }
 
     const reqSign = store.mountRequestSignature(
       methodName as string,
-      _configFn().variables || {}
+      defaulter().variables || {}
     );
 
     requestSignatureRef.current = reqSign;
@@ -92,17 +102,10 @@ export const useClient: UseClient = (methodName, hookConfig) => {
     };
   }, []);
 
-  const fetcher = (
-    variables: any,
-    config: Partial<FetcherConfig<any, any>> = {}
-  ) => {
-    const currentConfig = _configFn();
-
-    variables = variables || currentConfig.variables || {};
-
-    if (typeof config.cache !== 'boolean') {
-      config.cache = currentConfig.cache;
-    }
+  const fetcher = (config = hookConfig) => {
+    const { variables, fetchOnMount, afterMutate, ...methodConfig } = defaulter(
+      config
+    );
 
     const methodInfo = store.client.methodsInfo[methodName];
 
@@ -110,7 +113,7 @@ export const useClient: UseClient = (methodName, hookConfig) => {
       // we set loading here because we dont set loading from the above
       // subscription - because  setting from the subscription will set loading
       // for items that not called the current request
-      if ((config.cache === false && !state.loading) || state.error) {
+      if ((methodConfig.cache !== true && !state.loading) || state.error) {
         setState({ ...state, loading: true });
       }
 
@@ -121,7 +124,7 @@ export const useClient: UseClient = (methodName, hookConfig) => {
 
       store.activeQueries.add(requestSignatureRef.current);
 
-      return method(variables, config);
+      return method(variables, methodConfig);
     }
 
     if (!state.loading) {
@@ -129,7 +132,7 @@ export const useClient: UseClient = (methodName, hookConfig) => {
     }
 
     return method(variables, config).then(ctx => {
-      let { afterMutate } = _configFn();
+      let { afterMutate } = defaulter();
 
       if (!ctx.errors && afterMutate) {
         if (afterMutate instanceof RegExp) {
@@ -156,10 +159,10 @@ export const useClient: UseClient = (methodName, hookConfig) => {
 
   // if there is a default fetch config, fetch it on first render
   const wasStartedTheDefaultFetch = React.useRef(false);
-  if (!wasStartedTheDefaultFetch.current && _configFn().fetchOnMount) {
+  if (!wasStartedTheDefaultFetch.current && defaulter().fetchOnMount) {
     if (!state.loading && !state.resolved && !state.error) {
       wasStartedTheDefaultFetch.current = true;
-      fetcher(_configFn().variables, _configFn().methodConfig);
+      fetcher();
     }
   }
 
@@ -241,22 +244,27 @@ type Unpacked<T> = T extends (infer U)[]
   ? U
   : T;
 
+type UseClientConfig<
+  V,
+  R,
+  _MethodConfig = Partial<MethodConfig<V, R>>
+> = _MethodConfig & {
+  variables?: V;
+  fetchOnMount?: boolean;
+  afterMutate?: ((r: R, s: GraphQLStore) => any) | RegExp; // redo query if regex or run a callback
+};
+
 type UseClient = <
   A extends { variables: Parameters<M>[0]; config?: Parameters<M>[1] }, // argsArray
   K extends keyof Methods = any, // method key (name)
   M extends (...args: any) => any = Methods[K], // method
-  R = Unpacked<ReturnType<M>>['result'] // return type without promise
+  R = Unpacked<ReturnType<M>>['result'], // return type without promise
+  C = UseClientConfig<A['variables'], R>
 >(
   methodName: K,
-  config?: {
-    variables?: A['variables'];
-    fetchOnMount?: boolean;
-    cache?: boolean;
-    afterMutate?: ((r: R, s: GraphQLStore) => any) | RegExp; // redo query if regex or run a callback
-    methodConfig?: Partial<FetcherConfig<A['variables'], R>>;
-  }
+  config?: C
 ) => HookState<R, A['variables']> & {
-  fetch: (variables: A['variables'], config?: A['config']) => Promise<Context>;
+  fetch: (config?: UseClientConfig<A['variables'], R>) => Promise<Context>;
   store: GraphQLStore;
   signature: string;
 };
