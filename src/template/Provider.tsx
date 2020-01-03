@@ -253,7 +253,7 @@ type UseClient = <
     fetchOnMount?: boolean;
     cache?: boolean;
     afterMutate?: ((r: R, s: GraphQLStore) => any) | RegExp; // redo query if regex or run a callback
-    methodConfig?: A['config'];
+    methodConfig?: Partial<FetcherConfig<A['variables'], R>>;
   }
 ) => HookState<R, A['variables']> & {
   fetch: (variables: A['variables'], config?: A['config']) => Promise<Context>;
