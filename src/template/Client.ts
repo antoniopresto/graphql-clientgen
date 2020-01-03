@@ -409,7 +409,7 @@ export function parseFragmentConfig(fragment: string, config?: any): string {
 
   if (config) {
     if (config.fragment) {
-      resultingFragment += `\n ${config.fragment}`;
+      resultingFragment = `${config.fragment}`;
     }
 
     if (config.appendToFragment) {

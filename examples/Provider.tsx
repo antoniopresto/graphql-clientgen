@@ -10,8 +10,11 @@ import {
   Methods
 } from './Client';
 
-export const useClient: UseClient = (methodName, initialFetchConfig) => {
+export const useClient: UseClient = (methodName, hookConfig) => {
   const { store, method } = useGraphQLStore(methodName);
+
+  const configRef = React.useRef(hookConfig);
+  const _configFn = () => configRef.current || {};
 
   // as setState is async, we also save requestSignature in a ref
   const requestSignatureRef = React.useRef('');
@@ -24,13 +27,13 @@ export const useClient: UseClient = (methodName, initialFetchConfig) => {
   // the first request and possible changed with setCacheKey if
   // requestSignature changes between fetches or renders
   const [requestSignature, updateReqSignatureState] = React.useState(() => {
-    if (!initialFetchConfig) {
+    if (!configRef.current) {
       return '';
     }
 
     const reqSign = store.mountRequestSignature(
       methodName as string,
-      initialFetchConfig.variables || {}
+      _configFn().variables || {}
     );
 
     requestSignatureRef.current = reqSign;
@@ -90,9 +93,17 @@ export const useClient: UseClient = (methodName, initialFetchConfig) => {
   }, []);
 
   const fetcher = (
-    variables: any = {},
+    variables: any,
     config: Partial<FetcherConfig<any, any>> = {}
   ) => {
+    const currentConfig = _configFn();
+
+    variables = variables || currentConfig.variables || {};
+
+    if (typeof config.cache !== 'boolean') {
+      config.cache = currentConfig.cache;
+    }
+
     const methodInfo = store.client.methodsInfo[methodName];
 
     if (methodInfo.isQuery) {
@@ -116,14 +127,15 @@ export const useClient: UseClient = (methodName, initialFetchConfig) => {
     if (!state.loading) {
       setState({ ...state, loading: true });
     }
-    
+
     return method(variables, config).then(ctx => {
-      if (!ctx.errors && initialFetchConfig && initialFetchConfig.afterMutate) {
-        if (initialFetchConfig.afterMutate instanceof RegExp) {
-          
-          store.redoQuery(initialFetchConfig.afterMutate);
+      let { afterMutate } = _configFn();
+
+      if (!ctx.errors && afterMutate) {
+        if (afterMutate instanceof RegExp) {
+          store.redoQuery(afterMutate);
         } else {
-          initialFetchConfig.afterMutate(ctx.result, store);
+          afterMutate(ctx.result, store);
         }
       }
 
@@ -144,14 +156,10 @@ export const useClient: UseClient = (methodName, initialFetchConfig) => {
 
   // if there is a default fetch config, fetch it on first render
   const wasStartedTheDefaultFetch = React.useRef(false);
-  if (
-    !wasStartedTheDefaultFetch.current &&
-    initialFetchConfig &&
-    initialFetchConfig.fetchOnMount
-  ) {
+  if (!wasStartedTheDefaultFetch.current && _configFn().fetchOnMount) {
     if (!state.loading && !state.resolved && !state.error) {
       wasStartedTheDefaultFetch.current = true;
-      fetcher(initialFetchConfig.variables, initialFetchConfig.config);
+      fetcher(_configFn().variables, _configFn().methodConfig);
     }
   }
 
@@ -240,11 +248,12 @@ type UseClient = <
   R = Unpacked<ReturnType<M>>['result'] // return type without promise
 >(
   methodName: K,
-  initialFetchConfig?: {
+  config?: {
     variables?: A['variables'];
-    config?: A['config'];
     fetchOnMount?: boolean;
+    cache?: boolean;
     afterMutate?: ((r: R, s: GraphQLStore) => any) | RegExp; // redo query if regex or run a callback
+    methodConfig?: A['config'];
   }
 ) => HookState<R, A['variables']> & {
   fetch: (variables: A['variables'], config?: A['config']) => Promise<Context>;
