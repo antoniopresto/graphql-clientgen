@@ -8,6 +8,10 @@ import {
 import { getRemoteSchema } from '../lib/printFromEndpoint';
 
 describe('main', () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   test('generate ts file from remote host (smoke test)', async () => {
     const body = await getTSFile();
     expect(body.length > 5000).toBe(true);

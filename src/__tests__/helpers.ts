@@ -88,7 +88,7 @@ let imported: {
  * Generate and import modules to test importing the generated code
  */
 export async function getGeneratedModules(
-  useCache = true
+  useCache = false
 ): Promise<typeof imported> {
   const generatedFilesDest = path.resolve(CWD, `build/generated/${Date.now()}`);
 

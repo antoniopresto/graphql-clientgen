@@ -58,6 +58,10 @@ function parseContextAction(
   ctx: Context
 ): { isStateAction: boolean; isComplete: boolean } {
   switch (ctx.action) {
+    case Actions.clearQuery: {
+      return { isStateAction: true, isComplete: false };
+    }
+
     case Actions.abort: {
       return { isStateAction: true, isComplete: true };
     }
@@ -88,13 +92,16 @@ function parseContextAction(
  * Parse info from Middleware context
  * @param ctx
  */
-function parseContextInfo(ctx: Context) {
-  const isMutation = ctx.config.kind === OpKind.mutation;
-  const isQuery = ctx.config.kind === OpKind.query;
-  const shouldCacheByConfig = ctx.config.cache !== false;
+export function parseContextInfo<C extends Context>(
+  ctx: C
+): ParsedContextInfo<C> {
+  const isMutation = ctx.fetcherConfig.kind === OpKind.mutation;
+  const isQuery = ctx.fetcherConfig.kind === OpKind.query;
+  const shouldCacheByConfig = ctx.fetcherConfig.cache === true;
   const isActionComplete = ctx.action === Actions.complete;
   const isActionWillQueue = ctx.action === Actions.willQueue;
   const isActionAbort = ctx.action === Actions.abort;
+  const isActionClearQuery = ctx.action === Actions.clearQuery;
   const error = ctx.errors ? ctx.errors.join('\n') : undefined;
 
   const { isStateAction, isComplete } = parseContextAction(ctx);
@@ -106,6 +113,7 @@ function parseContextInfo(ctx: Context) {
     isActionWillQueue,
     isActionAbort,
     isActionComplete,
+    isActionClearQuery,
 
     // true if the action is a state action
     // and not a fetch action for example
@@ -120,13 +128,34 @@ function parseContextInfo(ctx: Context) {
   };
 }
 
+export type ParsedContextInfo<C extends Context> = {
+  isMutation: boolean;
+  isQuery: boolean;
+  canCache: boolean;
+  isActionWillQueue: boolean;
+  isActionAbort: boolean;
+  isActionComplete: boolean;
+  isActionClearQuery: boolean;
+
+  // true if the action is a state action
+  // and not a fetch action for example
+  // there is no schemaKey in fetch actions, because they are generics to
+  // a group of queries in a batch - and each one can have one schemaKey
+  isStateAction: boolean;
+
+  isComplete: boolean;
+
+  error: string | undefined;
+  result: C['result'];
+};
+
 export class GraphQLStore {
   client: GraphQLClient;
   private store: Store = {};
   private _listeners: StoreListener[] = [];
 
   // hooks not unmounted using the query
-  // private queryCount: { [key: string]: number } = {};
+  activeQueries = new ActiveQueriesRegister();
 
   constructor(config: Config) {
     this.client = config.client;
@@ -141,11 +170,13 @@ export class GraphQLStore {
     // there is no schemaKey in fetch actions (initFetch, fetchComplete)
     if (!info.isStateAction) return ctx;
 
-    if (!ctx.config.schemaKey) {
+    if (info.isActionClearQuery) return ctx;
+
+    if (!ctx.fetcherConfig.schemaKey) {
       throw new Error('ctx.config.schemaKey is undefined');
     }
 
-    const { schemaKey } = ctx.config;
+    const { schemaKey } = ctx.fetcherConfig;
 
     const requestSignature = this.mountRequestSignature(
       schemaKey,
@@ -211,7 +242,11 @@ export class GraphQLStore {
       // will queue and already has a entry with same requestSignature
       // the entry can be resolved or in progress
       if (entry && info.canCache && !entry.error && !entry.isOptimistic) {
-        if (entry.resolved && entry.context) {
+        if (
+          entry.resolved &&
+          entry.context &&
+          !entry.context.fetcherConfig.ignoreCached
+        ) {
           // dont need to dispatch action here, because  when the request
           // started, we should have checked if there was already
           // a cached response
@@ -283,6 +318,26 @@ export class GraphQLStore {
     }
   };
 
+  removeItem = (requestSignature: string, shouldDispatch = true) => {
+    const currentItem = this.getItem(requestSignature);
+    if (!currentItem) return;
+
+    const schemaKey = currentItem.context.fetcherConfig.schemaKey;
+
+    delete this.store[requestSignature];
+
+    delete currentItem.resolved;
+    delete currentItem.result;
+    delete currentItem.loading;
+
+    currentItem.isOptimistic = true;
+    currentItem.context.action = Actions.clearQuery;
+
+    if (shouldDispatch) {
+      this.dispatch(requestSignature, currentItem, schemaKey);
+    }
+  };
+
   dispatch = (
     requestSignature: string,
     state: StoreState,
@@ -317,7 +372,7 @@ export class GraphQLStore {
       if (!isSubscribed) {
         return;
       }
-  
+
       // self.queryCount[signature] -= 1;
       isSubscribed = false;
 
@@ -357,34 +412,50 @@ export class GraphQLStore {
     );
   }
 
-  optimisticUpdate = (
-    methodName: string,
-    variables: Dict,
-    setter: (item?: StoreState) => any
-  ) => {
-    const signature = this.mountRequestSignature(methodName, variables);
+  redoQuery = (regex: RegExp) => {
+    Object.keys(this.store).forEach(k => {
+      if (!regex.exec(k)) return;
 
-    const current = this.getItem(signature);
-    const newValue = setter(current);
+      const active = this.activeQueries.count(k);
+      const item = this.store[k]!;
+      const info = parseContextInfo(item.context);
 
-    this.setItem(
-      signature,
-      {
-        loading: false,
-        resolved: true,
-        context: {
-          requestConfig: {},
-          variables: variables,
-          config: {} as any,
-          action: Actions.complete,
-          result: newValue
-        },
-        listeners: [],
-        error: undefined,
-        result: newValue,
-        isOptimistic: true
-      },
-      methodName
-    );
+      if (!info.isQuery) return;
+
+      if (!active) {
+        this.removeItem(k);
+        this.activeQueries.remove(k);
+        return;
+      }
+
+      const methodName = item.context.fetcherConfig.schemaKey;
+      const variables = item.context.variables;
+      const fetcherConfig = item.context.fetcherConfig;
+
+      fetcherConfig.ignoreCached = true;
+
+      fetcherConfig.redoQueriesNumber =
+        (fetcherConfig.redoQueriesNumber || 0) + 1;
+
+      const method = this.client.methods[methodName as any];
+
+      method(variables, fetcherConfig);
+    });
   };
+}
+
+class ActiveQueriesRegister {
+  private _register: { [key: string]: number } = {};
+
+  add = (signature: string) => {
+    return (this._register[signature] = (this._register[signature] || 0) + 1);
+  };
+
+  remove = (signature: string) => {
+    let count = this._register[signature] - 1;
+    if (count < 0) count = 1;
+    return (this._register[signature] = count);
+  };
+
+  count = (signature: string) => this._register[signature] || 0;
 }

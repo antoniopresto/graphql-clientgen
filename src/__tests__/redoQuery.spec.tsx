@@ -135,11 +135,7 @@ describe('redoQuery', function() {
   });
 
   test('useClient should handle redoQuery', async () => {
-    const originalFetch = global.fetch;
-    const stub = jest.spyOn(global, 'fetch').mockImplementation((...args) => {
-      console.log(...args);
-      return originalFetch(...args);
-    });
+    const stub = jest.spyOn(global, 'fetch');
 
     const { Provider, Client, useClient } = await getGeneratedModules();
     const client = new Client({ url: TEST_API });
@@ -153,7 +149,7 @@ describe('redoQuery', function() {
     const Child = () => {
       let PostCreateOne = useClient('PostCreateOne', {
         afterMutate: /Post/,
-        config: {
+        methodConfig: {
           cache: true
         }
       });

@@ -50,7 +50,7 @@ module.exports = async function start(cb, port = 3000) {
       resolve: (_, args) => {
         const post = fakePost();
         post.title = args.title;
-        posts.push(post);
+        posts.unshift(post);
         return { record: post, recordId: post._id };
       }
     }

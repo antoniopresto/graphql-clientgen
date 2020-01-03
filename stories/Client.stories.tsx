@@ -3,15 +3,28 @@ import { useClient } from '../examples/Provider';
 import { storiesOf } from '@storybook/react';
 
 const List = () => {
-  const posts = useClient('PostFindMany', {  });
+  const posts = useClient('PostFindMany', { fetchOnMount: true });
+  const addNew = useClient('PostCreateOne', {
+    afterMutate: /Post/
+  });
 
   return (
     <div>
+      {posts.loading || addNew.loading ? 'loading...' : ''}
+
       <ul>
-        {(posts.result || []).map(p => (
+        {(posts.result || []).slice(0, 10).map(p => (
           <li key={p!._id!}>{p?.title}</li>
         ))}
       </ul>
+
+      <button
+        onClick={() => {
+          addNew.fetch({ title: `new ${new Date().toISOString()}` });
+        }}
+      >
+        add New
+      </button>
     </div>
   );
 };

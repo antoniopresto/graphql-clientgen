@@ -439,9 +439,7 @@ describe('client', function() {
     const Child = () => {
       const state = useClient('echo', {
         variables: { text: 'testingCache' },
-        config: {
-          cache: false
-        },
+        cache: false,
         fetchOnMount: true
       });
 
@@ -482,8 +480,8 @@ describe('client', function() {
     const Child = () => {
       const { fetch: echo, ...state } = useClient('echo', {
         variables: { text: 'testingCache' },
-        config: {
-          cache: false,
+        cache: false,
+        methodConfig: {
           async middleware(ctx: any) {
             if (ctx.action === 'complete') {
               firstCall.resolve();
@@ -536,8 +534,8 @@ describe('client', function() {
     const Child = () => {
       const echo = useClient('echo', {
         variables: { text: 'testingCache' },
-        config: {
-          cache: false,
+        cache: false,
+        methodConfig: {
           async middleware(ctx: any) {
             if (ctx.action === 'complete') {
               firstCall.resolve();
@@ -550,7 +548,7 @@ describe('client', function() {
 
       const echo2 = useClient('echo', {
         variables: { text: 'testingCache' },
-        config: {
+        methodConfig: {
           cache: false,
           async middleware(ctx) {
             if (ctx.action === 'complete') {
@@ -635,7 +633,7 @@ describe('client', function() {
 
       const echo = useClient('echo', {
         variables: { text: 'default_query' },
-        config: {
+        methodConfig: {
           cache: false
         },
         fetchOnMount: true
@@ -688,8 +686,8 @@ describe('client', function() {
     const Child = () => {
       const state1 = useClient('echo', {
         variables: { text: 'holly shit' },
-        config: {
-          cache: false,
+        cache: false,
+        methodConfig: {
           async middleware(ctx) {
             if (ctx.action === 'complete') {
               firstCall.resolve(ctx.result);
