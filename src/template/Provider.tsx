@@ -111,13 +111,17 @@ export const useClient: UseClient = (methodName, hookConfig) => {
     const methodInfo = store.client.methodsInfo[methodName];
 
     if (methodInfo.isQuery) {
-      // we set loading here because we dont set loading from the above
-      // subscription - because  setting from the subscription will set loading
-      // for items that not called the current request
-      if ((methodConfig.cache !== true && !state.loading) || state.error) {
+      // // we set loading here because we dont set loading from the above
+      // // subscription - because  setting from the subscription will set loading
+      // // for items that not called the current request
+      // if ((methodConfig.cache !== true && !state.loading) || state.error) {
+      //   setState({ ...state, loading: true });
+      // }
+      
+      if (!state.loading) {
         setState({ ...state, loading: true });
       }
-
+      
       updateSignature({ methodName: methodName as string, variables }, sign => {
         const cached = store.getItem(sign);
         setState({ ...storeStateToHookState(cached), loading: true });
@@ -128,9 +132,6 @@ export const useClient: UseClient = (methodName, hookConfig) => {
       return method(variables, methodConfig);
     }
 
-    if (!state.loading) {
-      setState({ ...state, loading: true });
-    }
 
     return method(variables, config).then(ctx => {
       let { afterMutate } = defaulter();
