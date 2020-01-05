@@ -11,6 +11,10 @@ import {
   Methods
 } from './Client';
 
+interface State extends HookState<any, any> {
+  updated?: number;
+}
+
 export const useClient: UseClient = (methodName, hookConfig) => {
   const { store, method } = useGraphQLStore(methodName);
 
@@ -51,16 +55,41 @@ export const useClient: UseClient = (methodName, hookConfig) => {
     return reqSign;
   });
 
-  const [state, setState] = React.useState<HookState<any, any>>(() => {
+  const [state, _setState] = React.useState<State>(() => {
+    const isLoading = hookConfig && hookConfig.fetchOnMount;
+
     // if there is a initial fetch config and cache !== false we have
     // a requestSignature at the first render
     if (requestSignature) {
       const cached = store.getItem(requestSignature);
-      return storeStateToHookState(cached);
+      return storeStateToHookState(cached, isLoading);
     }
 
-    return storeStateToHookState(undefined);
+    const result = storeStateToHookState(undefined, isLoading);
+
+    return {
+      ...result,
+      updated: 0
+    };
   });
+
+  const stateRef = React.useRef<State>(state);
+
+  function setState(newState: State) {
+    let { result, loading, resolved } = newState;
+
+    if (
+      result === stateRef.current.result &&
+      loading === stateRef.current.loading &&
+      resolved === stateRef.current.resolved
+    ) {
+      return;
+    }
+
+    stateRef.current = { ...newState, updated: (state.updated || 0) + 1 };
+
+    _setState(stateRef.current);
+  }
 
   // update requestSignature and state
   function updateSignature(
@@ -84,6 +113,14 @@ export const useClient: UseClient = (methodName, hookConfig) => {
 
     unsubscribeRef.current = store.subscribe((value, _requestSignature) => {
       if (requestSignatureRef.current !== _requestSignature) {
+        return;
+      }
+
+      if (value.loading) {
+        setState({
+          ...stateRef.current,
+          loading: true
+        });
         return;
       }
 
@@ -111,31 +148,12 @@ export const useClient: UseClient = (methodName, hookConfig) => {
     const methodInfo = store.client.methodsInfo[methodName];
 
     if (methodInfo.isQuery) {
-      // // we set loading here because we dont set loading from the above
-      // // subscription - because  setting from the subscription will set loading
-      // // for items that not called the current request
-      // if ((methodConfig.cache !== true && !state.loading) || state.error) {
-      //   setState({ ...state, loading: true });
-      // }
-      
-      if (!state.loading) {
-        setState({ ...state, loading: true });
-      }
-      
-      updateSignature({ methodName: methodName as string, variables }, sign => {
-        const cached = store.getItem(sign);
-        setState({ ...storeStateToHookState(cached), loading: true });
-      });
-
+      updateSignature({ methodName: methodName as string, variables });
       store.activeQueries.add(requestSignatureRef.current);
-
       return method(variables, methodConfig);
     }
 
-
-    return method(variables, config).then(ctx => {
-      let { afterMutate } = defaulter();
-
+    return method(variables, methodConfig).then(ctx => {
       if (!ctx.errors && afterMutate) {
         if (afterMutate instanceof RegExp) {
           store.redoQuery(afterMutate);
@@ -162,10 +180,8 @@ export const useClient: UseClient = (methodName, hookConfig) => {
   // if there is a default fetch config, fetch it on first render
   const wasStartedTheDefaultFetch = React.useRef(false);
   if (!wasStartedTheDefaultFetch.current && defaulter().fetchOnMount) {
-    if (!state.loading && !state.resolved && !state.error) {
-      wasStartedTheDefaultFetch.current = true;
-      fetcher();
-    }
+    wasStartedTheDefaultFetch.current = true;
+    fetcher();
   }
 
   return {
@@ -270,6 +286,7 @@ type UseClient = <
   ) => Promise<Context>;
   store: GraphQLStore;
   signature: string;
+  updated: number;
 };
 
 type HookState<T, V> = {

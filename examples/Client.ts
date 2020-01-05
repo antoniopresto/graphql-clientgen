@@ -22,6 +22,11 @@ export const query = {
             PostCreateOne(title: $title){
                 ${parseFragmentConfig(`recordId`, config)}
             }
+        }`,
+
+  PostDeleteById: (config?: any) => `
+        mutation PostDeleteById($_id: String!){
+                ${parseFragmentConfig(`PostDeleteById(_id: $_id)`, config)}
         }`
 };
 
@@ -44,10 +49,15 @@ export type Filter = {
 export type Mutation = {
   __typename?: 'Mutation';
   PostCreateOne?: Maybe<PostCreateOnePayload>;
+  PostDeleteById?: Maybe<Scalars['Boolean']>;
 };
 
 export type MutationPostCreateOneArgs = {
   title: Scalars['String'];
+};
+
+export type MutationPostDeleteByIdArgs = {
+  _id: Scalars['String'];
 };
 
 export type Post = {
@@ -403,6 +413,17 @@ export class GraphQLClient {
         kind: OpKind.mutation,
         ...config
       });
+    },
+
+    PostDeleteById: (variables, config) => {
+      return this.exec(variables, {
+        url: this.url,
+        entityName: 'Boolean',
+        schemaKey: 'PostDeleteById',
+        query: query.PostDeleteById(config),
+        kind: OpKind.mutation,
+        ...config
+      });
     }
   };
 
@@ -467,6 +488,28 @@ export class GraphQLClient {
         type: 'PostCreateOnePayload',
         args: [{ name: 'title', description: null, type: 'String!' }],
         name: 'PostCreateOne',
+        isDeprecated: false
+      },
+      isNonNull: false,
+      kind: 'mutation'
+    },
+
+    PostDeleteById: {
+      type: 'Boolean',
+      schemaKey: 'PostDeleteById',
+      entityName: 'Boolean',
+      isList: false,
+      argsTSName: 'MutationPostDeleteByIdArgs',
+      returnTSName: "Mutation['PostDeleteById']",
+      isMutation: true,
+      isQuery: false,
+      isSubscription: false,
+      field: {
+        description: null,
+        deprecationReason: null,
+        type: 'Boolean',
+        args: [{ name: '_id', description: null, type: 'String!' }],
+        name: 'PostDeleteById',
         isDeprecated: false
       },
       isNonNull: false,
@@ -626,6 +669,11 @@ export interface Methods extends MethodsDict {
   echo: Method<QueryEchoArgs, Query['echo']>;
 
   PostCreateOne: Method<MutationPostCreateOneArgs, Mutation['PostCreateOne']>;
+
+  PostDeleteById: Method<
+    MutationPostDeleteByIdArgs,
+    Mutation['PostDeleteById']
+  >;
 }
 
 export type MethodsInfo = {

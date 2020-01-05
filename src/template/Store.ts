@@ -433,14 +433,18 @@ export class GraphQLStore {
       const variables = item.context.variables;
       const methodConfig = item.context.methodConfig;
 
-      methodConfig.ignoreCached = true;
-
-      methodConfig.redoQueriesNumber =
-        (methodConfig.redoQueriesNumber || 0) + 1;
-
       const method = this.client.methods[methodName as any];
 
-      method(variables, methodConfig);
+      method(variables, {
+        url: methodConfig.url,
+        entityName: methodConfig.entityName,
+        schemaKey: methodConfig.schemaKey,
+        query: methodConfig.query,
+        kind: methodConfig.kind,
+        middleware: [],
+        ignoreCached: true,
+        redoQueriesNumber: (methodConfig.redoQueriesNumber || 0) + 1
+      });
     });
   };
 }

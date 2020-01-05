@@ -38,7 +38,7 @@ module.exports = async function start(cb, port = 3379) {
     })
   );
 
-  let posts = [...Array(100)].map(() => fakePost());
+  let posts = [...Array(3)].map(() => fakePost());
 
   composer.Mutation.addFields({
     PostCreateOne: {
@@ -52,6 +52,22 @@ module.exports = async function start(cb, port = 3379) {
         post.title = args.title;
         posts.unshift(post);
         return { record: post, recordId: post._id };
+      }
+    }
+  });
+
+  composer.Mutation.addFields({
+    PostDeleteById: {
+      name: 'PostDeleteById',
+      type: `Boolean`,
+      args: {
+        _id: 'String!'
+      },
+      resolve: (_, args) => {
+        const index = posts.findIndex((el => el._id === args._id));
+        if(index < 0) return false;
+        posts.splice(index, 1);
+        return true
       }
     }
   });
