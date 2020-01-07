@@ -283,7 +283,7 @@ type UseClient = <
       fetchOnMount?: boolean;
       afterMutate?: AfterMutate<R>;
     }
-  ) => Promise<Context>;
+  ) => Promise<Context<A['variables'], R>>;
   store: GraphQLStore;
   signature: string;
   updated: number;
