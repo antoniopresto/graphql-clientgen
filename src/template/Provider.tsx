@@ -153,6 +153,8 @@ export const useClient: UseClient = (methodName, hookConfig) => {
       return method(variables, methodConfig);
     }
 
+    setState({ ...stateRef.current, loading: true });
+
     return method(variables, methodConfig).then(ctx => {
       if (!ctx.errors && afterMutate) {
         if (afterMutate instanceof RegExp) {

@@ -4,11 +4,11 @@ import { storiesOf } from '@storybook/react';
 
 const List = () => {
   const renderRef = React.useRef(0);
-  
+
   const posts = useClient('PostFindMany', {
     fetchOnMount: true
   });
-  
+
   const addNew = useClient('PostCreateOne', {
     afterMutate: /Post/
   });
@@ -17,8 +17,11 @@ const List = () => {
     afterMutate: /Post/
   });
 
-  // console.log('render', ++renderRef.current, {loading: posts.loading});
-  
+  console.log('render', ++renderRef.current, {
+    loading: posts.loading,
+    addNewLoading: addNew.loading
+  });
+
   return (
     <div>
       <button
@@ -30,16 +33,16 @@ const List = () => {
       >
         add New
       </button>
-  
-      <hr/>
+
+      <hr />
       {posts.loading || addNew.loading ? 'loading...' : ''}
-      <hr/>
+      <hr />
 
       <ul>
         {(posts.result || []).slice(0, 10).map(p => (
           <li key={p!._id!}>
             <p
-              style={{cursor: 'pointer'}}
+              style={{ cursor: 'pointer' }}
               onClick={() => {
                 deleteById.fetch({ variables: { _id: p!._id } });
               }}
