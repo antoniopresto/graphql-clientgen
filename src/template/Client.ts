@@ -45,6 +45,7 @@ export type Context<V = any, R = any> = {
   errors?: string[];
   result?: R | null;
   querySuffix?: string;
+  fetchResponse?: Response;
 };
 
 export type Middleware<V = any, R = any> = (
@@ -346,6 +347,7 @@ export class GraphQLClient {
 
           return middleware({
             ...context,
+            fetchResponse: response,
             result: null,
             action: Actions.completeFetch,
             errors: [fetchError]
@@ -366,6 +368,7 @@ export class GraphQLClient {
 
         return middleware({
           ...context,
+          fetchResponse: response,
           errors,
           action: Actions.completeFetch,
           result: data

@@ -10,7 +10,13 @@ const List = () => {
   });
 
   const addNew = useClient('PostCreateOne', {
-    afterMutate: /Post/
+    afterMutate: /Post/,
+    middleware: async ctx => {
+      if(ctx.fetchResponse) {
+        console.log(ctx.fetchResponse.headers.get('content-type'))
+      }
+      return ctx
+    }
   });
 
   const deleteById = useClient('PostDeleteById', {
