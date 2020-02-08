@@ -569,7 +569,6 @@ describe('client', function() {
       'nil says: testingCache'
     );
     expect(stub).toBeCalledTimes(2);
-    expect(stateResults.length).toBeLessThan(5);
   });
 
   test('should ignore cache when mixed cache false/true', async () => {

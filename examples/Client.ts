@@ -1,34 +1,4 @@
-export const query = {
-  PostFindMany: (config?: any) => `
-        query PostFindMany($filter: Filter){
-            PostFindMany(filter: $filter){
-                ${parseFragmentConfig(
-                  `_id
-                        title
-                        updatedAt
-                        createdAt`,
-                  config
-                )}
-            }
-        }`,
-
-  echo: (config?: any) => `
-        query echo($text: String!){
-                ${parseFragmentConfig(`echo(text: $text)`, config)}
-        }`,
-
-  PostCreateOne: (config?: any) => `
-        mutation PostCreateOne($title: String!){
-            PostCreateOne(title: $title){
-                ${parseFragmentConfig(`recordId`, config)}
-            }
-        }`,
-
-  PostDeleteById: (config?: any) => `
-        mutation PostDeleteById($_id: String!){
-                ${parseFragmentConfig(`PostDeleteById(_id: $_id)`, config)}
-        }`
-};
+import { GraphQLStore } from './Store';
 
 export type Maybe<T> = T | null;
 
@@ -88,6 +58,38 @@ export type QueryEchoArgs = {
   text: Scalars['String'];
 };
 
+export const query = {
+  PostFindMany: (config?: any) => `
+        query PostFindMany($filter: Filter){
+            PostFindMany(filter: $filter){
+                ${parseFragmentConfig(
+                  `_id
+                        title
+                        updatedAt
+                        createdAt`,
+                  config
+                )}
+            }
+        }`,
+
+  echo: (config?: any) => `
+        query echo($text: String!){
+                ${parseFragmentConfig(`echo(text: $text)`, config)}
+        }`,
+
+  PostCreateOne: (config?: any) => `
+        mutation PostCreateOne($title: String!){
+            PostCreateOne(title: $title){
+                ${parseFragmentConfig(`recordId`, config)}
+            }
+        }`,
+
+  PostDeleteById: (config?: any) => `
+        mutation PostDeleteById($_id: String!){
+                ${parseFragmentConfig(`PostDeleteById(_id: $_id)`, config)}
+        }`
+};
+
 export enum OpKind {
   mutation = 'mutation',
   query = 'query'
@@ -142,6 +144,8 @@ export type Middleware<V = any, R = any> = (
   config: Context<V, R>
 ) => Promise<Context<V, R>>;
 
+export type AfterMutate<R> = ((r: R, s: GraphQLStore) => any) | RegExp; // redo query if regex or run a callback
+
 export type MethodConfig<V, R> = {
   url: string;
   headers?: { [key: string]: string };
@@ -156,6 +160,8 @@ export type MethodConfig<V, R> = {
   ignoreCached?: boolean;
   redoQueriesNumber?: number;
   kind: OpKind;
+  afterMutate?: AfterMutate<R>;
+  variables?: V;
 };
 
 type Resolver = (r: ReturnType<Middleware<any>>) => void;
@@ -704,3 +710,90 @@ export interface ArgsEntity {
   type: string;
   [key: string]: any;
 }
+
+export type MethodFetcher<V, R> = (
+  config?: Partial<MethodConfig<V, R>>
+) => Promise<Context<V, R>>;
+
+type OnStateUpdate = {
+  updateSignature?: (newValue: string) => void;
+  willCallMutation?: () => void;
+  resolvedMutation?: (ctx: Context) => void;
+};
+
+export const fetchGraphql = <V = any, R = any>(
+  methodName: string,
+  hookConfig: Partial<MethodConfig<V, R>> | undefined,
+  store: GraphQLStore,
+  onStateUpdate: OnStateUpdate = {}
+): MethodFetcher<V, R> => {
+  const method = store.client.methods[methodName];
+
+  const defaulter = (override: typeof hookConfig = {}) => {
+    const initial: any = hookConfig || {};
+
+    return {
+      ...initial,
+      ...override,
+      variables: override.variables
+        ? override.variables
+        : initial.variables || {}
+    };
+  };
+
+  let requestSignatureRef = '';
+
+  // update requestSignature when fetcher is called with new variables
+  function updateSignature({
+    methodName,
+    variables
+  }: {
+    methodName: string;
+    variables: Dict;
+  }) {
+    const newSignature = store.mountRequestSignature(methodName, variables);
+    if (newSignature === requestSignatureRef) return;
+
+    store.activeQueries.remove(requestSignatureRef);
+
+    requestSignatureRef = newSignature;
+
+    if (onStateUpdate.updateSignature) {
+      onStateUpdate.updateSignature(newSignature);
+    }
+  }
+
+  return function methodfetcher(config = hookConfig) {
+    const { variables, fetchOnMount, afterMutate, ...methodConfig } = defaulter(
+      config
+    );
+
+    const methodInfo = store.client.methodsInfo[methodName];
+
+    if (methodInfo.isQuery) {
+      updateSignature({ methodName: methodName as string, variables });
+      store.activeQueries.add(requestSignatureRef);
+      return method(variables, methodConfig);
+    }
+
+    if (onStateUpdate.willCallMutation) {
+      onStateUpdate.willCallMutation();
+    }
+
+    return method(variables, methodConfig).then(ctx => {
+      if (!ctx.errors && afterMutate) {
+        if (afterMutate instanceof RegExp) {
+          store.redoQuery(afterMutate);
+        } else {
+          afterMutate(ctx.result, store);
+        }
+      }
+
+      if (onStateUpdate.resolvedMutation) {
+        onStateUpdate.resolvedMutation(ctx);
+      }
+
+      return ctx;
+    });
+  };
+};

@@ -1,7 +1,7 @@
 import { delay, getGeneratedModules, hope, TEST_API } from './helpers';
 import { render } from '@testing-library/react';
 import * as React from 'react';
-import { GraphQLStore } from '../template/Store';
+import { GraphQLStore } from '../client/Store';
 
 describe('redoQuery', function() {
   afterEach(() => {

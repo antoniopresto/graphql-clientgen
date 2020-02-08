@@ -8,7 +8,7 @@ import path from 'path';
 
 const cli = meow(
   `
-Usage: 
+Usage:
   $ graphql-clientgen ENDPOINT_URL destination-folder/
   
   Fetch and print the GraphQL Client from a GraphQL HTTP endpoint.
@@ -77,7 +77,7 @@ export async function main(cli: meow.Result): Promise<void> {
   }
 
   const clientPath = `${folder}/Client.ts`;
-  const providerPath = `${folder}/Provider.tsx`;
+  const providerPath = `${folder}/Provider.ts`;
   const storePath = `${folder}/Store.ts`;
 
   console.log(`writing ${clientPath}`);

@@ -383,11 +383,16 @@ export class GraphQLStore {
   };
 
   /**
-   * mounts a string with schemaKey and variables like 'postCount(foo:12,bar:1)'
+   * mounts a string with schemaKey and variables like 'postCount(foo:12,bar:1)_FRAGMENT-HASH'
    * @param schemaKey
    * @param variables
+   * @param fragment
    */
-  mountRequestSignature(schemaKey: string, variables: Dict) {
+  mountRequestSignature(
+    schemaKey: string,
+    variables: Dict,
+    fragment: string = ''
+  ) {
     if (
       typeof (this.client.methods as { [key: string]: Method })[schemaKey] !==
       'function'
@@ -398,19 +403,7 @@ export class GraphQLStore {
       );
     }
 
-    const variablesString = Object.keys(variables)
-      .map(key => key.replace(/_(\d)*/, '')) // remove batch query suffix
-      .sort()
-      .reduce((prev, key) => {
-        const acc = prev ? prev + ',' : prev;
-        const value = JSON.stringify(variables[key]);
-        return `${acc}${key}:${value}`;
-      }, '');
-
-    return `${schemaKey}(${variablesString})`.replace(
-      /[^a-z0-9._\-;,():]/gim,
-      ''
-    );
+    return mountRequestSignature(schemaKey, variables, fragment);
   }
 
   redoQuery = (regex: RegExp) => {
@@ -463,4 +456,36 @@ class ActiveQueriesRegister {
   };
 
   count = (signature: string) => this._register[signature] || 0;
+}
+
+export function hashString(str: string = '') {
+  let hash = 0,
+    i,
+    chr;
+  if (str.length === 0) return hash;
+  for (i = 0; i < str.length; i++) {
+    chr = str.charCodeAt(i);
+    hash = (hash << 5) - hash + chr;
+    hash |= 0; // Convert to 32bit integer
+  }
+  return hash;
+}
+
+export function mountRequestSignature(
+  schemaKey: string,
+  variables: Dict,
+  fragment: string = ''
+) {
+  const variablesString = Object.keys(variables)
+    .map(key => key.replace(/_(\d)*/, '')) // remove batch query suffix
+    .sort()
+    .reduce((prev, key) => {
+      const acc = prev ? prev + ',' : prev;
+      const value = JSON.stringify(variables[key]);
+      return `${acc}${key}:${value}`;
+    }, '');
+
+  return `${schemaKey}(${variablesString})_${Math.abs(
+    hashString(fragment)
+  )}`.replace(/[^a-z0-9._\-;,():]/gim, '');
 }

@@ -90,8 +90,8 @@ function mountClient(schema: GraphQLSchema, clientBase: string) {
   `;
 
   return {
-    prependBody,
     clientBody: clientBase
+      .replace('//[prepend]//', prependBody)
       .replace('//[methods]//', actionsBody)
       .replace('//[methodsType]//', methodsType)
       .replace('//[methodsInfo]//', methodsInfo),
@@ -112,16 +112,12 @@ export async function printClient(schema: GraphQLSchema) {
       ? tsTypes
       : (tsTypes.prepend || []).join('\n') + '\n\n' + tsTypes.content;
 
-  const { prependBody, clientBody } = mountClient(schema, base.client);
-
-  const client = await prettify(
-    'client.ts',
-    `
-      ${prependBody}
-      ${tsContent}
-      ${clientBody}
-     `
+  const { clientBody } = mountClient(
+    schema,
+    base.client.replace('//[types]//', tsContent)
   );
+
+  const client = await prettify('client.ts', clientBody);
 
   return {
     ...base,
@@ -142,12 +138,11 @@ function addTabs(str = '', n = 8) {
     .join('\n');
 }
 
-// FIXME on prod dont remove `src` from path
-const basePath = path.resolve(__dirname, '../../src/template');
+const basePath = path.resolve(__dirname, '../client');
 
 const getClientBase = async () => {
   const client = fs.readFileSync(basePath + '/Client.ts', 'utf8');
-  const provider = fs.readFileSync(basePath + '/Provider.tsx', 'utf8');
+  const provider = fs.readFileSync(basePath + '/Provider.ts', 'utf8');
   const store = fs.readFileSync(basePath + '/Store.ts', 'utf8');
 
   return {

@@ -1,17 +1,17 @@
 import fs from 'fs-extra';
 import path from 'path';
 import ts from 'typescript';
-import { printFromEndpoint } from '../index';
-import { GraphQLClient } from '../template/Client';
+import { printFromEndpoint } from '../lib/printFromEndpoint';
+import { GraphQLClient } from '../client/Client';
 import {
   GraphQLProvider,
   GraphQLStoreContext,
   useClient
-} from '../template/Provider';
-import { GraphQLStore } from '../template/Store';
+} from '../client/Provider';
+import { GraphQLStore } from '../client/Store';
 
 const CWD = process.cwd();
-export const TEST_API = 'http://localhost:3000/graphql';
+export const TEST_API = 'http://localhost:3379/graphql';
 
 function loadConfig(mainPath = CWD) {
   const fileName = ts.findConfigFile(mainPath, ts.sys.fileExists);
@@ -86,7 +86,10 @@ export async function getGeneratedModules(): Promise<{
   useClient: typeof useClient;
 }> {
   const random = Math.floor(Math.random() * 99999999);
-  const generatedFilesDest = path.resolve(CWD, `build/generated/${Date.now()}_${random}`);
+  const generatedFilesDest = path.resolve(
+    CWD,
+    `build/generated/${Date.now()}_${random}`
+  );
 
   const filePaths = {
     client: generatedFilesDest + '/Client.js',

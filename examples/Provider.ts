@@ -4,7 +4,7 @@ import { GraphQLStore, StoreState } from './Store';
 
 import {
   Context,
-  Dict,
+  fetchGraphql,
   GraphQLClient,
   Method,
   MethodConfig,
@@ -16,7 +16,7 @@ interface State extends HookState<any, any> {
 }
 
 export const useClient: UseClient = (methodName, hookConfig) => {
-  const { store, method } = useGraphQLStore(methodName);
+  const { store } = useGraphQLStore(methodName);
 
   const defaulter = (override: typeof hookConfig = {}) => {
     const initial: any = hookConfig || {};
@@ -48,7 +48,8 @@ export const useClient: UseClient = (methodName, hookConfig) => {
 
     const reqSign = store.mountRequestSignature(
       methodName as string,
-      defaulter().variables || {}
+      defaulter().variables || {},
+      (defaulter().fragment || '') + (defaulter().appendToFragment || '')
     );
 
     requestSignatureRef.current = reqSign;
@@ -91,22 +92,6 @@ export const useClient: UseClient = (methodName, hookConfig) => {
     _setState(stateRef.current);
   }
 
-  // update requestSignature and state
-  function updateSignature(
-    { methodName, variables }: { methodName: string; variables: Dict },
-    cb?: (newReqSeg: string) => any
-  ) {
-    const newSignature = store.mountRequestSignature(methodName, variables);
-    if (newSignature === requestSignatureRef.current) return;
-
-    store.activeQueries.remove(requestSignatureRef.current);
-
-    updateReqSignatureState(newSignature);
-    requestSignatureRef.current = newSignature;
-
-    if (cb) cb(newSignature);
-  }
-
   // subscription
   React.useEffect(() => {
     unsubscribeRef.current();
@@ -140,30 +125,15 @@ export const useClient: UseClient = (methodName, hookConfig) => {
     };
   }, []);
 
-  const fetcher = (config = hookConfig) => {
-    const { variables, fetchOnMount, afterMutate, ...methodConfig } = defaulter(
-      config
-    );
-
-    const methodInfo = store.client.methodsInfo[methodName];
-
-    if (methodInfo.isQuery) {
-      updateSignature({ methodName: methodName as string, variables });
-      store.activeQueries.add(requestSignatureRef.current);
-      return method(variables, methodConfig);
-    }
-
-    setState({ ...stateRef.current, loading: true });
-
-    return method(variables, methodConfig).then(ctx => {
-      if (!ctx.errors && afterMutate) {
-        if (afterMutate instanceof RegExp) {
-          store.redoQuery(afterMutate);
-        } else {
-          afterMutate(ctx.result, store);
-        }
-      }
-
+  const fetcher = fetchGraphql(methodName as string, hookConfig, store, {
+    willCallMutation() {
+      setState({ ...stateRef.current, loading: true });
+    },
+    updateSignature(newSignature) {
+      updateReqSignatureState(newSignature);
+      requestSignatureRef.current = newSignature;
+    },
+    resolvedMutation(ctx) {
       setState(
         storeStateToHookState({
           context: ctx,
@@ -175,9 +145,8 @@ export const useClient: UseClient = (methodName, hookConfig) => {
           isOptimistic: false
         })
       );
-      return ctx;
-    });
-  };
+    }
+  });
 
   // if there is a default fetch config, fetch it on first render
   const wasStartedTheDefaultFetch = React.useRef(false);
@@ -196,24 +165,34 @@ export const useClient: UseClient = (methodName, hookConfig) => {
 
 export const GraphQLStoreContext = React.createContext({} as GraphQLStore);
 
-export class GraphQLProvider extends React.Component<Props> {
+type GraphQLProviderProps = {
+  client: GraphQLClient;
+  store?: GraphQLStore;
+  children?: React.ReactNode;
+  render?: (store: GraphQLStore, client: GraphQLClient) => React.ReactNode;
+};
+
+export class GraphQLProvider extends React.Component<GraphQLProviderProps> {
   store: GraphQLStore;
+  client: GraphQLClient;
 
-  constructor(props: Props, context: any) {
+  constructor(props: GraphQLProviderProps, context: any) {
     super(props, context);
-
-    this.store = new GraphQLStore({ client: this.props.client });
+    this.client = this.props.client;
+    this.store = props.store || new GraphQLStore({ client: this.client });
   }
 
   render() {
+    const { children, render } = this.props;
+    const child = render ? render(this.store, this.client) : children;
     return React.createElement(GraphQLStoreContext.Provider, {
-      children: this.props.children,
+      children: child,
       value: this.store
     });
   }
 }
 
-function useGraphQLStore(methodName: keyof Methods) {
+export function useGraphQLStore(methodName: keyof Methods) {
   const store = React.useContext(GraphQLStoreContext);
 
   if (!store) {
@@ -236,7 +215,7 @@ function useGraphQLStore(methodName: keyof Methods) {
   return { store, method };
 }
 
-const storeStateToHookState = (
+export const storeStateToHookState = (
   state?: StoreState,
   isLoadingIfNotCached?: boolean
 ): HookState<any, any> => {
@@ -251,12 +230,8 @@ const storeStateToHookState = (
   };
 };
 
-type Props = {
-  client: GraphQLClient;
-};
-
 // extract the type from a generic: ex. T from Promise<T>
-type Unpacked<T> = T extends (infer U)[]
+export type Unpacked<T> = T extends (infer U)[]
   ? U
   : T extends (...args: any[]) => infer U
   ? U
@@ -264,9 +239,7 @@ type Unpacked<T> = T extends (infer U)[]
   ? U
   : T;
 
-type AfterMutate<R> = ((r: R, s: GraphQLStore) => any) | RegExp; // redo query if regex or run a callback
-
-type UseClient = <
+export type UseClient = <
   A extends { variables: Parameters<M>[0]; config?: Parameters<M>[1] }, // argsArray
   K extends keyof Methods = any, // method key (name)
   M extends (...args: any) => any = Methods[K], // method
@@ -274,16 +247,12 @@ type UseClient = <
 >(
   methodName: K,
   config?: Partial<MethodConfig<A['variables'], R>> & {
-    variables?: A['variables'];
     fetchOnMount?: boolean;
-    afterMutate?: AfterMutate<R>;
   }
 ) => HookState<R, A['variables']> & {
   fetch: (
     config?: Partial<MethodConfig<A['variables'], R>> & {
-      variables?: A['variables'];
       fetchOnMount?: boolean;
-      afterMutate?: AfterMutate<R>;
     }
   ) => Promise<Context<A['variables'], R>>;
   store: GraphQLStore;
@@ -291,7 +260,7 @@ type UseClient = <
   updated: number;
 };
 
-type HookState<T, V> = {
+export type HookState<T, V> = {
   loading: boolean;
   resolved: boolean;
   context?: StoreState<T, V>['context'];

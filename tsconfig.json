@@ -2,7 +2,7 @@
   "compilerOptions": {
     "skipLibCheck": true,
     "target": "es2017",
-    "outDir": "build/main",
+    "outDir": "build",
     "moduleResolution": "node",
     "module": "commonjs",
     "declaration": true,
@@ -41,14 +41,7 @@
     "types": ["node", "jest"],
     "typeRoots": ["node_modules/@types", "src/types"]
   },
-  "include": [
-    "src/**.ts",
-    "src/**.tsx",
-    "src/**/*.ts",
-    "src/**/*.tsx",
-    "node_modules/@types/node/globals.d.ts",
-    "node_modules/@types/jest"
-  ],
+  "include": ["src"],
   "exclude": ["node_modules"],
   "compileOnSave": false
 }
