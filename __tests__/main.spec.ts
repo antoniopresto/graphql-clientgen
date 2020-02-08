@@ -5,7 +5,7 @@ import {
   TEST_API
 } from './helpers';
 
-import { getRemoteSchema } from '../lib/printFromEndpoint';
+import { getRemoteSchema } from '../src/lib/printFromEndpoint';
 
 describe('main', () => {
   afterEach(() => {

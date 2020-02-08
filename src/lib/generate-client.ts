@@ -7,8 +7,8 @@ import { generateQuery } from './expand-client-fields';
 import { getResolversHelper } from './resolversHelper';
 import { prettify } from '../utils/prettify';
 
-function mountClient(schema: GraphQLSchema, clientBase: string) {
-  let prependBody = '';
+async function templateValues(schema: GraphQLSchema) {
+  let prepend = '';
 
   const storeSet = getResolversHelper(schema);
   const storeItems = [...storeSet.values()];
@@ -21,7 +21,7 @@ function mountClient(schema: GraphQLSchema, clientBase: string) {
 
   let methodsType = ``;
 
-  let actionsBody = ``;
+  let methodsMap = ``;
 
   let methodsInfo = ``;
 
@@ -67,9 +67,9 @@ function mountClient(schema: GraphQLSchema, clientBase: string) {
     `;
 
     clientEntry += `
-      ${info.schemaKey}: (${variablesDeclaration}config) => {
-        return this.exec(${hasArgs ? 'variables, ' : '{}, '} {
-        url: this.url,
+      ${info.schemaKey}: (${variablesDeclaration}config, client) => {
+        return client.exec(${hasArgs ? 'variables, ' : '{}, '} {
+        url: client.url,
         entityName: '${info.entityName}',
         schemaKey: '${info.schemaKey}',
         query: query.${info.schemaKey}(config),
@@ -80,21 +80,28 @@ function mountClient(schema: GraphQLSchema, clientBase: string) {
       },
     `;
 
-    actionsBody += clientEntry;
+    methodsMap += clientEntry;
   });
 
   // prepend queries
-  prependBody += `
+  prepend += `
       ${queriesStr}
     }
   `;
 
+  const tsTypes = await tsPlugin(schema, [], {});
+
+  const types =
+    typeof tsTypes === 'string'
+      ? tsTypes
+      : (tsTypes.prepend || []).join('\n') + '\n\n' + tsTypes.content;
+
   return {
-    prependBody,
-    clientBody: clientBase
-      .replace('//[methods]//', actionsBody)
-      .replace('//[methodsType]//', methodsType)
-      .replace('//[methodsInfo]//', methodsInfo),
+    types,
+    prepend,
+    methods: methodsMap,
+    methodsType,
+    methodsInfo,
     query: [...queryHelpers.values()].reduce(
       (prev, next) => `${prev}\n\n ${next.query}`,
       ''
@@ -103,56 +110,76 @@ function mountClient(schema: GraphQLSchema, clientBase: string) {
 }
 
 export async function printClient(schema: GraphQLSchema) {
-  const base = await getClientBase();
+  const templates = await readTemplates();
 
-  const tsTypes = await tsPlugin(schema, [], {});
+  const values = await templateValues(schema);
 
-  const tsContent =
-    typeof tsTypes === 'string'
-      ? tsTypes
-      : (tsTypes.prepend || []).join('\n') + '\n\n' + tsTypes.content;
+  function fill(input: string) {
+    Object.keys(values).forEach(key => {
+      input = input.replace(`//[${key}]//`, (<any>values)[key]);
+    });
+    return input;
+  }
 
-  const { prependBody, clientBody } = mountClient(schema, base.client);
-
-  const client = await prettify(
-    'client.ts',
-    `
-      ${prependBody}
-      ${tsContent}
-      ${clientBody}
-     `
-  );
+  const types = await prettify('types.ts', fill(templates.types));
+  const client = await prettify('client.ts', fill(templates.client));
 
   return {
-    ...base,
-    client
+    client,
+    types
   };
 }
 
+const basePath = path.resolve(__dirname, '../template');
+
+const readTemplates = async () => {
+  const types = fs.readFileSync(basePath + '/types.txt', 'utf8');
+  const client = fs.readFileSync(basePath + '/client.txt', 'utf8');
+
+  return {
+    types,
+    client
+  };
+};
+
 function addTabs(str = '', n = 8) {
   let spaces = '';
-
+  
   for (let i = 0; i < n; i++) {
     spaces += ' ';
   }
-
+  
   return str
     .split('\n')
     .map(el => `${spaces}${el}`)
     .join('\n');
 }
 
-// FIXME on prod dont remove `src` from path
-const basePath = path.resolve(__dirname, '../../src/template');
-
-const getClientBase = async () => {
-  const client = fs.readFileSync(basePath + '/Client.ts', 'utf8');
-  const provider = fs.readFileSync(basePath + '/Provider.tsx', 'utf8');
-  const store = fs.readFileSync(basePath + '/Store.ts', 'utf8');
-
-  return {
-    client,
-    provider,
-    store
-  };
-};
+// const indentString = (
+//   string: string,
+//   count = 1,
+//   options: { indent?: string } = {}
+// ) => {
+//   options = {
+//     indent: ' ',
+//     ...options
+//   };
+//
+//   if (typeof options.indent !== 'string') {
+//     throw new TypeError(
+//       `Expected \`options.indent\` to be a \`string\`, got \`${typeof options.indent}\``
+//     );
+//   }
+//
+//   if (count === 0) {
+//     return string;
+//   }
+//
+//   const regex = /^(?!\s*$)/gm;
+//
+//   return string.replace(regex, options.indent.repeat(count));
+// };
+//
+// function removeNL(string = '') {
+//   return string.trim().replace(/\n/g, '').replace(/ +/g, ' ');
+// }

@@ -23,7 +23,7 @@ Usage:
   }
 );
 
-const dest = CWD + '/build/src/template';
+const dest = CWD + '/build/template';
 
 fs.ensureDirSync(dest);
 fs.copySync(CWD + '/src/template', dest);

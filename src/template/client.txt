@@ -1,0 +1,14 @@
+import { parseFragmentConfig, OpKind, useClientFactory } from 'graphql-clientgen';
+import { Methods } from './types';
+
+//[prepend]//
+
+export const AppMethods: Methods = {
+  //[methods]//
+};
+
+export const AppMethodsInfo = {
+  //[methodsInfo]//
+};
+
+export const useClient = useClientFactory<any, Methods>()

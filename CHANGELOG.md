@@ -2,6 +2,126 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="2.1.10-beta.7"></a>
+## [2.1.10-beta.7](https://github.com/antoniopresto/graphql-clientgen/compare/v2.1.10-beta.6...v2.1.10-beta.7) (2020-02-09)
+
+
+
+<a name="2.1.10-beta.6"></a>
+## [2.1.10-beta.6](https://github.com/antoniopresto/graphql-clientgen/compare/v2.1.10-beta.5...v2.1.10-beta.6) (2020-02-09)
+
+
+
+<a name="2.1.10-beta.5"></a>
+## [2.1.10-beta.5](https://github.com/antoniopresto/graphql-clientgen/compare/v2.1.10-beta.4...v2.1.10-beta.5) (2020-02-09)
+
+
+
+<a name="2.1.10-beta.4"></a>
+## [2.1.10-beta.4](https://github.com/antoniopresto/graphql-clientgen/compare/v2.1.10-beta.3...v2.1.10-beta.4) (2020-02-09)
+
+
+
+<a name="2.1.10-beta.3"></a>
+## [2.1.10-beta.3](https://github.com/antoniopresto/graphql-clientgen/compare/v2.1.10-beta.2...v2.1.10-beta.3) (2020-02-09)
+
+
+
+<a name="2.1.10-beta.2"></a>
+## [2.1.10-beta.2](https://github.com/antoniopresto/graphql-clientgen/compare/v2.1.10-beta.1...v2.1.10-beta.2) (2020-02-09)
+
+
+
+<a name="2.1.10-beta.1"></a>
+## [2.1.10-beta.1](https://github.com/antoniopresto/graphql-clientgen/compare/v2.1.10-beta.0...v2.1.10-beta.1) (2020-02-09)
+
+
+
+<a name="2.1.10-beta.0"></a>
+## [2.1.10-beta.0](https://github.com/antoniopresto/graphql-clientgen/compare/v2.1.9...v2.1.10-beta.0) (2020-02-09)
+
+
+
+<a name="2.1.9"></a>
+## [2.1.9](https://github.com/antoniopresto/graphql-clientgen/compare/v2.1.7...v2.1.9) (2020-02-09)
+
+
+
+<a name="2.1.9-beta.15"></a>
+## [2.1.9-beta.15](https://github.com/antoniopresto/graphql-clientgen/compare/v2.1.9-beta.14...v2.1.9-beta.15) (2020-02-08)
+
+
+
+<a name="2.1.9-beta.14"></a>
+## [2.1.9-beta.14](https://github.com/antoniopresto/graphql-clientgen/compare/v2.1.9-beta.13...v2.1.9-beta.14) (2020-02-08)
+
+
+
+<a name="2.1.9-beta.13"></a>
+## [2.1.9-beta.13](https://github.com/antoniopresto/graphql-clientgen/compare/v2.1.9-beta.12...v2.1.9-beta.13) (2020-02-08)
+
+
+
+<a name="2.1.9-beta.12"></a>
+## [2.1.9-beta.12](https://github.com/antoniopresto/graphql-clientgen/compare/v2.1.9-beta.11...v2.1.9-beta.12) (2020-02-08)
+
+
+
+<a name="2.1.9-beta.11"></a>
+## [2.1.9-beta.11](https://github.com/antoniopresto/graphql-clientgen/compare/v2.1.9-beta.10...v2.1.9-beta.11) (2020-02-08)
+
+
+
+<a name="2.1.9-beta.10"></a>
+## [2.1.9-beta.10](https://github.com/antoniopresto/graphql-clientgen/compare/v2.1.9-beta.9...v2.1.9-beta.10) (2020-02-08)
+
+
+
+<a name="2.1.9-beta.9"></a>
+## [2.1.9-beta.9](https://github.com/antoniopresto/graphql-clientgen/compare/v2.1.7...v2.1.9-beta.9) (2020-02-08)
+
+
+
+<a name="2.1.9-beta.8"></a>
+## [2.1.9-beta.8](https://github.com/antoniopresto/graphql-clientgen/compare/v2.1.9-beta.7...v2.1.9-beta.8) (2020-02-08)
+
+
+
+<a name="2.1.9-beta.7"></a>
+## [2.1.9-beta.7](https://github.com/antoniopresto/graphql-clientgen/compare/v2.1.9-beta.6...v2.1.9-beta.7) (2020-02-08)
+
+
+
+<a name="2.1.9-beta.6"></a>
+## [2.1.9-beta.6](https://github.com/antoniopresto/graphql-clientgen/compare/v2.1.9-beta.5...v2.1.9-beta.6) (2020-02-08)
+
+
+
+<a name="2.1.9-beta.5"></a>
+## [2.1.9-beta.5](https://github.com/antoniopresto/graphql-clientgen/compare/v2.1.9-beta.3...v2.1.9-beta.5) (2020-02-08)
+
+
+
+<a name="2.1.9-beta.3"></a>
+## [2.1.9-beta.3](https://github.com/antoniopresto/graphql-clientgen/compare/v2.1.9-beta.2...v2.1.9-beta.3) (2020-02-08)
+
+
+
+<a name="2.1.9-beta.2"></a>
+## [2.1.9-beta.2](https://github.com/antoniopresto/graphql-clientgen/compare/v2.1.9-beta.1...v2.1.9-beta.2) (2020-02-08)
+
+
+
+<a name="2.1.9-beta.1"></a>
+## [2.1.9-beta.1](https://github.com/antoniopresto/graphql-clientgen/compare/v2.1.9-beta.0...v2.1.9-beta.1) (2020-02-08)
+
+
+
+<a name="2.1.9-beta.0"></a>
+## [2.1.9-beta.0](https://github.com/antoniopresto/graphql-clientgen/compare/v2.1.7...v2.1.9-beta.0) (2020-02-08)
+
+
+
 <a name="2.1.7"></a>
 ## [2.1.7](https://github.com/antoniopresto/graphql-clientgen/compare/v2.1.6...v2.1.7) (2020-01-29)
 

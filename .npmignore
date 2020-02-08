@@ -13,8 +13,6 @@ build/docs
 coverage
 .nyc_output
 *.log
-build/main/dev
-build/module/dev
-build/main/dev
-build/main/template
-build/module/template
+build/stories
+build/examples
+**/*/__tests__

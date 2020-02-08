@@ -2,14 +2,14 @@ import got from 'got';
 import { introspectionQuery } from 'graphql/utilities/introspectionQuery';
 import { buildClientSchema } from 'graphql/utilities/buildClientSchema';
 import { GraphQLSchema } from 'graphql';
-import { printClient } from '../index';
+import { printClient } from './generate-client';
 
 type Options = {
   fetchOptions?: FetchOptions;
 };
 
 type Return =
-  | { status: 'ok'; client: string; provider: string; store: string }
+  | { status: 'ok'; types: string; client: string; }
   | { status: 'err'; message: string };
 
 export async function printFromEndpoint(
@@ -18,14 +18,14 @@ export async function printFromEndpoint(
 ): Promise<Return> {
   try {
     const schemaFetch = await getRemoteSchema(url, options.fetchOptions);
-    
+
     if (schemaFetch.status !== 'ok') {
       return schemaFetch;
     }
-    
-    const { client, provider, store } = await printClient(schemaFetch.schema);
-    
-    return { status: 'ok', client, provider, store };
+
+    const { types, client } = await printClient(schemaFetch.schema);
+
+    return { status: 'ok', types, client };
   } catch (e) {
     return { status: 'err', message: e.message };
   }
@@ -41,9 +41,9 @@ export async function getRemoteSchema(
   options: FetchOptions = {}
 ): Promise<
   { status: 'ok'; schema: GraphQLSchema } | { status: 'err'; message: string }
-  > {
+> {
   const body = JSON.stringify({ query: introspectionQuery });
-  
+
   try {
     const response = await got.post(endpoint, {
       method: options.method || 'POST',
@@ -54,10 +54,10 @@ export async function getRemoteSchema(
       },
       body
     });
-    
+
     // @ts-ignore
     const { data, errors } = JSON.parse(response.body);
-    
+
     if (errors) {
       return { status: 'err', message: JSON.stringify(errors, null, 2) };
     }
@@ -66,9 +66,9 @@ export async function getRemoteSchema(
     // the comment "/** Time represented in ISO 8601 */" is added to the
     // type Scalars['Time'] - but if simple building the schema, the
     // comment is suppressed
-    
+
     const schema = buildClientSchema(data);
-    
+
     return {
       status: 'ok',
       schema

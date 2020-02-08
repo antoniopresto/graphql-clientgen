@@ -117,6 +117,7 @@ module.exports = async function start(cb, port = 3379) {
 
   try {
     const { server } = await listen(port);
+    console.log(`server listen at http://localhost:${port}`)
     cb && cb(null, port, server.close);
     return server.close;
   } catch (e) {

@@ -1,0 +1,11 @@
+import { Method, MethodsDict, MethodsInfoDict } from 'graphql-clientgen'
+
+//[types]//
+
+export interface Methods extends MethodsDict {
+  //[methodsType]//
+}
+
+export interface MethodsInfo extends MethodsInfoDict {
+  //[methodsInfo]//
+}
