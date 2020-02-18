@@ -484,12 +484,11 @@ export type MethodFetcher<V, R> = (
   config?: Partial<MethodConfig<V, R>>
 ) => Promise<Context<V, R>>;
 
-type OnStateUpdate = {
+export type OnStateUpdate = {
   updateSignature?: (newValue: string) => void;
   willCallMutation?: () => void;
   resolvedMutation?: (ctx: Context) => void;
 };
-
 
 export type FetchGraphql<V = any, R = any> = (
   methodName: string,
