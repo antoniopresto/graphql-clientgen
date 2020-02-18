@@ -490,6 +490,14 @@ type OnStateUpdate = {
   resolvedMutation?: (ctx: Context) => void;
 };
 
+
+export type FetchGraphql<V = any, R = any> = (
+  methodName: string,
+  hookConfig: Partial<MethodConfig<V, R>> | undefined,
+  store: GraphQLStore,
+  onStateUpdate: OnStateUpdate
+) =>  MethodFetcher<V, R>
+
 export const fetchGraphql = <V = any, R = any>(
   methodName: string,
   hookConfig: Partial<MethodConfig<V, R>> | undefined,
@@ -539,6 +547,10 @@ export const fetchGraphql = <V = any, R = any>(
 
     const methodInfo = store.client.methodsInfo[methodName as keyof MethodInfo];
 
+    if(!methodInfo) {
+      throw new Error(`The method "${methodName}" does not exists`)
+    }
+    
     if (methodInfo.isQuery) {
       updateSignature({ methodName: methodName as string, variables });
       store.activeQueries.add(requestSignatureRef);
