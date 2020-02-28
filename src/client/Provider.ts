@@ -21,9 +21,11 @@ export const GraphQLStoreContext = React.createContext({} as GraphQLStore);
 export function useClientFactory<
   S extends GraphQLStore,
   MD extends MethodsDict = S['client']['methods']
->(defaultStore?: S): UseClient<MD> {
+>(defaultStore?: () => S): UseClient<MD> {
   return (methodName, hookConfig) => {
-    const store = defaultStore || useGraphQLStore(methodName as string).store;
+    const store =
+      (defaultStore && defaultStore()) ||
+      useGraphQLStore(methodName as string).store;
 
     const defaulter = (override: typeof hookConfig = {}) => {
       const initial: any = hookConfig || {};
