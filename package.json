@@ -1,6 +1,6 @@
 {
   "name": "graphql-clientgen",
-  "version": "2.2.5",
+  "version": "2.2.6",
   "description": "Generate client script for graphql projects",
   "main": "build/index.js",
   "typings": "build/index.d.ts",
