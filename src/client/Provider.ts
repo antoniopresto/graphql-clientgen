@@ -164,9 +164,17 @@ export function useClientFactory<
       fetcher();
     }
 
+    const refetch: typeof fetcher = function(config) {
+      return fetcher({
+        ignoreCached: true,
+        ...config
+      });
+    };
+
     return {
       ...(state as any),
-      fetch: fetcher,
+      fetch: refetch,
+      refetch,
       store,
       signature: requestSignature
     };
