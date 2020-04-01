@@ -486,7 +486,8 @@ export type MethodFetcher<V, R> = (
 
 export type OnStateUpdate = {
   updateSignature?: (newValue: string) => void;
-  willCallMutation?: () => void;
+  willCallMutation?: (config: MethodConfig<any, any>) => void;
+  willCallQuery?: (config: MethodConfig<any, any>) => void;
   resolvedMutation?: (ctx: Context) => void;
 };
 
@@ -495,7 +496,7 @@ export type FetchGraphql<V = any, R = any> = (
   hookConfig: Partial<MethodConfig<V, R>> | undefined,
   store: GraphQLStore,
   onStateUpdate: OnStateUpdate
-) =>  MethodFetcher<V, R>
+) => MethodFetcher<V, R>;
 
 export const fetchGraphql = <V = any, R = any>(
   methodName: string,
@@ -540,25 +541,30 @@ export const fetchGraphql = <V = any, R = any>(
   }
 
   return function methodfetcher(config = hookConfig) {
-    const { variables, fetchOnMount, afterMutate, ...methodConfig } = defaulter(
-      config
-    );
+    const parsedConfig = defaulter(config);
+
+    const {
+      variables,
+      fetchOnMount,
+      afterMutate,
+      ...methodConfig
+    } = parsedConfig;
 
     const methodInfo = store.client.methodsInfo[methodName as keyof MethodInfo];
 
-    if(!methodInfo) {
-      throw new Error(`The method "${methodName}" does not exists`)
+    if (!methodInfo) {
+      throw new Error(`The method "${methodName}" does not exists`);
     }
-    
+
     if (methodInfo.isQuery) {
+      onStateUpdate.willCallQuery?.(parsedConfig);
       updateSignature({ methodName: methodName as string, variables });
       store.activeQueries.add(requestSignatureRef);
       return method(variables, methodConfig, store.client);
     }
 
-    if (onStateUpdate.willCallMutation) {
-      onStateUpdate.willCallMutation();
-    }
+    onStateUpdate.willCallMutation?.(parsedConfig);
+    
 
     return method(variables, methodConfig, store.client).then(ctx => {
       if (!ctx.errors && afterMutate) {

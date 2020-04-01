@@ -27,6 +27,8 @@ export function useClientFactory<
       (defaultStore && defaultStore()) ||
       useGraphQLStore(methodName as string).store;
 
+    const lastConfig = React.useRef(hookConfig);
+
     const defaulter = (override: typeof hookConfig = {}) => {
       const initial: any = hookConfig || {};
 
@@ -135,7 +137,11 @@ export function useClientFactory<
     }, []);
 
     const fetcher = fetchGraphql(methodName as string, hookConfig, store, {
-      willCallMutation() {
+      willCallQuery(config) {
+        lastConfig.current = config;
+      },
+      willCallMutation(config) {
+        lastConfig.current = config;
         setState({ ...stateRef.current, loading: true });
       },
       updateSignature(newSignature) {
@@ -164,7 +170,7 @@ export function useClientFactory<
       fetcher();
     }
 
-    const refetch: typeof fetcher = function(config) {
+    const refetch: typeof fetcher = function(config = lastConfig.current) {
       return fetcher({
         ignoreCached: true,
         ...config
@@ -173,6 +179,7 @@ export function useClientFactory<
 
     return {
       ...(state as any),
+      data: state.result,
       fetch: refetch,
       refetch,
       store,
@@ -266,6 +273,8 @@ export type UseClient<MD extends MethodsDict> = <
     fetchOnMount?: boolean;
   }
 ) => HookState<R, A['variables']> & {
+  data: R;
+  refetch: () => Promise<Context<A['variables'], R>>;
   fetch: (
     config?: Partial<MethodConfig<A['variables'], R>> & {
       fetchOnMount?: boolean;
