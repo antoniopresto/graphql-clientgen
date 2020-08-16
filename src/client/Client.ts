@@ -66,7 +66,7 @@ export type MethodConfig<V, R> = {
   fragment?: string;
   appendToFragment?: string;
   querySuffix?: string;
-  cache?: boolean;
+  cache?: boolean; // TODO accept a custom cache handler (get, set, delete, etc)
   ignoreCached?: boolean;
   redoQueriesNumber?: number;
   kind: OpKind;
@@ -90,6 +90,7 @@ export type GraphQLClientConfig = {
   middleware?: Middleware | Middleware[];
   methods: Methods;
   methodsInfo: MethodsInfoDict;
+  useQueue?: boolean;
 };
 
 export class GraphQLClient {
@@ -104,12 +105,17 @@ export class GraphQLClient {
   private mutationQueue: QueueItem[] = [];
   private queryQueue: QueueItem[] = [];
 
-  private queueLimit = 20;
-  private timeoutLimit = 50;
+  useQueue = true;
+  queueLimit = 20;
+  timeoutLimit = 50;
 
   constructor(config: GraphQLClientConfig) {
     this.methods = config.methods;
     this.methodsInfo = config.methodsInfo;
+    
+    if(typeof config.useQueue === 'boolean') {
+      this.useQueue = config.useQueue
+    }
 
     // apply global client instance middleware
     if (config.middleware) {
@@ -136,6 +142,11 @@ export class GraphQLClient {
     let finalQueryHeader = '';
     let finalVariables: Dict = {};
     let resolverMap: { [key: string]: QueueItem } = {};
+    let finalQueryName = kind + '';
+    
+    if(queue.length === 1) {
+      finalQueryName = `${finalQueryName} ${queue[0].config.schemaKey} `
+    }
 
     queue.forEach((childQuery, childQueryIndex) => {
       const qiKey = `${kind}_${childQueryIndex}`;
@@ -200,7 +211,7 @@ export class GraphQLClient {
       finalQueryHeader = `(${finalQueryHeader})`;
     }
 
-    const query = `${kind} ${finalQueryHeader} {
+    const query = `${finalQueryName} ${finalQueryHeader} {
       ${finalQueryBody}
     }`;
 
@@ -272,6 +283,11 @@ export class GraphQLClient {
       queueItem.resolver = r;
     });
 
+    if(!this.useQueue) {
+      this.fetchQueue([queueItem], kind);
+      return promise;
+    }
+    
     if (kind === OpKind.query) {
       this.queryQueue.push(queueItem);
 
