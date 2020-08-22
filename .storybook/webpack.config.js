@@ -1,6 +1,14 @@
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
+const path = require('path');
 
 module.exports = ({ config, mode }) => {
+  config.resolve.alias = config.resolve.alias || {};
+
+  config.resolve.alias['graphql-clientgen'] = path.resolve(
+    process.cwd(),
+    'src'
+  );
+
   config.module.rules.push({
     test: /\.(ts|tsx)$/,
     loader: require.resolve('babel-loader'),

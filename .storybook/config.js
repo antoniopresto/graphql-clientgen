@@ -1,7 +1,5 @@
 import React from 'react';
 import { configure, addDecorator } from '@storybook/react';
-import { GraphQLProvider } from '../examples/Provider';
-import { GraphQLClient } from '../examples/Client';
 
 const req = require.context('../stories', true, /\.stories.tsx/);
 
@@ -10,17 +8,7 @@ function loadStories() {
 }
 
 const CenterDecorator = storyFn => {
-  const client = React.useMemo(() => {
-    return new GraphQLClient({ url: 'http://localhost:3379/graphql' });
-  }, []);
-
-  window.__GraphQLClient__ = client;
-
-  return (
-    <GraphQLProvider client={client}>
-      <div style={{ padding: 10 }}>{storyFn()}</div>
-    </GraphQLProvider>
-  );
+  return <div style={{ padding: 10 }}>{storyFn()}</div>;
 };
 
 addDecorator(CenterDecorator);

@@ -1,18 +1,11 @@
-import React, { useContext } from 'react';
-import { useClient, GraphQLStoreContext } from '../examples/Provider';
-import { fetchGraphql } from '../examples/Client';
+import React from 'react';
 import { storiesOf } from '@storybook/react';
+import { GraphQLClient, GraphQLProvider } from 'graphql-clientgen';
+import { AppMethods, AppMethodsInfo, useClient } from '../examples/Client';
 
 const List = () => {
   const renderRef = React.useRef(0);
 
-  const store = useContext(GraphQLStoreContext);
-
-  const fetcher = fetchGraphql('PostFindMany', undefined, store);
-
-  // @ts-ignore
-  window.fetcher = fetcher;
-  
   const posts = useClient('PostFindMany', {
     fetchOnMount: true
   });
@@ -70,4 +63,21 @@ const List = () => {
   );
 };
 
-storiesOf('Posts', module).add('List', () => <List />);
+const App = () => {
+  const [graphqlClient] = React.useState(() => {
+    return new GraphQLClient({
+      url: 'http://localhost:3379/graphql',
+      middleware: [],
+      methods: AppMethods,
+      methodsInfo: AppMethodsInfo
+    });
+  });
+
+  return (
+    <GraphQLProvider client={graphqlClient}>
+      <List />
+    </GraphQLProvider>
+  );
+};
+
+storiesOf('App', module).add('App', () => <App />);

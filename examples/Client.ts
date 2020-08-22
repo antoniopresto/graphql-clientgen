@@ -3,6 +3,7 @@ import {
   OpKind,
   useClientFactory
 } from 'graphql-clientgen';
+
 import { Methods } from './types';
 
 export const query = {
